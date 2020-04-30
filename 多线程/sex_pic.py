@@ -8,7 +8,7 @@ import time
 
 sio = socketio.AsyncClient()
 api = 'http://10.1.1.169:8888'
-robotqq = ''  # 机器人QQ号
+robotqq = ""  # 机器人QQ号
 sexpic_key = ''  # 申请地址api.lolicon.app
 size1200 = 'true'  # 是否使用 master_1200 缩略图，即长或宽最大为1200px的缩略图，以节省流量或提升加载速度（某些原图的大小可以达到十几MB）
 
@@ -62,7 +62,7 @@ async def OnGroupMsgs(data):
 
 
 @sio.event
-async def OnFriendMsgs(data):
+def OnFriendMsgs(data):
     mess = FMess(data['CurrentPacket']['Data'])
     # print(mess.Content)
     keyword = re.match(r'来[点丶张](.*?)的{0,1}色图', mess.Content)  # 瞎写的正则
@@ -71,14 +71,14 @@ async def OnFriendMsgs(data):
         future = asyncio.run_coroutine_threadsafe(sex_pic(1, keyword.group(1)), new_loop)
         asyncio.run_coroutine_threadsafe(
             send_pic(mess.ToQQ, 3, future.result()[0], mess.FromQQG, 0, future.result()[1]), new_loop)
-
+        return
 
 async def main():
     await sio.connect(api, transports=['websocket'])
     print('client connected id:', sio.sid)
     # await sio.disconnect()
     await sio.wait()
-    await sio.disconnect()
+#    await sio.disconnect()
 
 
 if __name__ == '__main__':

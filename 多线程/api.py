@@ -18,7 +18,6 @@ async def send_text(toid, type, msg, groupid, atuser=''):
     async with aiohttp.ClientSession() as session:
         async with session.post(url=Luaapi, params=params, json=data, timeout=30) as res:
             print(await res.json())
-            return 123, 456
 
 
 async def send_pic(toid, type, msg='', groupid=0, atuser=0, picurl='', picbase64='', picmd5=''):
@@ -34,8 +33,8 @@ async def send_pic(toid, type, msg='', groupid=0, atuser=0, picurl='', picbase64
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
     async with aiohttp.ClientSession() as session:
-        async with session.post(Luaapi, params=params, json=data) as res:
-            print(res.status)
+        async with session.post(Luaapi, params=params, json=data,timeout=30) as res:
+            print(await res.json())
 
 
 async def sex_pic(r18, keyword=''):
@@ -47,7 +46,7 @@ async def sex_pic(r18, keyword=''):
               'proxy': 'i.pixiv.cat'}
     errpicurl = 'https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg'
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, ) as res:
+        async with session.get(url, params=params,timeout=8 ) as res:
             try:
                 data = await res.json()  # 转换成字典
                 if data['code'] == 404:
