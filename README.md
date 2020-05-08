@@ -35,5 +35,8 @@ api地址http://api.yuban10703.xyz:2333/setu
 可选参数:
 
 1. `tag`:P站的tag,str变量
-2. `r18`:布尔变量,True或False,
+2. `r18`:布尔变量,True或False
 
+返回值的处理的话可以看插件的对应函数.....
+
+图片url就是用返回值里面的filename和https://cdn.jsdelivr.net/gh/laosepi/setu/pics/拼接的
