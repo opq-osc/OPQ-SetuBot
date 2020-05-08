@@ -120,7 +120,7 @@ def sysinfo():
 
 
 def setuapi_1(tag='', r18=False):
-    url = 'http://10.1.1.1:2333/setu'
+    url = 'http://home.yuban10703.xyz:2333/setu'
     params = {'r18': r18,
               'tag': tag}
     try:
