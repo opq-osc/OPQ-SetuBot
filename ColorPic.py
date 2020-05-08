@@ -1,66 +1,179 @@
-# coding=utf-8
 import socketio
-# import json
 import requests
 import re
 import logging
 import time
+import json
+import psutil
+import cpuinfo
+import datetime
 
-# import socket
-'''
-Python插件SDK Ver 0.0.2
-维护者:enjoy(2435932516)
-有问题联系我。
-'''
-
-robotqq = ""  # 机器人QQ号
-webapi = "http://10.1.1.168:8888"  # Webapi接口 http://127.0.0.1:8888
 color_pickey = ''  # 申请地址api.lolicon.app
 size1200 = 'true'  # 是否使用 master_1200 缩略图，即长或宽最大为1200px的缩略图，以节省流量或提升加载速度（某些原图的大小可以达到十几MB）
+webapi = "http://127.0.0.1:8888"  # Webapi接口 http://127.0.0.1:8888
+robotqq = ""  # 机器人QQ号
 
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 refreshapi = webapi + '/v1/RefreshKeys'
 sio = socketio.Client()
 # log文件处理
-logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=0,
-                    filename='new.log', filemode='a')
+# logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=0,
+#                     filename='new.log', filemode='a')
+Luaapi = api + "/v1/LuaApiCaller"
 
 
 class GMess:
     # QQ群消息类型
-    def __init__(self, message1):
-        # print(message1)
-        self.FromQQG = message1['FromGroupId']  # 来源QQ群
-        self.QQGName = message1['FromGroupName']  # 来源QQ群昵称
-        self.FromQQ = message1['FromUserId']  # 来源QQ
-        self.FromQQName = message1['FromNickName']  # 来源QQ名称
-        self.Content = message1['Content']  # 消息内容
+    def __init__(self, message):
+        self.FromQQG = message['FromGroupId']  # 来源QQ群
+        self.QQGName = message['FromGroupName']  # 来源QQ群昵称
+        self.FromQQ = message['FromUserId']  # 来源QQ
+        self.FromQQName = message['FromNickName']  # 来源QQ名称
+        self.Content = message['Content']  # 消息内容
+        try:
+            if robotqq == str(json.loads(message['Content'])['UserID'][0]):
+                self.Atmsg = json.loads(message['Content'])['Content']
+            else:
+                self.Atmsg = ''
+        except:
+            self.Atmsg = ''
+        # except:
+        #     print('?????')
+        # if robotqq in json.loads(message['Content'])['UserID']:
+        #     print('>>>aaaa<<<')
+        #     self.Atmsg = json.loads(message['Content'])['Content']
 
 
 class Mess:
-    def __init__(self, message1):
-        self.FromQQ = message1['ToUin']
-        self.ToQQ = message1['FromUin']
-        self.Content = message1['Content']
+    def __init__(self, message):
+        # print(message)
+        self.FromQQ = message['ToUin']
+        self.ToQQ = message['FromUin']
         try:
-            self.FromQQG = message1['TempUin']
+            self.Content = json.loads(message['Content'])['Content']
+        except:
+            self.Content = message['Content']
+        try:
+            self.FromQQG = message['TempUin']
         except:
             self.FromQQG = 0
 
 
-# standard Python
+def get_cpu_info():
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+    cpu_count = psutil.cpu_count(logical=False)  # 1代表单核CPU，2代表双核CPU
+    xc_count = psutil.cpu_count()  # 线程数，如双核四线程
+    cpu_percent = round((psutil.cpu_percent()), 2)  # cpu使用率
+    try:
+        model = info['brand']
+    except:
+        model = info['hardware']
+    try:
+        freq = info['hz_actual']
+    except:
+        freq = 'null'
+    cpu_info = (model, freq, info['arch'], cpu_count, xc_count, cpu_percent)
+    return cpu_info
 
-# SocketIO Client
-# sio = socketio.AsyncClient(logger=True, engineio_logger=True)
 
-# ----------------------------------------------------- 
-# Socketio
-# ----------------------------------------------------- 
-def refreshkey():
-    params = {'qq': robotqq}
-    res = requests.get(refreshapi, params=params)
-    print(res.text)
+def get_memory_info():
+    memory = psutil.virtual_memory()
+    swap = psutil.swap_memory()
+    total_nc = round((float(memory.total) / 1024 / 1024 / 1024), 3)  # 总内存
+    used_nc = round((float(memory.used) / 1024 / 1024 / 1024), 3)  # 已用内存
+    free_nc = round((float(memory.free) / 1024 / 1024 / 1024), 3)  # 空闲内存
+    percent_nc = memory.percent  # 内存使用率
+    swap_total = round((float(swap.total) / 1024 / 1024 / 1024), 3)  # 总swap
+    swap_used = round((float(swap.used) / 1024 / 1024 / 1024), 3)  # 已用swap
+    swap_free = round((float(swap.free) / 1024 / 1024 / 1024), 3)  # 空闲swap
+    swap_percent = swap.percent  # swap使用率
+    men_info = (total_nc, used_nc, free_nc, percent_nc, swap_total, swap_used, swap_free, swap_percent)
+    return men_info
+
+
+def uptime():
+    now = time.time()
+    boot = psutil.boot_time()
+    boottime = datetime.datetime.fromtimestamp(boot).strftime("%Y-%m-%d %H:%M:%S")
+    nowtime = datetime.datetime.fromtimestamp(now).strftime("%Y-%m-%d %H:%M:%S")
+    up_time = str(datetime.datetime.utcfromtimestamp(now).replace(microsecond=0) - datetime.datetime.utcfromtimestamp(
+        boot).replace(microsecond=0))
+    alltime = (boottime, nowtime, up_time)
+    return alltime
+
+
+def sysinfo():
+    cpu_info = get_cpu_info()
+    mem_info = get_memory_info()
+    up_time = uptime()
+    msg = 'CPU型号:{0}\r\n频率:{1}\r\n架构:{2}\r\n核心数:{3}\r\n线程数:{4}\r\n负载:{5}%\r\n{6}\r\n' \
+          '总内存:{7}G\r\n已用内存:{8}G\r\n空闲内存:{9}G\r\n内存使用率:{10}%\r\n{6}\r\n' \
+          'swap:{11}G\r\n已用swap:{12}G\r\n空闲swap:{13}G\r\nswap使用率:{14}%\r\n{6}\r\n' \
+          '开机时间:{15}\r\n当前时间:{16}\r\n已运行时间:{17}'
+    full_meg = msg.format(cpu_info[0], cpu_info[1], cpu_info[2], cpu_info[3], cpu_info[4], cpu_info[5], '*' * 20,
+                          mem_info[0], mem_info[1], mem_info[2], mem_info[3], mem_info[4],
+                          mem_info[5], mem_info[6], mem_info[7], up_time[0], up_time[1], up_time[2])
+    return full_meg
+
+
+
+
+def setuapi_1(tag='', r18=False):
+    url = 'http://10.1.1.1:2333/setu'
+    params = {'r18': r18,
+              'tag': tag}
+    try:
+        res = requests.get(url, params, timeout=5)
+    except:
+        return '', '请求出错啦~'
+    setu_data = res.json()
+    print(res.status_code)
+    if res.status_code == 200 and setu_data['_id'] not in sent:
+        sent.append(setu_data['_id'])
+        title = setu_data['title']
+        author = setu_data['author']
+        artworkid = setu_data['artwork']
+        artistid = setu_data['artist']
+        url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + setu_data['filename'][0]
+        msg = pixiv_url(title, artworkid, author, artistid)
+        return url, msg
+    else:
+        return '', 'emmmm'
+
+
+def setuapi_0(keyword='', r18=False):
+    url = 'https://api.lolicon.app/setu/'
+    params = {'r18': r18,
+              'apikey': color_pickey,
+              'keyword': keyword,
+              'size1200': size1200,
+              'proxy': 'i.pixiv.cat'}
+    try:
+        setu_data = requests.get(url, params, timeout=5).json()
+    except:
+        return '', '服务器爆炸啦~'
+    if setu_data['code'] == 404:
+        msg = "你的xp好奇怪啊 爪巴"
+        return '', msg
+    if setu_data['code'] == 429:
+        msg = "没图了 爪巴"
+        return '', msg
+    picurl = setu_data['data'][0]['url']  # 提取图片链接
+    author = setu_data['data'][0]['author']  # 提取作者名字
+    title = setu_data['data'][0]['title']  # 图片标题
+    artworkid = setu_data['data'][0]['pid']
+    artistid = setu_data['data'][0]['uid']
+    msg = pixiv_url(title, artworkid, author, artistid)
+    print(picurl)
+    return picurl, msg
+
+
+def pixiv_url(title, artworkid, author, artistid):  # 拼凑消息
+    purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
+    uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
+    msg = title + "\r\n" + purl + "\r\n" + author + "\r\n" + uurl
+    return msg
 
 
 def send_text(toid, type, msg, groupid, atuser):
@@ -72,7 +185,8 @@ def send_text(toid, type, msg, groupid, atuser):
             "content": msg,
             "groupid": groupid,
             "atUser": atuser}
-    requests.post(api, params=params, json=data)
+    requests.post(api, params=params, json=data, timeout=10)
+    # print('已发送~')
 
 
 def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5=''):
@@ -87,43 +201,44 @@ def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5='
             "picUrl": picurl,
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
-    requests.post(api, params=params, json=data, timeout=30)
+    req = requests.post(api, params=params, json=data, timeout=30)
+    print(req.status_code)
+
+
+
+sent = []
+
+
+def nmsl():
+    api = 'https://nmsl.shadiao.app/api.php?from=sunbelife'
+    res = '\r\n' + requests.get(url=api).text
+    return res
+
+
+def get_setu(keyword, r18=False):
+    data = setuapi_1(keyword, r18)
     print(data)
+    if data[0] != '':
+        # sent.append(data['_id'])
+        print('从本地api获取')
+        return data[0], data[1]
+    else:
+        print('尝试从网络api获取')
+        data_1 = setuapi_0(keyword, r18)
+        if data_1[0] != '':
+            return data_1[0], data_1[1]
+        else:
+            return '', data_1[1]
 
 
 def beat():
+    global sent
     while (1):
-        sio.emit('GetWebConn', robotqq)
-        time.sleep(60)
-
-
-def color_pic(r18, keyword=''):
-    url = 'https://api.lolicon.app/setu/'
-    params = {'r18': r18,
-              'apikey': color_pickey,
-              'keyword': keyword,
-              'size1200': size1200,
-              'proxy': 'i.pixiv.cat'}
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36 Edg/81.0.416.53',
-    }
-    try:
-        res = requests.get(url, headers=headers, params=params, timeout=8)
-        data = res.json()  # 转换成字典
-        picurl = data['data'][0]['url']  # 提取图片链接
-        author = data['data'][0]['author']  # 提取作者名字
-        title = data['data'][0]['title']  # 图片标题
-        purl = 'www.pixiv.net/artworks/' + str(data['data'][0]['pid'])  # 拼凑p站链接
-        uurl = 'www.pixiv.net/users/' + str(data['data'][0]['uid'])  # 画师的p站链接
-        msg = title + '\r\n' + purl + '\r\n' + author + '\r\n' + uurl  # 组合消息
-        return msg, picurl
-    except IndexError:
-        picurl = 'https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg'
-        return '你的xp好奇怪啊,爪巴', picurl
-    except Exception as error:
-        print(error)
-        picurl = 'https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg'
-        return '服务器可能挂掉了' + '\r\n' + str(error), picurl  # 出错了就返回固定值.....
+        # sio.emit('GetWebConn', robotqq)
+        print('sent:', sent)
+        sent = []
+        print('sent:', sent)
+        time.sleep(300)
 
 
 @sio.event
@@ -137,9 +252,8 @@ def connect():
 def OnGroupMsgs(message):
     ''' 监听群组消息'''
     tmp = message['CurrentPacket']['Data']
-    # print(tmp)
     a = GMess(tmp)
-    # cm = a.Content.split(' ',3) #分割命令
+    # print(tmp)
     '''
     a.FrQQ 消息来源
     a.QQGName 来源QQ群昵称
@@ -147,22 +261,30 @@ def OnGroupMsgs(message):
     a.FromNickName 来源QQ昵称
     a.Content 消息内容
     '''
-    print('群聊:', a.Content)
-    keyword = re.match(r'来[点丶张](.*?)的{0,1}色图', a.Content)  # 瞎写的正则
+    print(a.QQGName, '———', a.FromQQName, ':', a.Content)
+    # print(tmp)
+    keyword = re.match(r'来[点丶张](.*?)的{0,1}[色涩]图', a.Content)  # 瞎写的正则
     if keyword:
         keyword = keyword.group(1)
-        data = color_pic(0, keyword=keyword)
-        msg = data[0]
-        picurl = data[1]
         send_text(a.FromQQG, 2, '', 0, a.FromQQ)
-        send_pic(a.FromQQG, 2, msg, a.FromQQ, a.FromQQ, picurl)
-        print('已发送~')
+        setu = get_setu(keyword)
+        if setu[0] == '':
+            send_text(a.FromQQG, 2, setu[1], 0, 0)
+            return
+        send_pic(a.FromQQG, 2, setu[1], a.FromQQ, a.FromQQ, setu[0])
+        # print('发送成功~')
+        # time.sleep(5)
         return
 
-    # te = re.search(r'\#(.*)', str(a.Content))
-    # if te == None:
-    #     # print('???')
-    #     return
+    if a.Content == 'sysinfo':
+        msg = sysinfo()
+        send_text(a.FromQQG, 2, msg, 0, 0)
+        return
+    # print('@消息:',a.Atmsg)
+    if 'nmsl' in a.Atmsg:
+        msg = nmsl()
+        send_text(a.FromQQG, 2, msg, 0, a.FromQQ)
+        return
 
 
 @sio.on('OnFriendMsgs')
@@ -171,17 +293,27 @@ def OnFriendMsgs(message):
     tmp = message['CurrentPacket']['Data']
     a = Mess(tmp)
     # print(tmp)
-    # cm = a.Content.split(' ')
-    print('好友:', a.Content)
-    keyword = re.match(r'来[点丶张](.*?)的{0,1}色图', a.Content)  # 瞎写的正则
+    # print('好友:', a.Content)
+    keyword = re.match(r'来[点丶张](.*?)的{0,1}[色涩]图', a.Content)  # 瞎写的正则
     if keyword:
         keyword = keyword.group(1)
-        data = color_pic(1, keyword=keyword)
-        msg = data[0]
-        picurl = data[1]
-        send_pic(a.ToQQ, 3, msg, a.FromQQG, 0, picurl)
-        print('已发送~')
-        return
+        setu = get_setu(keyword, r18=True)
+        if a.FromQQG == 0:
+            # print('好友会话')
+            send_text(a.ToQQ, 1, '发送ing', a.FromQQG, 0)
+            if setu[0] == '':
+                send_text(a.ToQQ, 1, setu[1], a.FromQQG, 0)
+                return
+            send_pic(a.ToQQ, 1, setu[1], 0, 0, setu[0])
+            return
+        else:
+            # print('临时会话')
+            send_text(a.ToQQ, 3, '发送ing', a.FromQQG, 0)
+            if setu[0] == '':
+                send_text(a.ToQQ, 3, setu[1], a.FromQQG, 0)
+                return
+            send_pic(a.ToQQ, 3, setu[1], a.FromQQG, 0, setu[0])
+            return
 
 
 @sio.on('OnEvents')
@@ -195,6 +327,7 @@ def OnEvents(message):
 def main():
     try:
         sio.connect(webapi, transports=['websocket'])
+        sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
         # pdb.set_trace() 这是断点
         sio.wait()
     except BaseException as e:
@@ -203,5 +336,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # refreshkey()
     main()
