@@ -16,11 +16,11 @@ robotqq = ""  # 机器人QQ号
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 refreshapi = webapi + '/v1/RefreshKeys'
+Luaapi = api + "/v1/LuaApiCaller"
 sio = socketio.Client()
 # log文件处理
-# logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=0,
-#                     filename='new.log', filemode='a')
-Luaapi = api + "/v1/LuaApiCaller"
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=0,
+                    filename='new.log', filemode='a')
 
 
 class GMess:
@@ -117,10 +117,8 @@ def sysinfo():
     return full_meg
 
 
-
-
 def setuapi_1(tag='', r18=False):
-    url = 'http://home.yuban10703.xyz:2333/setu'
+    url = 'http://api.yuban10703.xyz:2333/setu'
     params = {'r18': r18,
               'tag': tag}
     try:
@@ -128,7 +126,7 @@ def setuapi_1(tag='', r18=False):
     except:
         return '', '请求出错啦~'
     setu_data = res.json()
-    print(res.status_code)
+    # print(res.status_code)
     if res.status_code == 200 and setu_data['_id'] not in sent:
         sent.append(setu_data['_id'])
         title = setu_data['title']
@@ -139,7 +137,7 @@ def setuapi_1(tag='', r18=False):
         msg = pixiv_url(title, artworkid, author, artistid)
         return url, msg
     else:
-        return '', 'emmmm'
+        return '', setu_data['msg']
 
 
 def setuapi_0(keyword='', r18=False):
@@ -165,7 +163,6 @@ def setuapi_0(keyword='', r18=False):
     artworkid = setu_data['data'][0]['pid']
     artistid = setu_data['data'][0]['uid']
     msg = pixiv_url(title, artworkid, author, artistid)
-    print(picurl)
     return picurl, msg
 
 
@@ -185,8 +182,28 @@ def send_text(toid, type, msg, groupid, atuser):
             "content": msg,
             "groupid": groupid,
             "atUser": atuser}
-    requests.post(api, params=params, json=data, timeout=10)
+    res = requests.post(api, params=params, json=data, timeout=10)
+    print('文字消息:', res.json())
+    return
     # print('已发送~')
+
+
+def friend_send_text(data, msg):
+    if data.FromQQG == 0:  # 临时会话
+        send_text(data.ToQQ, 1, msg, data.FromQQG, 0)
+        return
+    else:  # 好友
+        send_text(data.ToQQ, 3, msg, data.FromQQG, 0)
+        return
+
+
+def friend_send_pic(data, msg, url):
+    if data.FromQQG == 0:  # 临时会话
+        send_pic(data.ToQQ, 1, msg, 0, 0, url)
+        return
+    else:  # 好友
+        send_pic(data.ToQQ, 3, msg, data.FromQQG, 0, url)
+        return
 
 
 def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5=''):
@@ -202,8 +219,7 @@ def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5='
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
     req = requests.post(api, params=params, json=data, timeout=30)
-    print(req.status_code)
-
+    print('图片消息:', req.json())
 
 
 sent = []
@@ -211,19 +227,19 @@ sent = []
 
 def nmsl():
     api = 'https://nmsl.shadiao.app/api.php?from=sunbelife'
-    res = '\r\n' + requests.get(url=api).text
+    res = requests.get(url=api).text
     return res
 
 
 def get_setu(keyword, r18=False):
     data = setuapi_1(keyword, r18)
-    print(data)
+    # print(data)
     if data[0] != '':
         # sent.append(data['_id'])
-        print('从本地api获取')
+        print('尝试从gtihub图库获取')
         return data[0], data[1]
     else:
-        print('尝试从网络api获取')
+        print('尝试从lolicon获取')
         data_1 = setuapi_0(keyword, r18)
         if data_1[0] != '':
             return data_1[0], data_1[1]
@@ -233,11 +249,10 @@ def get_setu(keyword, r18=False):
 
 def beat():
     global sent
-    while (1):
+    while True:
         # sio.emit('GetWebConn', robotqq)
         print('sent:', sent)
         sent = []
-        print('sent:', sent)
         time.sleep(300)
 
 
@@ -261,8 +276,7 @@ def OnGroupMsgs(message):
     a.FromNickName 来源QQ昵称
     a.Content 消息内容
     '''
-    print(a.QQGName, '———', a.FromQQName, ':', a.Content)
-    # print(tmp)
+    # print(a.QQGName, '———', a.FromQQName, ':', a.Content)
     keyword = re.match(r'来[点丶张](.*?)的{0,1}[色涩]图', a.Content)  # 瞎写的正则
     if keyword:
         keyword = keyword.group(1)
@@ -275,15 +289,16 @@ def OnGroupMsgs(message):
         # print('发送成功~')
         # time.sleep(5)
         return
-
+    # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
         send_text(a.FromQQG, 2, msg, 0, 0)
         return
+    # -----------------------------------------------------
     # print('@消息:',a.Atmsg)
     if 'nmsl' in a.Atmsg:
         msg = nmsl()
-        send_text(a.FromQQG, 2, msg, 0, a.FromQQ)
+        send_text(a.FromQQG, 2, '\r\n' + msg, 0, a.FromQQ)
         return
 
 
@@ -298,28 +313,25 @@ def OnFriendMsgs(message):
     if keyword:
         keyword = keyword.group(1)
         setu = get_setu(keyword, r18=True)
-        if a.FromQQG == 0:
-            # print('好友会话')
-            send_text(a.ToQQ, 1, '发送ing', a.FromQQG, 0)
-            if setu[0] == '':
-                send_text(a.ToQQ, 1, setu[1], a.FromQQG, 0)
-                return
-            send_pic(a.ToQQ, 1, setu[1], 0, 0, setu[0])
-            return
-        else:
-            # print('临时会话')
-            send_text(a.ToQQ, 3, '发送ing', a.FromQQG, 0)
-            if setu[0] == '':
-                send_text(a.ToQQ, 3, setu[1], a.FromQQG, 0)
-                return
-            send_pic(a.ToQQ, 3, setu[1], a.FromQQG, 0, setu[0])
-            return
+        friend_send_text(a, '发送ing')
+        friend_send_pic(a, setu[1], setu[0])
+        return
+    # -----------------------------------------------------
+    if a.Content == 'sysinfo':
+        msg = sysinfo()
+        friend_send_text(a, msg)
+        return
+    # -----------------------------------------------------
+    if a.Content == 'nmsl':
+        msg = nmsl()
+        friend_send_text(a, msg)
+        return
 
 
 @sio.on('OnEvents')
 def OnEvents(message):
     ''' 监听相关事件'''
-    print(message)
+    # print(message)
 
 
 # -----------------------------------------------------
@@ -327,12 +339,11 @@ def OnEvents(message):
 def main():
     try:
         sio.connect(webapi, transports=['websocket'])
-        sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
         # pdb.set_trace() 这是断点
         sio.wait()
     except BaseException as e:
         logging.info(e)
-        print(e)
+        # print(e)
 
 
 if __name__ == '__main__':
