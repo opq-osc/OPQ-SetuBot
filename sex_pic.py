@@ -127,17 +127,17 @@ def setuapi_1(tag='', r18=False):
         return '', '请求出错啦~'
     setu_data = res.json()
     # print(res.status_code)
-    if res.status_code == 200 and setu_data['_id'] not in sent:
-        sent.append(setu_data['_id'])
-        title = setu_data['title']
-        author = setu_data['author']
-        artworkid = setu_data['artwork']
-        artistid = setu_data['artist']
-        url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + setu_data['filename'][0]
-        msg = pixiv_url(title, artworkid, author, artistid)
-        return url, msg
-    else:
-        return '', setu_data['msg']
+    if res.status_code == 200:
+        if setu_data['_id'] not in sent:
+            sent.append(setu_data['_id'])
+            title = setu_data['title']
+            author = setu_data['author']
+            artworkid = setu_data['artwork']
+            artistid = setu_data['artist']
+            url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + setu_data['filename'][0]
+            msg = pixiv_url(title, artworkid, author, artistid)
+            return url, msg
+    return '', setu_data['msg']
 
 
 def setuapi_0(keyword='', r18=False):
