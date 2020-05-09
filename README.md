@@ -34,8 +34,8 @@ api地址http://api.yuban10703.xyz:2333/setu
 
 可选参数:
 
-1. `tag`:P站的tag,str变量
-2. `r18`:布尔变量,True或False
+1. `tag`:P站的tag,str变量(不加tag就随机返回)
+2. `r18`:布尔变量,True或False(默认False)
 
 返回值的处理的话可以看插件的对应函数.....
 
