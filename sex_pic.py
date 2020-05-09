@@ -258,8 +258,8 @@ def beat():
 
 @sio.event
 def connect():
-    print('connected to server')
     sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
+    print('connected to server')
     beat()  # 心跳包，保持对服务器的连接
 
 
