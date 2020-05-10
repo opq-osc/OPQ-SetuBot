@@ -158,8 +158,8 @@ def setuapi_1(tag='', r18=False):
                 url = ''
                 base64_code = base_64(filename)
             msg = pixiv_url(title, artworkid, author, artistid)
-            return url, base64_code,msg
-    return '', '', setu_data['msg']
+            return url, base64_code, msg
+    return '', '', 'error'
 
 
 def setuapi_0(keyword='', r18=False):
@@ -174,11 +174,9 @@ def setuapi_0(keyword='', r18=False):
     except:
         return '', '服务器爆炸啦~'
     if setu_data['code'] == 404:
-        msg = "你的xp好奇怪啊 爪巴"
-        return '', msg
+        return '', '你的xp好奇怪啊 爪巴'
     if setu_data['code'] == 429:
-        msg = "没图了 爪巴"
-        return '', msg
+        return '', '没图了 爪巴'
     picurl = setu_data['data'][0]['url']  # 提取图片链接
     author = setu_data['data'][0]['author']  # 提取作者名字
     title = setu_data['data'][0]['title']  # 图片标题
@@ -204,27 +202,27 @@ def send_text(toid, type, msg, groupid, atuser):
             "content": msg,
             "groupid": groupid,
             "atUser": atuser}
-    res = requests.post(api, params=params, json=data, timeout=10)
+    res = requests.post(api, params=params, json=data, timeout=3)
     print('文字消息:', res.json())
     return
     # print('已发送~')
 
 
 def friend_send_text(data, msg):
-    if data.FromQQG == 0:  # 临时会话
+    if data.FromQQG == 0:  # 好友
         send_text(data.ToQQ, 1, msg, data.FromQQG, 0)
         return
-    else:  # 好友
+    else:  # 临时
         send_text(data.ToQQ, 3, msg, data.FromQQG, 0)
         return
 
 
-def friend_send_pic(data, msg, url):
+def friend_send_pic(data, msg, url, base64code):
     if data.FromQQG == 0:  # 临时会话
-        send_pic(data.ToQQ, 1, msg, 0, 0, url)
+        send_pic(data.ToQQ, 1, msg, 0, 0, url, base64code)
         return
     else:  # 好友
-        send_pic(data.ToQQ, 3, msg, data.FromQQG, 0, url)
+        send_pic(data.ToQQ, 3, msg, data.FromQQG, 0, url, base64code)
         return
 
 
@@ -255,18 +253,18 @@ def nmsl():
 
 def get_setu(keyword, r18=False):
     data = setuapi_1(keyword, r18)
-    # print(data)
+    # print(data[2])
     if data[0] != data[1]:
         # sent.append(data['_id'])
         print('尝试从yubanのapi获取')
-        return data[0], data[1] ,data[2]
+        return data[0], data[1], data[2]
     else:
         print('尝试从lolicon获取')
         data_1 = setuapi_0(keyword, r18)
         if data_1[0] != '':
-            return data_1[0],'',data_1[1]
+            return data_1[0], '', data_1[1]
         else:
-            return '','', data_1[1]
+            return '', '', data_1[1]
 
 
 def beat():
@@ -275,7 +273,7 @@ def beat():
         # sio.emit('GetWebConn', robotqq)
         print('sent:', sent)
         sent = []
-        time.sleep(300)
+        time.sleep(600)
 
 
 @sio.event
@@ -336,9 +334,12 @@ def OnFriendMsgs(message):
     keyword = setu_pattern.match(a.Content)
     if keyword:
         keyword = keyword.group(1)
-        setu = get_setu(keyword, r18=True)
         friend_send_text(a, '发送ing')
-        friend_send_pic(a, setu[1], setu[0])
+        setu = get_setu(keyword, r18=True)
+        if setu[0] == setu[1]:
+            friend_send_text(a, setu[2])
+            return
+        friend_send_pic(a, setu[2], setu[0], setu[1])
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
