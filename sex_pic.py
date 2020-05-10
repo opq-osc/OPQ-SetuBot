@@ -3,20 +3,29 @@ import requests
 import re
 import logging
 import time
+import base64
 import json
 import psutil
 import cpuinfo
 import datetime
 
-color_pickey = ''  # 申请地址api.lolicon.app
-size1200 = 'true'  # 是否使用 master_1200 缩略图，即长或宽最大为1200px的缩略图，以节省流量或提升加载速度（某些原图的大小可以达到十几MB）
-webapi = "http://127.0.0.1:8888"  # Webapi接口 http://127.0.0.1:8888
-robotqq = ""  # 机器人QQ号
+with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
+    config = json.loads(f.read())
+    print('获取配置成功~')
 
+# globals().update(config)  # 神奇的方法,但是这样IDE总是提示没有变量
+# setu_pattern = re.compile(setu_pattern)
+# setunum_pattern = re.compile(setunum_pattern)
+
+color_pickey = config['color_pickey']  # 申请地址api.lolicon.app
+size1200 = config['size1200']  # 是否使用 master_1200 缩略图，即长或宽最大为1200px的缩略图，以节省流量或提升加载速度（某些原图的大小可以达到十几MB）
+webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
+robotqq = config['robotqq']  # 机器人QQ号
+setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
+setunum_pattern = re.compile(config['setunum_pattern'])  # 色图正则1
+path = config['path']  # 色图路径
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
-refreshapi = webapi + '/v1/RefreshKeys'
-Luaapi = api + "/v1/LuaApiCaller"
 sio = socketio.Client()
 # log文件处理
 logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=0,
@@ -117,6 +126,13 @@ def sysinfo():
     return full_meg
 
 
+def base_64(filename):
+    with open(path + filename, 'rb') as f:
+        coding = base64.b64encode(f.read())  # 读取文件内容，转换为base64编码
+        print('本地base64转码~')
+        return coding.decode()
+
+
 def setuapi_1(tag='', r18=False):
     url = 'http://api.yuban10703.xyz:2333/setu'
     params = {'r18': r18,
@@ -124,7 +140,7 @@ def setuapi_1(tag='', r18=False):
     try:
         res = requests.get(url, params, timeout=5)
     except:
-        return '', '请求出错啦~'
+        return '', '', '请求出错啦~'
     setu_data = res.json()
     # print(res.status_code)
     if res.status_code == 200:
@@ -134,10 +150,16 @@ def setuapi_1(tag='', r18=False):
             author = setu_data['author']
             artworkid = setu_data['artwork']
             artistid = setu_data['artist']
-            url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + setu_data['filename'][0]
+            filename = setu_data['filename'][0]
+            if path == '':
+                url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename
+                base64_code = ''
+            else:
+                url = ''
+                base64_code = base_64(filename)
             msg = pixiv_url(title, artworkid, author, artistid)
-            return url, msg
-    return '', setu_data['msg']
+            return url, base64_code,msg
+    return '', '', setu_data['msg']
 
 
 def setuapi_0(keyword='', r18=False):
@@ -234,17 +256,17 @@ def nmsl():
 def get_setu(keyword, r18=False):
     data = setuapi_1(keyword, r18)
     # print(data)
-    if data[0] != '':
+    if data[0] != data[1]:
         # sent.append(data['_id'])
-        print('尝试从gtihub图库获取')
-        return data[0], data[1]
+        print('尝试从yubanのapi获取')
+        return data[0], data[1] ,data[2]
     else:
         print('尝试从lolicon获取')
         data_1 = setuapi_0(keyword, r18)
         if data_1[0] != '':
-            return data_1[0], data_1[1]
+            return data_1[0],'',data_1[1]
         else:
-            return '', data_1[1]
+            return '','', data_1[1]
 
 
 def beat():
@@ -259,7 +281,7 @@ def beat():
 @sio.event
 def connect():
     sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
-    print('connected to server')
+    print('连接成功~')
     beat()  # 心跳包，保持对服务器的连接
 
 
@@ -277,18 +299,20 @@ def OnGroupMsgs(message):
     a.Content 消息内容
     '''
     # print(a.QQGName, '———', a.FromQQName, ':', a.Content)
-    keyword = re.match(r'来[点丶张](.*?)的{0,1}[色涩]图', a.Content)  # 瞎写的正则
-    if keyword:
-        keyword = keyword.group(1)
+    setu_keyword = setu_pattern.match(a.Content)
+    # num_keyword = setunum_pattern.match(a.Content)
+    if setu_keyword:
+        keyword = setu_keyword.group(1)
         send_text(a.FromQQG, 2, '', 0, a.FromQQ)
         setu = get_setu(keyword)
-        if setu[0] == '':
-            send_text(a.FromQQG, 2, setu[1], 0, 0)
+        if setu[0] == setu[1]:
+            send_text(a.FromQQG, 2, setu[2], 0, 0)
             return
-        send_pic(a.FromQQG, 2, setu[1], a.FromQQ, a.FromQQ, setu[0])
+        send_pic(a.FromQQG, 2, setu[2], a.FromQQ, a.FromQQ, setu[0], setu[1])
         # print('发送成功~')
         # time.sleep(5)
         return
+
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
@@ -309,7 +333,7 @@ def OnFriendMsgs(message):
     a = Mess(tmp)
     # print(tmp)
     # print('好友:', a.Content)
-    keyword = re.match(r'来[点丶张](.*?)的{0,1}[色涩]图', a.Content)  # 瞎写的正则
+    keyword = setu_pattern.match(a.Content)
     if keyword:
         keyword = keyword.group(1)
         setu = get_setu(keyword, r18=True)

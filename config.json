@@ -1,0 +1,9 @@
+{
+  "color_pickey": "",
+  "size1200": "true",
+  "webapi": "http://127.0.0.1:8888",
+  "robotqq": "",
+  "setu_pattern": "来[点丶张](.*?)的{0,1}[色涩]图",
+  "setunum_pattern": "来(.*?)张{0,1}[色涩]图",
+  "path": ""
+}
