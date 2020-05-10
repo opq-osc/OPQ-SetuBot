@@ -2,6 +2,10 @@
 
 在文件里填上bot的qq号和对应webapi地址和[key](https://api.lolicon.app/)运行就好了
 
+path是针对我的api的,会根据api返回的filename去path对应的路径找图,然后转换成base64发送,可以省下下载的时间..
+
+色图仓库:https://github.com/laosepi/setu (每天3点自动从我的收藏夹更新色图)
+
 文件里用了两个api,第一个是我[自己的](http://api.yuban10703.xyz:2333/setu),第二个是https://api.lolicon.app/#/
 
 色图姬运行模式大概是这样:
@@ -16,19 +20,17 @@
 
 <img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200509062130.jpg" alt="IMG_20200509_062059" style="zoom: 33%;" />
 
-还有系统信息,发送==sysinfo==就行了(私聊或者群聊都可以,@不行)
+还有系统信息,发送*sysinfo*就行了(私聊或者群聊都可以,@不行)
 
 <img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200509061522.jpg" alt="IMG_20200509_061421" style="zoom: 33%;" />
 
-还有[祖安模式](http://shadiao.app/)... 对bot说nmsl就行了(需要@,或者私聊)
+还有[祖安模式](http://shadiao.app/)... 对bot说*nmsl*就行了(需要@,或者私聊)
 
 <img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200509061742.jpg" alt="IMG_20200509_061659" style="zoom:33%;" />
 
 还有关于api的:
 
 api地址http://api.yuban10703.xyz:2333/setu
-
-色图仓库:https://github.com/laosepi/setu (每天3点自动从我的收藏夹更新色图)
 
 请求方式:get
 
