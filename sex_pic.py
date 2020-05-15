@@ -151,7 +151,7 @@ def setuapi_1(tag='', r18=False):
             author = setu_data['author']
             artworkid = setu_data['artwork']
             artistid = setu_data['artist']
-            filename = setu_data['filename']
+            filename = setu_data['filename'][0]
             if path == '':
                 url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename
                 base64_code = ''
