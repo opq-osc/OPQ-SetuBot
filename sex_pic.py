@@ -91,13 +91,13 @@ def get_memory_info():
     swap = psutil.swap_memory()
     total_nc = round((float(memory.total) / 1024 / 1024 / 1024), 3)  # 总内存
     used_nc = round((float(memory.used) / 1024 / 1024 / 1024), 3)  # 已用内存
-    free_nc = round((float(memory.free) / 1024 / 1024 / 1024), 3)  # 空闲内存
+    available_nc = round((float(memory.available) / 1024 / 1024 / 1024), 3)  # 空闲内存
     percent_nc = memory.percent  # 内存使用率
     swap_total = round((float(swap.total) / 1024 / 1024 / 1024), 3)  # 总swap
     swap_used = round((float(swap.used) / 1024 / 1024 / 1024), 3)  # 已用swap
     swap_free = round((float(swap.free) / 1024 / 1024 / 1024), 3)  # 空闲swap
     swap_percent = swap.percent  # swap使用率
-    men_info = (total_nc, used_nc, free_nc, percent_nc, swap_total, swap_used, swap_free, swap_percent)
+    men_info = (total_nc, used_nc, available_nc, percent_nc, swap_total, swap_used, swap_free, swap_percent)
     return men_info
 
 
@@ -134,6 +134,7 @@ def base_64(filename):
 
 
 def setuapi_1(tag='', r18=False):
+    print('尝试从yubanのapi获取')
     url = 'http://api.yuban10703.xyz:2333/setu'
     params = {'r18': r18,
               'tag': tag}
@@ -150,7 +151,7 @@ def setuapi_1(tag='', r18=False):
             author = setu_data['author']
             artworkid = setu_data['artwork']
             artistid = setu_data['artist']
-            filename = setu_data['filename'][0]
+            filename = setu_data['filename']
             if path == '':
                 url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename
                 base64_code = ''
@@ -163,6 +164,7 @@ def setuapi_1(tag='', r18=False):
 
 
 def setuapi_0(keyword='', r18=False):
+    print('尝试从lolicon获取')
     url = 'https://api.lolicon.app/setu/'
     params = {'r18': r18,
               'apikey': color_pickey,
@@ -256,10 +258,8 @@ def get_setu(keyword, r18=False):
     # print(data[2])
     if data[0] != data[1]:
         # sent.append(data['_id'])
-        print('尝试从yubanのapi获取')
         return data[0], data[1], data[2]
     else:
-        print('尝试从lolicon获取')
         data_1 = setuapi_0(keyword, r18)
         if data_1[0] != '':
             return data_1[0], '', data_1[1]
@@ -270,14 +270,14 @@ def get_setu(keyword, r18=False):
 def beat():
     global sent
     while True:
-        # sio.emit('GetWebConn', robotqq)
         print('sent:', sent)
         sent = []
-        time.sleep(600)
-
+        time.sleep(300)
+#	sio.emit('GetWebConn', robotqq)
 
 @sio.event
 def connect():
+    time.sleep(1)
     sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
     print('连接成功~')
     beat()  # 心跳包，保持对服务器的连接
@@ -368,7 +368,7 @@ def main():
         sio.wait()
     except BaseException as e:
         logging.info(e)
-        # print(e)
+        print(e)
 
 
 if __name__ == '__main__':
