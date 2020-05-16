@@ -22,7 +22,6 @@ size1200 = config['size1200']  # 是否使用 master_1200 缩略图，即长或�
 webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
 robotqq = config['robotqq']  # 机器人QQ号
 setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
-setunum_pattern = re.compile(config['setunum_pattern'])  # 色图正则1
 path = config['path']  # 色图路径
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
@@ -47,11 +46,6 @@ class GMess:
                 self.Atmsg = ''
         except:
             self.Atmsg = ''
-        # except:
-        #     print('?????')
-        # if robotqq in json.loads(message['Content'])['UserID']:
-        #     print('>>>aaaa<<<')
-        #     self.Atmsg = json.loads(message['Content'])['Content']
 
 
 class Mess:
@@ -133,59 +127,49 @@ def base_64(filename):
         return coding.decode()
 
 
-def setuapi_1(tag='', r18=False):
+def setuapi_0(tag='', num=1, r18=False):
     print('尝试从yubanのapi获取')
-    url = 'http://api.yuban10703.xyz:2333/setu'
+    url = 'http://api.yuban10703.xyz:2333/setu_v2'
     params = {'r18': r18,
+              'num': num,
               'tag': tag}
     try:
         res = requests.get(url, params, timeout=5)
-    except:
-        return '', '', '请求出错啦~'
-    setu_data = res.json()
-    # print(res.status_code)
-    if res.status_code == 200:
-        if setu_data['_id'] not in sent:
-            sent.append(setu_data['_id'])
-            title = setu_data['title']
-            author = setu_data['author']
-            artworkid = setu_data['artwork']
-            artistid = setu_data['artist']
-            filename = setu_data['filename'][0]
-            if path == '':
-                url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename
-                base64_code = ''
-            else:
-                url = ''
-                base64_code = base_64(filename)
-            msg = pixiv_url(title, artworkid, author, artistid)
-            return url, base64_code, msg
-    return '', '', 'error'
+        setu_data = res.json()
+        status_code = res.status_code
+    except Exception as e:
+        return e, '', 'boom~~'
+    msg, filename = [], []
+    if status_code == 200:
+        for i in setu_data['data']:
+            msg.append(pixiv_url(i['title'], i['artwork'], i['author'], i['artist']))
+            filename.append(i['filename'])
+    return status_code, filename, msg
 
 
-def setuapi_0(keyword='', r18=False):
+def setuapi_1(keyword='', num=1, r18=False):
     print('尝试从lolicon获取')
     url = 'https://api.lolicon.app/setu/'
     params = {'r18': r18,
               'apikey': color_pickey,
               'keyword': keyword,
+              'num': num,
               'size1200': size1200,
               'proxy': 'i.pixiv.cat'}
     try:
-        setu_data = requests.get(url, params, timeout=5).json()
-    except:
-        return '', '服务器爆炸啦~'
-    if setu_data['code'] == 404:
-        return '', '你的xp好奇怪啊 爪巴'
-    if setu_data['code'] == 429:
-        return '', '没图了 爪巴'
-    picurl = setu_data['data'][0]['url']  # 提取图片链接
-    author = setu_data['data'][0]['author']  # 提取作者名字
-    title = setu_data['data'][0]['title']  # 图片标题
-    artworkid = setu_data['data'][0]['pid']
-    artistid = setu_data['data'][0]['uid']
-    msg = pixiv_url(title, artworkid, author, artistid)
-    return picurl, msg
+        res = requests.get(url, params, timeout=5)
+        setu_data = res.json()
+        status_code = res.status_code
+    except Exception as e:
+        return e, '', 'boom~~'
+    msg, url = [], []
+    print(setu_data)
+    if status_code == 200 and setu_data['code'] == 0:
+        for i in setu_data['data']:
+            msg.append(pixiv_url(i['title'], i['pid'], i['author'], i['uid']))
+            url.append(i['url'])
+
+    return setu_data['code'], url, msg
 
 
 def pixiv_url(title, artworkid, author, artistid):  # 拼凑消息
@@ -204,10 +188,10 @@ def send_text(toid, type, msg, groupid, atuser):
             "content": msg,
             "groupid": groupid,
             "atUser": atuser}
-    res = requests.post(api, params=params, json=data, timeout=3)
-    print('文字消息:', res.json())
+    res = requests.post(api, params=params, json=data, timeout=None)
+    result = res.json()
+    print('文字消息:', result)
     return
-    # print('已发送~')
 
 
 def friend_send_text(data, msg):
@@ -240,8 +224,10 @@ def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5='
             "picUrl": picurl,
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
-    req = requests.post(api, params=params, json=data, timeout=30)
-    print('图片消息:', req.json())
+    res = requests.post(api, params=params, json=data, timeout=None)
+    result = res.json()
+    print('图片消息:', result)
+    return
 
 
 sent = []
@@ -253,26 +239,66 @@ def nmsl():
     return res
 
 
-def get_setu(keyword, r18=False):
-    data = setuapi_1(keyword, r18)
-    # print(data[2])
-    if data[0] != data[1]:
-        # sent.append(data['_id'])
-        return data[0], data[1], data[2]
+def send_setu(a, keyword, num=1, r18=False):
+    if num > 10:
+        send_text(a.FromQQG, 2, '不能贪得无厌哦', 0, 0)
+        return
+    send_text(a.FromQQG, 2, '', 0, a.FromQQ)
+    data = setuapi_0(keyword, num, r18)
+    print(data)
+    if data[0] == 200:
+        for i in range(len(data[1])):
+            if path == '':
+                url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + data[1][i]
+                send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, url)
+            else:
+                base64_code = base_64(data[1][i])
+                send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, '', base64_code)
     else:
-        data_1 = setuapi_0(keyword, r18)
-        if data_1[0] != '':
-            return data_1[0], '', data_1[1]
+        data = setuapi_1(keyword, num, r18)
+        print(data)
+        if data[0] == 0:
+            for i in range(len(data[1])):
+                send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, data[1][i])
         else:
-            return '', '', data_1[1]
+            errormsg = '你的xp好奇怪啊 爪巴'
+            send_text(a.FromQQG, 2, errormsg, 0, 0)
+
+
+def send_setu_friend(a, keyword, num=1, r18=False):
+    if num > 10:
+        friend_send_text(a, '不能贪得无厌哦')
+        return
+    friend_send_text(a, '发送ing')
+    data = setuapi_0(keyword, num, r18)
+    print(data)
+    if data[0] == 200:
+        for i in range(len(data[1])):
+            if path == '':
+                url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + data[1][i]
+                friend_send_pic(a, data[2][i], url, '')
+            else:
+                base64_code = base_64(data[1][i])
+                friend_send_pic(a, data[2][i], '', base64_code)
+
+    else:
+        data = setuapi_1(keyword, num, r18)
+        print(data)
+        if data[0] == 0:
+            for i in range(len(data[1])):
+                friend_send_pic(a, data[2][i], data[1][i], '')
+        else:
+            errormsg = '你的xp好奇怪啊 爪巴'
+            friend_send_text(a, errormsg)
 
 
 def beat():
-    global sent
     while True:
-        print('sent:', sent)
-        sent = []
-        time.sleep(300)
+        time.sleep(60)
+        sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
+        print('心跳?')
+
+
 #	sio.emit('GetWebConn', robotqq)
 
 @sio.event
@@ -283,7 +309,7 @@ def connect():
     beat()  # 心跳包，保持对服务器的连接
 
 
-@sio.on('OnGroupMsgs')
+@sio.event
 def OnGroupMsgs(message):
     ''' 监听群组消息'''
     tmp = message['CurrentPacket']['Data']
@@ -297,18 +323,21 @@ def OnGroupMsgs(message):
     a.Content 消息内容
     '''
     # print(a.QQGName, '———', a.FromQQName, ':', a.Content)
-    setu_keyword = setu_pattern.match(a.Content)
+    # setu_keyword = setu_pattern.match(a.Content)
     # num_keyword = setunum_pattern.match(a.Content)
-    if setu_keyword:
-        keyword = setu_keyword.group(1)
-        send_text(a.FromQQG, 2, '', 0, a.FromQQ)
-        setu = get_setu(keyword)
-        if setu[0] == setu[1]:
-            send_text(a.FromQQG, 2, setu[2], 0, 0)
+    # if setu_keyword:
+    if setu_keyword := setu_pattern.match(a.Content):
+        num = setu_keyword.group(1)
+        keyword = setu_keyword.group(2)
+        if num == '':
+            num = 1
+        try:
+            num = int(num)
+        except:
+            send_text(a.FromQQG, 2, '必须是整数哦', 0, 0)
             return
-        send_pic(a.FromQQG, 2, setu[2], a.FromQQ, a.FromQQ, setu[0], setu[1])
-        # print('发送成功~')
-        # time.sleep(5)
+        print('num:', num)
+        send_setu(a, keyword, num)
         return
 
     # -----------------------------------------------------
@@ -324,22 +353,24 @@ def OnGroupMsgs(message):
         return
 
 
-@sio.on('OnFriendMsgs')
+@sio.event
 def OnFriendMsgs(message):
     ''' 监听好友消息 '''
     tmp = message['CurrentPacket']['Data']
     a = Mess(tmp)
     # print(tmp)
     # print('好友:', a.Content)
-    keyword = setu_pattern.match(a.Content)
-    if keyword:
-        keyword = keyword.group(1)
-        friend_send_text(a, '发送ing')
-        setu = get_setu(keyword, r18=True)
-        if setu[0] == setu[1]:
-            friend_send_text(a, setu[2])
+    if setu_keyword := setu_pattern.match(a.Content):
+        num = setu_keyword.group(1)
+        keyword = setu_keyword.group(2)
+        if num == '':
+            num = 1
+        try:
+            num = int(num)
+        except:
+            send_text(a.FromQQG, 2, '必须是整数哦', 0, 0)
             return
-        friend_send_pic(a, setu[2], setu[0], setu[1])
+        send_setu_friend(a, keyword, num, r18=True)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
