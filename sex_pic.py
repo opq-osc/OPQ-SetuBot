@@ -261,14 +261,14 @@ def send_setu(a, keyword, num=1, r18=False):
             else:
                 base64_code = base_64(data[1][i])
                 send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, '', base64_code)
-            time.sleep(1)
+            time.sleep(1.4)
     else:
         data = setuapi_1(keyword, num, r18)
         # print(data)
         if data[0] == 0:
             for i in range(len(data[1])):
                 send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, data[1][i])
-                time.sleep(1)
+                time.sleep(1.2)
         else:
             errormsg = '你的xp好奇怪啊 爪巴'
             send_text(a.FromQQG, 2, errormsg, 0, 0)
@@ -290,14 +290,14 @@ def send_setu_friend(a, keyword, num=1, r18=False):
             else:
                 base64_code = base_64(data[1][i])
                 friend_send_pic(a, data[2][i], '', base64_code)
-            time.sleep(1)
+            time.sleep(1.4)
     else:
         data = setuapi_1(keyword, num, r18)
         # print(data)
         if data[0] == 0:
             for i in range(len(data[1])):
                 friend_send_pic(a, data[2][i], data[1][i], '')
-                time.sleep(1)
+                time.sleep(1.2)
 
         else:
             errormsg = '你的xp好奇怪啊 爪巴'
@@ -315,7 +315,7 @@ def beat():
 
 @sio.event
 def connect():
-    time.sleep(1)
+    time.sleep(1.5)
     sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
     print('连接成功~')
     beat()  # 心跳包，保持对服务器的连接
