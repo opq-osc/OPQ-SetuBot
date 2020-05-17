@@ -65,7 +65,7 @@ api的代码在https://github.com/yuban10703/Pixiv_download_to_mongodb/blob/mast
 
 ### 感谢
 
-[lolicon](api.lolicon.app)
+[lolicon](https://api.lolicon.app/#/setu)
 
 [mcoo/iotqq-plugins-demo](https://github.com/mcoo/iotqq-plugins-demo)
 
