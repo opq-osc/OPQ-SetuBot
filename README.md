@@ -38,7 +38,7 @@ api地址http://api.yuban10703.xyz:2333/setu_v2
 
 1. `tag`:P站的tag,str变量(不加tag就随机返回)
 2. `num`:数量,int变量(最大10,默认1)
-3. `r18`:布尔变量,True或False(默认False)
+3. `r18`:布尔变量,True或False(默认False)[r18的判断是用腾讯ai的鉴黄接口判断的]
 
 返回值:
 
