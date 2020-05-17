@@ -141,6 +141,7 @@ def setuapi_0(tag='', num=1, r18=False):
         return e, '', 'boom~~'
     msg, filename = [], []
     if status_code == 200:
+        print('从api获取到{0}条数据'.format(len(setu_data['data'])))  # 打印获取到多少条
         for i in setu_data['data']:
             msg.append(pixiv_url(i['title'], i['artwork'], i['author'], i['artist']))
             filename.append(i['filename'])
@@ -163,12 +164,11 @@ def setuapi_1(keyword='', num=1, r18=False):
     except Exception as e:
         return e, '', 'boom~~'
     msg, url = [], []
-    print(setu_data)
     if status_code == 200 and setu_data['code'] == 0:
+        print('从api获取到{0}条数据'.format(len(setu_data['data'])))  # 打印获取到多少条
         for i in setu_data['data']:
             msg.append(pixiv_url(i['title'], i['pid'], i['author'], i['uid']))
             url.append(i['url'])
-
     return setu_data['code'], url, msg
 
 
@@ -189,8 +189,11 @@ def send_text(toid, type, msg, groupid, atuser):
             "groupid": groupid,
             "atUser": atuser}
     res = requests.post(api, params=params, json=data, timeout=None)
-    result = res.json()
-    print('文字消息:', result)
+    try:
+        result = res.json()['Ret']
+    except:
+        result = '返回错误~'
+    print('文字消息:',  res.status_code, result)
     return
 
 
@@ -225,8 +228,11 @@ def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5='
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
     res = requests.post(api, params=params, json=data, timeout=None)
-    result = res.json()
-    print('图片消息:', result)
+    try:
+        result = res.json()['Ret']
+    except:
+        result = '返回错误~'
+    print('图片消息:', res.status_code, result)
     return
 
 
@@ -243,9 +249,10 @@ def send_setu(a, keyword, num=1, r18=False):
     if num > 10:
         send_text(a.FromQQG, 2, '不能贪得无厌哦', 0, 0)
         return
+    print('尝试获取{0}张色图'.format(num))
     send_text(a.FromQQG, 2, '', 0, a.FromQQ)
     data = setuapi_0(keyword, num, r18)
-    print(data)
+    # print(data)
     if data[0] == 200:
         for i in range(len(data[1])):
             if path == '':
@@ -254,12 +261,14 @@ def send_setu(a, keyword, num=1, r18=False):
             else:
                 base64_code = base_64(data[1][i])
                 send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, '', base64_code)
+            time.sleep(1)
     else:
         data = setuapi_1(keyword, num, r18)
-        print(data)
+        # print(data)
         if data[0] == 0:
             for i in range(len(data[1])):
                 send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, data[1][i])
+                time.sleep(1)
         else:
             errormsg = '你的xp好奇怪啊 爪巴'
             send_text(a.FromQQG, 2, errormsg, 0, 0)
@@ -269,9 +278,10 @@ def send_setu_friend(a, keyword, num=1, r18=False):
     if num > 10:
         friend_send_text(a, '不能贪得无厌哦')
         return
+    print('尝试获取{0}张色图'.format(num))
     friend_send_text(a, '发送ing')
     data = setuapi_0(keyword, num, r18)
-    print(data)
+    # print(data)
     if data[0] == 200:
         for i in range(len(data[1])):
             if path == '':
@@ -280,13 +290,15 @@ def send_setu_friend(a, keyword, num=1, r18=False):
             else:
                 base64_code = base_64(data[1][i])
                 friend_send_pic(a, data[2][i], '', base64_code)
-
+            time.sleep(1)
     else:
         data = setuapi_1(keyword, num, r18)
-        print(data)
+        # print(data)
         if data[0] == 0:
             for i in range(len(data[1])):
                 friend_send_pic(a, data[2][i], data[1][i], '')
+                time.sleep(1)
+
         else:
             errormsg = '你的xp好奇怪啊 爪巴'
             friend_send_text(a, errormsg)
@@ -312,9 +324,8 @@ def connect():
 @sio.event
 def OnGroupMsgs(message):
     ''' 监听群组消息'''
-    tmp = message['CurrentPacket']['Data']
-    a = GMess(tmp)
-    # print(tmp)
+    # tmp = message['CurrentPacket']['Data']
+    a = GMess(message['CurrentPacket']['Data'])
     '''
     a.FrQQ 消息来源
     a.QQGName 来源QQ群昵称
@@ -322,13 +333,14 @@ def OnGroupMsgs(message):
     a.FromNickName 来源QQ昵称
     a.Content 消息内容
     '''
-    # print(a.QQGName, '———', a.FromQQName, ':', a.Content)
+    # print(a.QQGName, '———', a.FromQQName, ':', a.Content) #打印消息
     # setu_keyword = setu_pattern.match(a.Content)
-    # num_keyword = setunum_pattern.match(a.Content)
     # if setu_keyword:
     if setu_keyword := setu_pattern.match(a.Content):
         num = setu_keyword.group(1)
         keyword = setu_keyword.group(2)
+        if keyword != '':
+            print('关键字:',keyword)
         if num == '':
             num = 1
         try:
@@ -336,7 +348,7 @@ def OnGroupMsgs(message):
         except:
             send_text(a.FromQQG, 2, '必须是整数哦', 0, 0)
             return
-        print('num:', num)
+        # print('num:', num)
         send_setu(a, keyword, num)
         return
 
@@ -348,6 +360,7 @@ def OnGroupMsgs(message):
     # -----------------------------------------------------
     # print('@消息:',a.Atmsg)
     if 'nmsl' in a.Atmsg:
+        send_text(a.FromQQG, 2, '酝酿ing', 0, 0)
         msg = nmsl()
         send_text(a.FromQQG, 2, '\r\n' + msg, 0, a.FromQQ)
         return
@@ -356,13 +369,15 @@ def OnGroupMsgs(message):
 @sio.event
 def OnFriendMsgs(message):
     ''' 监听好友消息 '''
-    tmp = message['CurrentPacket']['Data']
-    a = Mess(tmp)
+    # tmp = message['CurrentPacket']['Data']
+    a = Mess(message['CurrentPacket']['Data'])
     # print(tmp)
     # print('好友:', a.Content)
     if setu_keyword := setu_pattern.match(a.Content):
         num = setu_keyword.group(1)
         keyword = setu_keyword.group(2)
+        if keyword != '':
+            print('关键字:',keyword)
         if num == '':
             num = 1
         try:
@@ -379,6 +394,7 @@ def OnFriendMsgs(message):
         return
     # -----------------------------------------------------
     if a.Content == 'nmsl':
+        friend_send_text(a, '酝酿ing')
         msg = nmsl()
         friend_send_text(a, msg)
         return
