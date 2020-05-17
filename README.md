@@ -62,3 +62,12 @@ api地址http://api.yuban10703.xyz:2333/setu_v2
 api的代码在https://github.com/yuban10703/Pixiv_download_to_mongodb/blob/master/api.py
 
 图片url就是用返回值里面的filename和https://cdn.jsdelivr.net/gh/laosepi/setu/pics  拼接的
+
+### 感谢
+
+[lolicon](api.lolicon.app)
+
+[mcoo/iotqq-plugins-demo](https://github.com/mcoo/iotqq-plugins-demo)
+
+
+
