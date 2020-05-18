@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d15a1cbd-7290-4027-b4bd-73d20efb3374" name="默认更改列表" comment="">
+    <list default="true" id="31d37c85-f26a-4827-b455-c6b0a104668b" name="默认更改列表" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/colorpic.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/colorpic.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sex_pic.py" beforeDir="false" afterPath="$PROJECT_DIR$/sex_pic.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -12,7 +15,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectId" id="1c1L6gnSJOH9bJ6DFPvuPKiO0v3" />
+  <component name="ProjectId" id="1c4hWu42wQQqsBJcis1dEbXf6ov" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -22,16 +25,41 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.web.browsers" />
   </component>
+  <component name="RunManager">
+    <configuration name="sex_pic" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="colorpic" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sex_pic.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.sex_pic" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d15a1cbd-7290-4027-b4bd-73d20efb3374" name="默认更改列表" comment="" />
-      <created>1589690978173</created>
+      <changelist id="31d37c85-f26a-4827-b455-c6b0a104668b" name="默认更改列表" comment="" />
+      <created>1589793807688</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1589690978173</updated>
+      <updated>1589793807688</updated>
     </task>
     <servers />
   </component>

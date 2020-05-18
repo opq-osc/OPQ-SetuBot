@@ -23,6 +23,12 @@ webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
 robotqq = config['robotqq']  # 机器人QQ号
 setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
 path = config['path']  # 色图路径
+setu_threshold = config['setu_threshold']  # 发送上限
+threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
+notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
+wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
+before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
+before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 sio = socketio.Client()
@@ -156,7 +162,7 @@ def setuapi_1(keyword='', num=1, r18=False):
               'keyword': keyword,
               'num': num,
               'size1200': size1200,
-              'proxy': 'i.pixiv.cat'}
+              'proxy': 'disable'}
     try:
         res = requests.get(url, params, timeout=5)
         setu_data = res.json()
@@ -193,7 +199,7 @@ def send_text(toid, type, msg, groupid, atuser):
         result = res.json()['Ret']
     except:
         result = '返回错误~'
-    print('文字消息:',  res.status_code, result)
+    print('文字消息:', res.status_code, result)
     return
 
 
@@ -242,15 +248,13 @@ sent = []
 def nmsl():
     api = 'https://nmsl.shadiao.app/api.php?from=sunbelife'
     res = requests.get(url=api).text
+    time.sleep(0.8)
     return res
 
 
 def send_setu(a, keyword, num=1, r18=False):
-    if num > 10:
-        send_text(a.FromQQG, 2, '不能贪得无厌哦', 0, 0)
-        return
     print('尝试获取{0}张色图'.format(num))
-    send_text(a.FromQQG, 2, '', 0, a.FromQQ)
+    send_text(a.FromQQG, 2, '\r\n'+before_setu_to_send, 0, a.FromQQ)
     data = setuapi_0(keyword, num, r18)
     # print(data)
     if data[0] == 200:
@@ -270,16 +274,13 @@ def send_setu(a, keyword, num=1, r18=False):
                 send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, data[1][i])
                 time.sleep(1.2)
         else:
-            errormsg = '你的xp好奇怪啊 爪巴'
+            errormsg = notfound_to_send
             send_text(a.FromQQG, 2, errormsg, 0, 0)
 
 
 def send_setu_friend(a, keyword, num=1, r18=False):
-    if num > 10:
-        friend_send_text(a, '不能贪得无厌哦')
-        return
     print('尝试获取{0}张色图'.format(num))
-    friend_send_text(a, '发送ing')
+    friend_send_text(a, before_setu_to_send)
     data = setuapi_0(keyword, num, r18)
     # print(data)
     if data[0] == 200:
@@ -300,7 +301,7 @@ def send_setu_friend(a, keyword, num=1, r18=False):
                 time.sleep(1.2)
 
         else:
-            errormsg = '你的xp好奇怪啊 爪巴'
+            errormsg = notfound_to_send
             friend_send_text(a, errormsg)
 
 
@@ -308,14 +309,13 @@ def beat():
     while True:
         time.sleep(60)
         sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
-        print('心跳?')
+        print('心跳')
 
 
 #	sio.emit('GetWebConn', robotqq)
 
 @sio.event
 def connect():
-    time.sleep(1.5)
     sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
     print('连接成功~')
     beat()  # 心跳包，保持对服务器的连接
@@ -336,19 +336,23 @@ def OnGroupMsgs(message):
     # print(a.QQGName, '———', a.FromQQName, ':', a.Content) #打印消息
     # setu_keyword = setu_pattern.match(a.Content)
     # if setu_keyword:
-    if setu_keyword := setu_pattern.match(a.Content):
-        num = setu_keyword.group(1)
-        keyword = setu_keyword.group(2)
-        if keyword != '':
-            print('关键字:',keyword)
-        if num == '':
+    if setu_keyword := setu_pattern.match(a.Content):  # 满足正则就执行
+        num = setu_keyword.group(1)  # 提取数量
+        keyword = setu_keyword.group(2)  # 提取关键字
+        if keyword != '':  # 如果关键字不为空就打印出来
+            print('>>>>>关键字:{0}<<<<<'.format(keyword))
+        if num != '':  # 如果指定了色图数量
+            try:  # 将str转换成int
+                num = int(num)
+            except:  # 如果失败了就说明不是整数数字
+                send_text(a.FromQQG, 2, wrong_input_to_send, 0, 0)
+                return
+        else:  # 没指定的话默认是1
             num = 1
-        try:
-            num = int(num)
-        except:
-            send_text(a.FromQQG, 2, '必须是整数哦', 0, 0)
+
+        if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
+            send_text(a.FromQQG, 2, threshold_to_send, 0, 0)
             return
-        # print('num:', num)
         send_setu(a, keyword, num)
         return
 
@@ -360,7 +364,7 @@ def OnGroupMsgs(message):
     # -----------------------------------------------------
     # print('@消息:',a.Atmsg)
     if 'nmsl' in a.Atmsg:
-        send_text(a.FromQQG, 2, '酝酿ing', 0, 0)
+        send_text(a.FromQQG, 2, before_nmsl_to_send, 0, 0)
         msg = nmsl()
         send_text(a.FromQQG, 2, '\r\n' + msg, 0, a.FromQQ)
         return
@@ -377,13 +381,17 @@ def OnFriendMsgs(message):
         num = setu_keyword.group(1)
         keyword = setu_keyword.group(2)
         if keyword != '':
-            print('关键字:',keyword)
-        if num == '':
+            print('>>>>>关键字:{0}<<<<<'.format(keyword))
+        if num != '':
+            try:
+                num = int(num)
+            except:
+                friend_send_text(a, wrong_input_to_send)
+                return
+        else:
             num = 1
-        try:
-            num = int(num)
-        except:
-            send_text(a.FromQQG, 2, '必须是整数哦', 0, 0)
+        if num > int(setu_threshold):
+            friend_send_text(a, threshold_to_send)
             return
         send_setu_friend(a, keyword, num, r18=True)
         return
@@ -394,7 +402,7 @@ def OnFriendMsgs(message):
         return
     # -----------------------------------------------------
     if a.Content == 'nmsl':
-        friend_send_text(a, '酝酿ing')
+        friend_send_text(a, before_nmsl_to_send)
         msg = nmsl()
         friend_send_text(a, msg)
         return
