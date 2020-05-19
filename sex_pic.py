@@ -392,7 +392,7 @@ def OnFriendMsgs(message):
                     friend_send_text(a, threshold_to_send)
                     return
                 if num <= 0:
-                    friend_send_text(a.FromQQG, 2, '你给我发色图?', 0, 0)
+                    friend_send_text(a.FromQQG, 2, '¿', 0, 0)
                     return
             except:
                 friend_send_text(a, wrong_input_to_send)
