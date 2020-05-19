@@ -254,7 +254,7 @@ def nmsl():
 
 def send_setu(a, keyword, num=1, r18=False):
     print('尝试获取{0}张色图'.format(num))
-    send_text(a.FromQQG, 2, '\r\n'+before_setu_to_send, 0, a.FromQQ)
+    send_text(a.FromQQG, 2, '\r\n' + before_setu_to_send, 0, a.FromQQ)
     data = setuapi_0(keyword, num, r18)
     # print(data)
     if data[0] == 200:
@@ -344,15 +344,18 @@ def OnGroupMsgs(message):
         if num != '':  # 如果指定了色图数量
             try:  # 将str转换成int
                 num = int(num)
+                if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
+                    send_text(a.FromQQG, 2, threshold_to_send, 0, 0)
+                    return
+                if num <= 0:
+                    send_text(a.FromQQG, 2, '¿', 0, 0)
+                    return
             except:  # 如果失败了就说明不是整数数字
                 send_text(a.FromQQG, 2, wrong_input_to_send, 0, 0)
                 return
         else:  # 没指定的话默认是1
             num = 1
 
-        if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
-            send_text(a.FromQQG, 2, threshold_to_send, 0, 0)
-            return
         send_setu(a, keyword, num)
         return
 
@@ -385,14 +388,18 @@ def OnFriendMsgs(message):
         if num != '':
             try:
                 num = int(num)
+                if num > int(setu_threshold):
+                    friend_send_text(a, threshold_to_send)
+                    return
+                if num <= 0:
+                    friend_send_text(a.FromQQG, 2, '你给我发色图?', 0, 0)
+                    return
             except:
                 friend_send_text(a, wrong_input_to_send)
                 return
         else:
             num = 1
-        if num > int(setu_threshold):
-            friend_send_text(a, threshold_to_send)
-            return
+
         send_setu_friend(a, keyword, num, r18=True)
         return
     # -----------------------------------------------------

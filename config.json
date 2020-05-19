@@ -3,7 +3,7 @@
   "size1200": "true",
   "webapi": "http://127.0.0.1:8888",
   "robotqq": "",
-  "setu_pattern": "来{0,1}(.*?)[点丶份张](.*?)的{0,1}[色瑟涩]图",
+  "setu_pattern": "来?(.*?)[点丶份张](.*?)的?[色瑟涩]图",
   "path": "",
   "setu_threshold": "10",
   "threshold_to_send": "要这么多色图你怎么不冲死呢?",

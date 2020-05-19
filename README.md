@@ -12,9 +12,9 @@ path是针对我的api的,会根据api返回的filename去path对应的路径找
 
 ![img](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200509060759.png)
 
-关键字用了正则`r'来{0,1}(.*?)[点丶份张](.*?)的{0,1}[色瑟涩]图'`:
+关键字用了正则`r'来?(.*?)[点丶份张](.*?)的?[色瑟涩]图'`:
 
-![批注 2020-05-18 201416](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200518201441.png)
+![111](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200519215641.png)
 
 效果图(群聊或者私聊,@不行)[群聊:R18=False,私聊:R18=True]:
 
