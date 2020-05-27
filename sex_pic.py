@@ -135,7 +135,7 @@ def base_64(filename):
 
 def setuapi_0(tag='', num=1, r18=False):
     print('尝试从yubanのapi获取')
-    url = 'http://10.1.1.1:2333/setu_v2'
+    url = 'http://api.yuban10703.xyz:2333/setu_v2'
     params = {'r18': r18,
               'num': num,
               'tag': tag}
