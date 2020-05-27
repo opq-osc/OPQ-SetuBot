@@ -135,7 +135,7 @@ def base_64(filename):
 
 def setuapi_0(tag='', num=1, r18=False):
     print('尝试从yubanのapi获取')
-    url = 'http://api.yuban10703.xyz:2333/setu_v2'
+    url = 'http://10.1.1.1:2333/setu_v2'
     params = {'r18': r18,
               'num': num,
               'tag': tag}
@@ -242,9 +242,6 @@ def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5='
     return
 
 
-sent = []
-
-
 def nmsl():
     api = 'https://nmsl.shadiao.app/api.php?from=sunbelife'
     res = requests.get(url=api).text
@@ -334,9 +331,9 @@ def OnGroupMsgs(message):
     a.Content 消息内容
     '''
     # print(a.QQGName, '———', a.FromQQName, ':', a.Content) #打印消息
-    # setu_keyword = setu_pattern.match(a.Content)
-    # if setu_keyword:
-    if setu_keyword := setu_pattern.match(a.Content):  # 满足正则就执行
+    setu_keyword = setu_pattern.match(a.Content)
+    if setu_keyword:
+    # if setu_keyword := setu_pattern.match(a.Content):  # 满足正则就执行
         num = setu_keyword.group(1)  # 提取数量
         keyword = setu_keyword.group(2)  # 提取关键字
         if keyword != '':  # 如果关键字不为空就打印出来
@@ -380,7 +377,9 @@ def OnFriendMsgs(message):
     a = Mess(message['CurrentPacket']['Data'])
     # print(tmp)
     # print('好友:', a.Content)
-    if setu_keyword := setu_pattern.match(a.Content):
+    setu_keyword = setu_pattern.match(a.Content)
+    if setu_keyword:
+    # if setu_keyword := setu_pattern.match(a.Content):
         num = setu_keyword.group(1)
         keyword = setu_keyword.group(2)
         if keyword != '':
@@ -392,7 +391,7 @@ def OnFriendMsgs(message):
                     friend_send_text(a, threshold_to_send)
                     return
                 if num <= 0:
-                    friend_send_text(a,'¿')
+                    friend_send_text(a, '¿')
                     return
             except:
                 friend_send_text(a, wrong_input_to_send)
