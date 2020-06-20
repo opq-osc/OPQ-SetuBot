@@ -1,72 +1,130 @@
-import socketio
-import requests
-import re
-import logging
-import time
-import base64
-import json
-import psutil
-import cpuinfo
-import datetime
+import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading
+from queue import Queue
 
 with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
     config = json.loads(f.read())
     print('获取配置成功~')
-
-# globals().update(config)  # 神奇的方法,但是这样IDE总是提示没有变量
-# setu_pattern = re.compile(setu_pattern)
-# setunum_pattern = re.compile(setunum_pattern)
-
 color_pickey = config['color_pickey']  # 申请地址api.lolicon.app
-size1200 = config['size1200']  # 是否使用 master_1200 缩略图，即长或宽最大为1200px的缩略图，以节省流量或提升加载速度（某些原图的大小可以达到十几MB）
 webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
-robotqq = config['robotqq']  # 机器人QQ号
+botqqs = config['botqqs']  # 机器人QQ号
 setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
-path = config['path']  # 色图路径
+setu_path = config['path']  # 色图路径
+send_pic_original = config['send_pic_original']  # 是否发送原图
 setu_threshold = config['setu_threshold']  # 发送上限
 threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
 notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
 wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
 before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
 before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
+blacklist = config['blacklist']
+whitelist = config['whitelist']
+r18_whitelist = config['r18_whitelist']
+r18_only_whitelist = config['r18_only_whitelist']
+# -----------------------------------------------------
+sio = socketio.Client()
+q = Queue(maxsize=0)
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
-sio = socketio.Client()
-# log文件处理
-logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s', level=0,
-                    filename='new.log', filemode='a')
+
+
+# -----------------------------------------------------
 
 
 class GMess:
-    # QQ群消息类型
+    # 群消息
     def __init__(self, message):
-        self.FromQQG = message['FromGroupId']  # 来源QQ群
-        self.QQGName = message['FromGroupName']  # 来源QQ群昵称
-        self.FromQQ = message['FromUserId']  # 来源QQ
-        self.FromQQName = message['FromNickName']  # 来源QQ名称
-        self.Content = message['Content']  # 消息内容
-        try:
-            if robotqq == str(json.loads(message['Content'])['UserID'][0]):
-                self.Atmsg = json.loads(message['Content'])['Content']
-            else:
-                self.Atmsg = ''
-        except:
-            self.Atmsg = ''
+        self.messtype = 'group'  # 标记群聊
+        self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的QQ
+        self.FromQQG = message['CurrentPacket']['Data']['FromGroupId']  # 来源QQ群
+        self.QQGName = message['CurrentPacket']['Data']['FromGroupName']  # 来源QQ群昵称
+        self.FromQQ = message['CurrentPacket']['Data']['FromUserId']  # 哪个QQ发过来的
+        self.FromQQName = message['CurrentPacket']['Data']['FromNickName']  # 来源QQ名称(群内)
+        if message['CurrentPacket']['Data']['MsgType'] == 'TextMsg':  # 普通消息
+            self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
+            self.At_Content = ''
+        elif message['CurrentPacket']['Data']['MsgType'] == 'AtMsg':  # at消息
+            self.At_Content = re.sub(r'@.* ', '',
+                                     json.loads(message['CurrentPacket']['Data']['Content'])['Content'])  # AT消息内容
+            self.Content = ''  # 消息内容
+        else:
+            self.At_Content = ''
+            self.Content = ''  # 消息内容
 
 
 class Mess:
+    # 私聊消息
     def __init__(self, message):
         # print(message)
-        self.FromQQ = message['ToUin']
-        self.ToQQ = message['FromUin']
-        try:
-            self.Content = json.loads(message['Content'])['Content']
-        except:
-            self.Content = message['Content']
-        try:
-            self.FromQQG = message['TempUin']
-        except:
+        self.messtype = 'private'  # 标记私聊
+        self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的QQ
+        self.QQ = message['CurrentPacket']['Data']['ToUin']  # 接收到这条消息的QQ
+        self.FromQQ = message['CurrentPacket']['Data']['FromUin']  # 哪个QQ发过来的
+        if message['CurrentPacket']['Data']['MsgType'] == 'TextMsg':  # 普通消息
+            self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
             self.FromQQG = 0
+        elif message['CurrentPacket']['Data']['MsgType'] == 'TempSessionMsg':  # 临时消息
+            self.FromQQG = message['CurrentPacket']['Data']['TempUin']  # 通过哪个QQ群发起的
+            self.Content = json.loads(message['CurrentPacket']['Data']['Content'])['Content']
+        else:
+            self.Content = ''
+            self.FromQQG = 0
+
+
+def send_text(mess, msg, atuser=0):
+    if mess.messtype == 'group':
+        t = 2  # 群聊
+        toid = mess.FromQQG
+    else:
+        toid = mess.FromQQ  # 来自谁
+        if mess.FromQQG == 0:  # 0为好友会话
+            t = 1
+        else:
+            t = 3  # 3为临时会话
+    params = {'qq': mess.CurrentQQ,  # bot的qq
+              'funcname': 'SendMsg'}
+    data = {"toUser": toid,
+            "sendToType": t,
+            "sendMsgType": "TextMsg",
+            "content": msg,
+            "groupid": mess.FromQQG,
+            "atUser": atuser}
+    res = requests.post(api, params=params, json=data, timeout=None)
+    try:
+        ret = res.json()['Ret']
+    except:
+        ret = '返回错误~'
+    print('文字消息发送状态:{0} Ret:{1}'.format(res.status_code, ret))
+    return
+
+
+def send_pic(mess, msg, atuser=0, picurl='', picbase64='', picmd5=''):
+    if mess.messtype == 'group':
+        t = 2  # 群聊
+        toid = mess.FromQQG
+    else:
+        toid = mess.FromQQ  # 来自谁
+        if mess.FromQQG == 0:  # FromQQG为0是好友会话
+            t = 1
+        else:
+            t = 3  # 3为临时会话
+    params = {'qq': mess.CurrentQQ,
+              'funcname': 'SendMsg'}
+    data = {"toUser": toid,
+            "sendToType": t,
+            "sendMsgType": "PicMsg",
+            "content": msg,
+            "groupid": mess.FromQQG,
+            "atUser": atuser,
+            "picUrl": picurl,
+            "picBase64Buf": picbase64,
+            "fileMd5": picmd5}
+    res = requests.post(api, params=params, json=data, timeout=None)
+    try:
+        ret = res.json()['Ret']
+    except:
+        ret = '返回错误~'
+    print('图片消息发送状态:{0} Ret:{1}'.format(res.status_code, ret))
+    return
 
 
 def get_cpu_info():
@@ -74,15 +132,12 @@ def get_cpu_info():
     cpu_count = psutil.cpu_count(logical=False)  # 1代表单核CPU，2代表双核CPU
     xc_count = psutil.cpu_count()  # 线程数，如双核四线程
     cpu_percent = round((psutil.cpu_percent()), 2)  # cpu使用率
-    try:
-        model = info['brand']
-    except:
-        model = info['hardware']
-    try:
-        freq = info['hz_actual']
+    model = info['brand_raw']  # cpu型号
+    try:  # 频率
+        freq = info['hz_actual_friendly']
     except:
         freq = 'null'
-    cpu_info = (model, freq, info['arch'], cpu_count, xc_count, cpu_percent)
+    cpu_info = (model, freq, info['arch_string_raw'], cpu_count, xc_count, cpu_percent)
     return cpu_info
 
 
@@ -126,311 +181,216 @@ def sysinfo():
     return full_meg
 
 
-def base_64(filename):
-    with open(path + filename, 'rb') as f:
-        coding = base64.b64encode(f.read())  # 读取文件内容，转换为base64编码
-        print('本地base64转码~')
-        return coding.decode()
-
-
-def setuapi_0(tag='', num=1, r18=False):
-    print('尝试从yubanのapi获取')
-    url = 'http://api.yuban10703.xyz:2333/setu_v2'
-    params = {'r18': r18,
-              'num': num,
-              'tag': tag}
-    try:
-        res = requests.get(url, params, timeout=5)
-        setu_data = res.json()
-        status_code = res.status_code
-    except Exception as e:
-        return e, '', 'boom~~'
-    msg, filename = [], []
-    if status_code == 200:
-        print('从api获取到{0}条数据'.format(len(setu_data['data'])))  # 打印获取到多少条
-        for i in setu_data['data']:
-            msg.append(pixiv_url(i['title'], i['artwork'], i['author'], i['artist']))
-            filename.append(i['filename'])
-    return status_code, filename, msg
-
-
-def setuapi_1(keyword='', num=1, r18=False):
-    print('尝试从lolicon获取')
-    url = 'https://api.lolicon.app/setu/'
-    params = {'r18': r18,
-              'apikey': color_pickey,
-              'keyword': keyword,
-              'num': num,
-              'size1200': size1200,
-              'proxy': 'disable'}
-    try:
-        res = requests.get(url, params, timeout=5)
-        setu_data = res.json()
-        status_code = res.status_code
-    except Exception as e:
-        return e, '', 'boom~~'
-    msg, url = [], []
-    if status_code == 200 and setu_data['code'] == 0:
-        print('从api获取到{0}条数据'.format(len(setu_data['data'])))  # 打印获取到多少条
-        for i in setu_data['data']:
-            msg.append(pixiv_url(i['title'], i['pid'], i['author'], i['uid']))
-            url.append(i['url'])
-    return setu_data['code'], url, msg
-
-
-def pixiv_url(title, artworkid, author, artistid):  # 拼凑消息
-    purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
-    uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
-    msg = title + "\r\n" + purl + "\r\n" + author + "\r\n" + uurl
-    return msg
-
-
-def send_text(toid, type, msg, groupid, atuser):
-    params = {'qq': robotqq,
-              'funcname': 'SendMsg'}
-    data = {"toUser": toid,
-            "sendToType": type,
-            "sendMsgType": "TextMsg",
-            "content": msg,
-            "groupid": groupid,
-            "atUser": atuser}
-    res = requests.post(api, params=params, json=data, timeout=None)
-    try:
-        result = res.json()['Ret']
-    except:
-        result = '返回错误~'
-    print('文字消息:', res.status_code, result)
-    return
-
-
-def friend_send_text(data, msg):
-    if data.FromQQG == 0:  # 好友
-        send_text(data.ToQQ, 1, msg, data.FromQQG, 0)
-        return
-    else:  # 临时
-        send_text(data.ToQQ, 3, msg, data.FromQQG, 0)
-        return
-
-
-def friend_send_pic(data, msg, url, base64code):
-    if data.FromQQG == 0:  # 临时会话
-        send_pic(data.ToQQ, 1, msg, 0, 0, url, base64code)
-        return
-    else:  # 好友
-        send_pic(data.ToQQ, 3, msg, data.FromQQG, 0, url, base64code)
-        return
-
-
-def send_pic(toid, type, msg, groupid, atuser, picurl='', picbase64='', picmd5=''):
-    params = {'qq': robotqq,
-              'funcname': 'SendMsg'}
-    data = {"toUser": toid,
-            "sendToType": type,
-            "sendMsgType": "PicMsg",
-            "content": msg,
-            "groupid": groupid,
-            "atUser": atuser,
-            "picUrl": picurl,
-            "picBase64Buf": picbase64,
-            "fileMd5": picmd5}
-    res = requests.post(api, params=params, json=data, timeout=None)
-    try:
-        result = res.json()['Ret']
-    except:
-        result = '返回错误~'
-    print('图片消息:', res.status_code, result)
-    return
-
-
 def nmsl():
     api = 'https://nmsl.shadiao.app/api.php?from=sunbelife'
     res = requests.get(url=api).text
-    time.sleep(0.8)
     return res
 
 
-def send_setu(a, keyword, num=1, r18=False):
-    print('尝试获取{0}张色图'.format(num))
-    send_text(a.FromQQG, 2, '\r\n' + before_setu_to_send, 0, a.FromQQ)
-    data = setuapi_0(keyword, num, r18)
-    # print(data)
-    if data[0] == 200:
-        for i in range(len(data[1])):
-            if path == '':
-                url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + data[1][i]
-                send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, url)
-            else:
-                base64_code = base_64(data[1][i])
-                send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, '', base64_code)
-            time.sleep(1.4)
-    else:
-        data = setuapi_1(keyword, num, r18)
-        # print(data)
-        if data[0] == 0:
-            for i in range(len(data[1])):
-                send_pic(a.FromQQG, 2, data[2][i], a.FromQQ, a.FromQQ, data[1][i])
-                time.sleep(1.2)
+class Setu:
+    def __init__(self, msg_in, tag='', num=1, r18=0):
+        self.msg_in = msg_in
+        self.tag = tag
+        self.num = num  # 尝试获取的数量
+        self.num_real = 0  # 实际的数量
+        self.api_1_num = 0  # api1
+        self.r18 = r18
+        self.setudata = None
+        self.msg = []  # 待发送的消息
+        self.download_url = []
+        self.base64_codes = []
+
+    def build_msg(self, title, artworkid, author, artistid, page, url_original):
+        purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
+        uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
+        page = 'p' + str(page)
+        msg = ('标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
+            title=title, purl=purl, page=page, author=author,
+            uurl=uurl, url_original=url_original))
+        return msg
+
+    def base_64(self, filename):
+        with open(filename, 'rb') as f:
+            coding = base64.b64encode(f.read())  # 读取文件内容，转换为base64编码
+            print('本地base64转码~')
+            return coding.decode()
+
+    def api_0(self):
+        print('尝试从yubanのapi获取')
+        url = 'http://api.yuban10703.xyz:2333/setu_v3'
+        params = {'type': self.r18,
+                  'num': self.num,
+                  'tag': self.tag}
+        try:
+            res = requests.get(url, params, timeout=5)
+            setu_data = res.json()
+            status_code = res.status_code
+            assert status_code == 200
+            print('获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
+            self.num_real = setu_data['count']  # 实际获取到多少条
+            for data in setu_data['data']:
+                filename = data['filename']
+                url_original = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics_original/' + filename
+                msg = self.build_msg(data['title'], data['artwork'], data['author'], data['artist'], data['page'],
+                                     url_original)
+                self.msg.append(msg)
+                if setu_path == '':  # 非本地
+                    self.base64_codes.append('')
+                    if send_pic_original:  # 发送原画
+                        self.download_url.append(url_original)
+                    else:
+                        self.download_url.append('https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename)
+                else:  # 本地
+                    self.base64_codes.append(self.base_64(setu_path + filename))
+                    self.download_url.append('')
+                    # self.download_url.append(data[send_pic_type])
+        except:
+            pass
+
+    def api_1(self):
+        if self.r18 == 1:
+            r18 = 0
+        elif self.r18 == 3:
+            r18 = 2
+        elif self.r18 == 2:
+            r18 = 1
         else:
-            errormsg = notfound_to_send
-            send_text(a.FromQQG, 2, errormsg, 0, 0)
+            r18 = 0
+        print('尝试从lolicon获取')
+        url = 'https://api.lolicon.app/setu/'
+        params = {'r18': r18,
+                  'apikey': color_pickey,
+                  'keyword': self.tag,
+                  'num': self.api_1_num,
+                  'size1200': not send_pic_original,
+                  'proxy': 'disable'}
+        try:
+            res = requests.get(url, params, timeout=5)
+            setu_data = res.json()
+            status_code = res.status_code
+            assert status_code == 200
+            self.num_real = setu_data['count']  # 实际获取到多少条
+            print('获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
+            for data in setu_data['data']:
+                msg = self.build_msg(data['title'], data['pid'], data['author'], data['uid'], data['p'], '无~')
+                self.msg.append(msg)
+                self.download_url.append(data['url'])
+                self.base64_codes.append('')
+        except:
+            pass
+
+    def main(self):
+        self.api_0()
+        if self.num_real < self.num:  # 如果实际数量小于尝试获取的数量
+            self.api_1_num = self.num - self.num_real
+            self.api_1()
+            if self.num_real == 0:
+                send_text(self.msg_in, notfound_to_send, 0)
+        for i in range(len(self.msg)):
+            print('进入队列')
+            q.put({'mess': self.msg_in, 'msg': self.msg[i], 'download_url': self.download_url[i],
+                   'base64code': self.base64_codes[i]})
 
 
-def send_setu_friend(a, keyword, num=1, r18=False):
-    print('尝试获取{0}张色图'.format(num))
-    friend_send_text(a, before_setu_to_send)
-    data = setuapi_0(keyword, num, r18)
-    # print(data)
-    if data[0] == 200:
-        for i in range(len(data[1])):
-            if path == '':
-                url = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + data[1][i]
-                friend_send_pic(a, data[2][i], url, '')
-            else:
-                base64_code = base_64(data[1][i])
-                friend_send_pic(a, data[2][i], '', base64_code)
-            time.sleep(1.4)
-    else:
-        data = setuapi_1(keyword, num, r18)
-        # print(data)
-        if data[0] == 0:
-            for i in range(len(data[1])):
-                friend_send_pic(a, data[2][i], data[1][i], '')
-                time.sleep(1.2)
+def send_setu(mess, num, tag, r18):
+    if num != '':  # 如果指定了色图数量
+        try:  # 将str转换成int
+            num = int(num)
+            if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
+                send_text(mess, threshold_to_send)
+                return
+            if num <= 0:
+                send_text(mess, '¿')
+                return
+        except:  # 如果失败了就说明不是整数数字
+            send_text(mess, wrong_input_to_send)
+            return
+    else:  # 没指定的话默认是1
+        num = 1
+    setu = Setu(mess, tag, num, r18)
+    setu.main()
 
-        else:
-            errormsg = notfound_to_send
-            friend_send_text(a, errormsg)
-
-
-def beat():
-    while True:
-        time.sleep(60)
-        sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
-        print('心跳')
-
-
-#	sio.emit('GetWebConn', robotqq)
 
 @sio.event
 def connect():
-    sio.emit('GetWebConn', robotqq)  # 取得当前已经登录的QQ链接
-    print('连接成功~')
-    beat()  # 心跳包，保持对服务器的连接
+    for botqq in botqqs:
+        sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
+    while True:
+        data = q.get()
+        t = threading.Thread(target=send_pic,
+                             args=(data['mess'], data['msg'], 0, data['download_url'], data['base64code']))
+        t.start()
+        q.task_done()
+        time.sleep(1.1)
 
 
 @sio.event
 def OnGroupMsgs(message):
-    ''' 监听群组消息'''
-    # tmp = message['CurrentPacket']['Data']
-    a = GMess(message['CurrentPacket']['Data'])
-    '''
-    a.FrQQ 消息来源
-    a.QQGName 来源QQ群昵称
-    a.FromQQG 来源QQ群
-    a.FromNickName 来源QQ昵称
-    a.Content 消息内容
-    '''
-    # print(a.QQGName, '———', a.FromQQName, ':', a.Content) #打印消息
+    a = GMess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
-    # if setu_keyword := setu_pattern.match(a.Content):  # 满足正则就执行
-        num = setu_keyword.group(1)  # 提取数量
-        keyword = setu_keyword.group(2)  # 提取关键字
-        if keyword != '':  # 如果关键字不为空就打印出来
-            print('>>>>>关键字:{0}<<<<<'.format(keyword))
-        if num != '':  # 如果指定了色图数量
-            try:  # 将str转换成int
-                num = int(num)
-                if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
-                    send_text(a.FromQQG, 2, threshold_to_send, 0, 0)
-                    return
-                if num <= 0:
-                    send_text(a.FromQQG, 2, '¿', 0, 0)
-                    return
-            except:  # 如果失败了就说明不是整数数字
-                send_text(a.FromQQG, 2, wrong_input_to_send, 0, 0)
+        if blacklist != [] and whitelist != []:  # 如果黑白名单中有数据
+            if a.FromQQG in blacklist:  # 如果在黑名单直接返回
                 return
-        else:  # 没指定的话默认是1
-            num = 1
-
-        send_setu(a, keyword, num)
+            if a.FromQQG not in whitelist and whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
+                return
+        if a.FromQQG in r18_whitelist:  # 如果在r18列表中,返回混合内容
+            r18 = 3
+            if a.FromQQG in r18_only_whitelist:  # 如果在r18only中,返回porn的内容
+                r18 = 2
+        else:
+            r18 = random.choice([0, 1])  # 从普通和性感中二选一
+        num = setu_keyword.group(1)  # 提取数量
+        tag = setu_keyword.group(2)  # 提取tag
+        send_setu(a, num, tag, r18)
         return
-
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
-        send_text(a.FromQQG, 2, msg, 0, 0)
+        send_text(a, msg)
         return
     # -----------------------------------------------------
-    # print('@消息:',a.Atmsg)
-    if 'nmsl' in a.Atmsg:
-        send_text(a.FromQQG, 2, before_nmsl_to_send, 0, 0)
+    if a.At_Content == 'nmsl':
         msg = nmsl()
-        send_text(a.FromQQG, 2, '\r\n' + msg, 0, a.FromQQ)
+        send_text(a, msg)
         return
 
 
 @sio.event
 def OnFriendMsgs(message):
-    ''' 监听好友消息 '''
-    # tmp = message['CurrentPacket']['Data']
-    a = Mess(message['CurrentPacket']['Data'])
-    # print(tmp)
-    # print('好友:', a.Content)
+    a = Mess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
-    # if setu_keyword := setu_pattern.match(a.Content):
-        num = setu_keyword.group(1)
-        keyword = setu_keyword.group(2)
-        if keyword != '':
-            print('>>>>>关键字:{0}<<<<<'.format(keyword))
-        if num != '':
-            try:
-                num = int(num)
-                if num > int(setu_threshold):
-                    friend_send_text(a, threshold_to_send)
-                    return
-                if num <= 0:
-                    friend_send_text(a, '¿')
-                    return
-            except:
-                friend_send_text(a, wrong_input_to_send)
+        if blacklist != [] and whitelist != []:  # 如果黑白名单中有数据
+            if a.FromQQG in blacklist:
                 return
-        else:
-            num = 1
-
-        send_setu_friend(a, keyword, num, r18=True)
+            if a.FromQQG not in whitelist and whitelist != []:
+                return
+        num = setu_keyword.group(1)  # 提取数量
+        tag = setu_keyword.group(2)  # 提取tag
+        send_setu(a, num, tag, 2)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
-        friend_send_text(a, msg)
+        send_text(a, msg)
         return
     # -----------------------------------------------------
     if a.Content == 'nmsl':
-        friend_send_text(a, before_nmsl_to_send)
         msg = nmsl()
-        friend_send_text(a, msg)
+        send_text(a, msg)
         return
 
 
-@sio.on('OnEvents')
+@sio.event
 def OnEvents(message):
     ''' 监听相关事件'''
     # print(message)
 
 
-# -----------------------------------------------------
-
-def main():
+if __name__ == '__main__':
     try:
         sio.connect(webapi, transports=['websocket'])
-        # pdb.set_trace() 这是断点
         sio.wait()
     except BaseException as e:
-        logging.info(e)
         print(e)
-
-
-if __name__ == '__main__':
-    main()

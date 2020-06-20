@@ -1,14 +1,18 @@
 {
   "color_pickey": "",
-  "size1200": "true",
-  "webapi": "http://127.0.0.1:8888",
-  "robotqq": "",
-  "setu_pattern": "来?(.*?)[点丶份张](.*?)的?[色瑟涩]图",
+  "send_pic_original": false,
+  "webapi": "http://10.1.1.169:8888",
+  "botqqs": [123456,123456],
+  "blacklist": [],
+  "whitelist": [],
+  "r18_whitelist": [],
+  "r18_only_whitelist": [],
+  "setu_pattern": "来(.*?)[点丶份张](.*?)的?[色瑟涩]图",
   "path": "",
-  "setu_threshold": "10",
+  "setu_threshold": "3",
   "threshold_to_send": "要这么多色图你怎么不冲死呢?",
   "notfound_to_send": "淦 你的xp好奇怪啊",
-  "wrong_input_to_send": "必须是整数数字哦",
+  "wrong_input_to_send": "必须是正整数数字哦",
   "before_nmsl_to_send" : "酝酿ing",
-  "before_setu_to_send" : "发送ing"
+  "before_setu_to_send" : "发送ing" 
 }

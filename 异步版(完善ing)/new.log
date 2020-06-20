@@ -1,0 +1,1276 @@
+2020-05-23 13:54:20,128 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 13:54:20,134 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 13:54:38,263 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: _GatheringFuture exception was never retrieved
+future: <_GatheringFuture finished exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 13:55:19,473 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 13:55:19,477 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 13:55:56,918 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 13:55:56,925 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 13:56:57,700 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 13:56:57,705 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 13:57:00,293 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: _GatheringFuture exception was never retrieved
+future: <_GatheringFuture finished exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 13:57:09,064 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: _GatheringFuture exception was never retrieved
+future: <_GatheringFuture finished exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 13:58:53,206 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 13:58:53,210 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 13:58:58,981 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: _GatheringFuture exception was never retrieved
+future: <_GatheringFuture finished exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:06:59,437 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:06:59,442 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:07:05,424 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:07:48,447 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:07:48,456 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:07:50,901 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:08:05,870 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-20' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:08:36,912 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:08:36,916 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:08:39,380 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:09:16,843 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:09:16,850 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:09:20,672 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:09:29,501 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-20' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:09:53,822 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:09:53,828 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:09:58,939 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:10:03,718 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-20' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:10:11,557 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:10:11,580 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:10:19,806 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:12:08,246 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:12:08,252 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:12:16,066 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:13:05,401 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:13:05,406 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:13:13,210 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:13:38,765 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:13:38,772 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:13:47,845 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:13:47,850 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:13:51,841 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 104, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:25:02,722 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:25:02,726 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:25:07,226 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:25:20,297 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-20' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:25:50,355 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:25:50,359 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:25:53,185 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendtext
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:26:07,786 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:26:07,793 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:26:13,249 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendpic_callback(a,setu,send_pic)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 74, in sendpic_callback
+    await send_pic(data,2,setudata[2],setudata[0],setudata[1])
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 68, in send_pic
+    print('图片消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:26:13,250 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<send_text() done, defined at E:\git\colorpic\异步版(完善ing)\bot_apis.py:27> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:27:15,321 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:27:15,327 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:27:20,190 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendpic_callback(a,setu,send_pic)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 73, in sendpic_callback
+    await send_pic(data,2,setudata[2],setudata[0],setudata[1])
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 67, in send_pic
+    print('图片消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:27:20,190 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-13' coro=<send_text() done, defined at E:\git\colorpic\异步版(完善ing)\bot_apis.py:27> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 44, in send_text
+    print('文字消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:28:34,542 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:28:34,549 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:28:39,239 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendpic_callback(a,setu,send_pic)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 74, in sendpic_callback
+    await send_pic(data,2,setudata[2],setudata[0],setudata[1])
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 68, in send_pic
+    print('图片消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:29:40,725 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:29:40,732 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:29:45,388 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendpic_callback(a,setu,send_pic)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 72, in sendpic_callback
+    await send_pic(data,2,setudata[2],setudata[0],setudata[1])
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 66, in send_pic
+    print('图片消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:30:17,694 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:30:17,698 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:30:22,601 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=UnboundLocalError("local variable 'status' referenced before assignment")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 103, in OnGroupMsgs
+    await sendpic_callback(a,setu,send_pic)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 72, in sendpic_callback
+    await send_pic(data,2,setudata[2],setudata[0],setudata[1])
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 66, in send_pic
+    print('图片消息发送状态:{0} Ret:{1}'.format(status, result['Ret']))
+UnboundLocalError: local variable 'status' referenced before assignment
+2020-05-23 14:31:19,305 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:31:19,311 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:36:45,598 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:36:45,602 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:39:03,846 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:39:03,854 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:40:09,841 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:40:09,850 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:41:24,840 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:41:24,847 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:41:48,091 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:41:48,098 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 14:42:48,608 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 14:42:48,615 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 15:25:45,083 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 15:25:45,111 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 15:25:53,820 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=TypeError('Object of type ClientResponse is not JSON serializable')>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 125, in OnGroupMsgs
+    await sendnmsl
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 77, in sendtext_callback
+    await send_text(data, 2, textdata)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 38, in send_text
+    async with session.post(url=api, params=params, json=data, timeout=None) as res:
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\client.py", line 1012, in __aenter__
+    self._resp = await self._coro
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\client.py", line 365, in _request
+    data = payload.JsonPayload(json, dumps=self._json_serialize)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\payload.py", line 389, in __init__
+    dumps(value).encode(encoding),
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type ClientResponse is not JSON serializable
+2020-05-23 15:26:57,754 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 15:26:57,761 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 17:09:49,839 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 17:09:49,843 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 17:10:20,051 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 17:10:20,057 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:18:22,058 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:18:22,062 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:18:26,912 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    msg = info.get_sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 62, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:18:51,503 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-13' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    msg = info.get_sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 62, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:20:02,152 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:20:02,157 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:20:06,075 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    msg = info.get_sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:20:37,131 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:20:37,135 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:20:38,490 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    msg = info.get_sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:21:49,496 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:21:49,501 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:21:52,340 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    sendtext = asyncio.create_task(send_text(a, 2, info.get_sysinfo()))
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:22:55,768 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:22:55,773 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:22:58,711 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    await send_text(a, 2, info.get_sysinfo())
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:23:27,377 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:23:27,381 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:23:32,829 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    msg = info.get_sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:24:09,316 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:24:09,320 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:24:14,299 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 109, in OnGroupMsgs
+    msg = info.get_sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in get_sysinfo
+    cpu_info = self.get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 21, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:25:15,657 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:25:15,661 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:25:18,324 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 108, in OnGroupMsgs
+    msg = sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in sysinfo
+    cpu_info = get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 20, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:25:40,946 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:25:40,951 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:26:05,861 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:26:05,866 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:26:08,773 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 108, in OnGroupMsgs
+    msg = sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in sysinfo
+    cpu_info = get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 20, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-23 18:26:53,262 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-23 18:26:53,266 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-23 18:26:55,582 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'cpuinfo' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 108, in OnGroupMsgs
+    msg = await sysinfo()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 63, in sysinfo
+    cpu_info = get_cpu_info()
+  File "E:\git\colorpic\异步版(完善ing)\function_apis.py", line 20, in get_cpu_info
+    info = cpuinfo.get_cpu_info()  # 获取CPU型号等
+NameError: name 'cpuinfo' is not defined
+2020-05-24 12:26:34,185 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-24 12:26:34,191 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 83, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-24 12:26:53,707 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-12' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=TypeError('Object of type coroutine is not JSON serializable')>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 461, in _handle_eio_message
+    await self._handle_event(pkt.namespace, pkt.id, pkt.data)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 331, in _handle_event
+    r = await self._trigger_event(data[0], namespace, *data[1:])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 110, in OnGroupMsgs
+    await send_text(a, 2, msg)
+  File "E:\git\colorpic\异步版(完善ing)\bot_apis.py", line 38, in send_text
+    async with session.post(url=api, params=params, json=data, timeout=None) as res:
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\client.py", line 1012, in __aenter__
+    self._resp = await self._coro
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\client.py", line 365, in _request
+    data = payload.JsonPayload(json, dumps=self._json_serialize)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\aiohttp\payload.py", line 389, in __init__
+    dumps(value).encode(encoding),
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\json\encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type coroutine is not JSON serializable
+2020-05-31 14:41:15,322 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 14:41:15,339 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 75, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 14:42:53,060 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 14:42:53,064 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 75, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 14:43:17,750 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 14:43:17,769 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 75, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 14:43:57,792 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 14:43:57,796 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 76, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 14:59:29,353 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 14:59:29,360 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 76, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 15:00:20,981 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:00:20,985 - E:/git/colorpic/异步版(完善ing)/sex_pic.py[line:159] - INFO: emit() got an unexpected keyword argument 'namespaces'
+2020-05-31 15:00:20,986 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\engineio\asyncio_client.py[line:546] - ERROR: packet queue is empty, aborting
+2020-05-31 15:00:28,512 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:00:28,516 - E:/git/colorpic/异步版(完善ing)/sex_pic.py[line:159] - INFO: emit() got an unexpected keyword argument 'namespaces'
+2020-05-31 15:00:28,516 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\engineio\asyncio_client.py[line:546] - ERROR: packet queue is empty, aborting
+2020-05-31 15:01:05,755 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:01:05,760 - E:/git/colorpic/异步版(完善ing)/sex_pic.py[line:159] - INFO: emit() got an unexpected keyword argument 'namespaces'
+2020-05-31 15:01:05,760 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\engineio\asyncio_client.py[line:546] - ERROR: packet queue is empty, aborting
+2020-05-31 15:01:56,803 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:01:56,807 - E:/git/colorpic/异步版(完善ing)/sex_pic.py[line:159] - INFO: emit() got an unexpected keyword argument 'namespaces'
+2020-05-31 15:01:56,807 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\engineio\asyncio_client.py[line:546] - ERROR: packet queue is empty, aborting
+2020-05-31 15:02:04,560 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:02:04,564 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 76, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 15:02:05,580 - E:/git/colorpic/异步版(完善ing)/sex_pic.py[line:159] - INFO: Task <Task pending name='Task-13' coro=<Event.wait() running at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\locks.py:309> cb=[_release_waiter(<Future pendi...3261BF700>()]>)() at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\tasks.py:429]> got Future <Future pending> attached to a different loop
+2020-05-31 15:02:23,191 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:02:23,196 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 76, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 15:02:24,198 - E:/git/colorpic/异步版(完善ing)/sex_pic.py[line:159] - INFO: Task <Task pending name='Task-14' coro=<Event.wait() running at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\locks.py:309> cb=[_release_waiter(<Future pendi...A25893F70>()]>)() at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\tasks.py:429]> got Future <Future pending> attached to a different loop
+2020-05-31 15:02:41,303 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:02:41,308 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 76, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
+2020-05-31 15:02:55,692 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\proactor_events.py[line:623] - DEBUG: Using proactor: IocpProactor
+2020-05-31 15:02:55,696 - C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\asyncio\base_events.py[line:1707] - ERROR: Task exception was never retrieved
+future: <Task finished name='Task-9' coro=<AsyncClient._handle_eio_message() done, defined at C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py:444> exception=NameError("name 'beat' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 457, in _handle_eio_message
+    await self._handle_connect(pkt.namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 306, in _handle_connect
+    await self._trigger_event('connect', namespace=namespace)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python38\lib\site-packages\socketio\asyncio_client.py", line 387, in _trigger_event
+    ret = await self.handlers[namespace][event](*args)
+  File "E:/git/colorpic/异步版(完善ing)/sex_pic.py", line 76, in connect
+    beat()  # 心跳包，保持对服务器的连接
+NameError: name 'beat' is not defined
