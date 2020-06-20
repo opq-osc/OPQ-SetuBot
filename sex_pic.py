@@ -22,7 +22,8 @@ r18_whitelist = config['r18_whitelist']
 r18_only_whitelist = config['r18_only_whitelist']
 # -----------------------------------------------------
 sio = socketio.Client()
-q = Queue(maxsize=0)
+q_pic = Queue(maxsize=0)
+q_text = Queue(maxsize=0)
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 
@@ -132,12 +133,15 @@ def get_cpu_info():
     cpu_count = psutil.cpu_count(logical=False)  # 1代表单核CPU，2代表双核CPU
     xc_count = psutil.cpu_count()  # 线程数，如双核四线程
     cpu_percent = round((psutil.cpu_percent()), 2)  # cpu使用率
-    model = info['brand_raw']  # cpu型号
+    try:
+        model = info['hardware_raw']  # cpu型号
+    except:
+        model = info['brand_raw']  # cpu型号
     try:  # 频率
         freq = info['hz_actual_friendly']
     except:
         freq = 'null'
-    cpu_info = (model, freq, info['arch_string_raw'], cpu_count, xc_count, cpu_percent)
+    cpu_info = (model, freq, info['arch'], cpu_count, xc_count, cpu_percent)
     return cpu_info
 
 
@@ -285,10 +289,11 @@ class Setu:
             self.api_1_num = self.num - self.num_real
             self.api_1()
             if self.num_real == 0:
-                send_text(self.msg_in, notfound_to_send, 0)
+                q_text.put({'mess':self.msg_in,'msg':notfound_to_send,'atuser':0})
+                # send_text(self.msg_in, notfound_to_send,0)
         for i in range(len(self.msg)):
             print('进入队列')
-            q.put({'mess': self.msg_in, 'msg': self.msg[i], 'download_url': self.download_url[i],
+            q_pic.put({'mess': self.msg_in, 'msg': self.msg[i], 'download_url': self.download_url[i],
                    'base64code': self.base64_codes[i]})
 
 
@@ -297,31 +302,56 @@ def send_setu(mess, num, tag, r18):
         try:  # 将str转换成int
             num = int(num)
             if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
-                send_text(mess, threshold_to_send)
+                # send_text(mess, threshold_to_send)
+                q_text.put({'mess': mess, 'msg': threshold_to_send, 'atuser': 0})
                 return
             if num <= 0:
-                send_text(mess, '¿')
+                q_text.put({'mess': mess, 'msg': '¿', 'atuser': 0})
+                # send_text(mess, '¿')
                 return
         except:  # 如果失败了就说明不是整数数字
-            send_text(mess, wrong_input_to_send)
+            # send_text(mess, wrong_input_to_send)
+            q_text.put({'mess': mess, 'msg': wrong_input_to_send, 'atuser': 0})
             return
     else:  # 没指定的话默认是1
         num = 1
     setu = Setu(mess, tag, num, r18)
     setu.main()
 
-
-@sio.event
-def connect():
-    for botqq in botqqs:
-        sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
+def sendpic_queue():
     while True:
-        data = q.get()
+        data = q_pic.get()
         t = threading.Thread(target=send_pic,
                              args=(data['mess'], data['msg'], 0, data['download_url'], data['base64code']))
         t.start()
-        q.task_done()
-        time.sleep(1.1)
+        q_pic.task_done()
+        time.sleep(1.2)
+
+def sendtext_queue():
+    while True:
+        data = q_text.get()
+        t = threading.Thread(target=send_text,
+                             args=(data['mess'], data['msg'], data['atuser']))
+        t.start()
+        q_text.task_done()
+        time.sleep(0.9)
+
+def heartbeat():
+    while True:
+        for botqq in botqqs:
+            sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
+        time.sleep(300)
+        
+@sio.event
+def connect():
+    beat = threading.Thread(target=heartbeat)
+    text_queue = threading.Thread(target=sendtext_queue)
+    pic_queue = threading.Thread(target=sendpic_queue)
+    beat.start()
+    text_queue.start()
+    pic_queue.start()
+
+
 
 
 @sio.event
@@ -347,12 +377,14 @@ def OnGroupMsgs(message):
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
-        send_text(a, msg)
+        q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
+        # send_text(a, msg)
         return
     # -----------------------------------------------------
     if a.At_Content == 'nmsl':
         msg = nmsl()
-        send_text(a, msg)
+        # send_text(a, msg)
+        q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
 
 
@@ -373,13 +405,16 @@ def OnFriendMsgs(message):
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
-        send_text(a, msg)
+        # send_text(a, msg)
+        q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
     if a.Content == 'nmsl':
         msg = nmsl()
-        send_text(a, msg)
+        # send_text(a, msg)
+        q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
+
 
 
 @sio.event
