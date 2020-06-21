@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading
 from queue import Queue
 
@@ -10,7 +12,7 @@ botqqs = config['botqqs']  # 机器人QQ号
 setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
 setu_path = config['path']  # 色图路径
 send_pic_original = config['send_pic_original']  # 是否发送原图
-setu_threshold = config['setu_threshold']  # 发送上限
+setu_threshold = int(config['setu_threshold'])  # 发送上限
 threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
 notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
 wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
@@ -20,12 +22,16 @@ blacklist = config['blacklist']
 whitelist = config['whitelist']
 r18_whitelist = config['r18_whitelist']
 r18_only_whitelist = config['r18_only_whitelist']
+RevokeMsg = config['RevokeMsg']
+RevokeMsg_time = int(config['RevokeMsg_time'])
 # -----------------------------------------------------
 sio = socketio.Client()
 q_pic = Queue(maxsize=0)
 q_text = Queue(maxsize=0)
+q_withdraw = Queue(maxsize=0)
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
+sent_list = []
 
 
 # -----------------------------------------------------
@@ -34,12 +40,16 @@ api = webapi + '/v1/LuaApiCaller'
 class GMess:
     # 群消息
     def __init__(self, message):
+        # print(message)
         self.messtype = 'group'  # 标记群聊
         self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的QQ
         self.FromQQG = message['CurrentPacket']['Data']['FromGroupId']  # 来源QQ群
         self.QQGName = message['CurrentPacket']['Data']['FromGroupName']  # 来源QQ群昵称
         self.FromQQ = message['CurrentPacket']['Data']['FromUserId']  # 哪个QQ发过来的
         self.FromQQName = message['CurrentPacket']['Data']['FromNickName']  # 来源QQ名称(群内)
+        self.MsgSeq = message['CurrentPacket']['Data']['MsgSeq']
+        self.MsgRandom = message['CurrentPacket']['Data']['MsgRandom']
+        self.MsgType = message['CurrentPacket']['Data']['MsgType']
         if message['CurrentPacket']['Data']['MsgType'] == 'TextMsg':  # 普通消息
             self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
             self.At_Content = ''
@@ -125,6 +135,21 @@ def send_pic(mess, msg, atuser=0, picurl='', picbase64='', picmd5=''):
     except:
         ret = '返回错误~'
     print('图片消息发送状态:{0} Ret:{1}'.format(res.status_code, ret))
+    return
+
+
+def withdraw_message(mess):
+    params = {'qq': mess.FromQQ,
+              'funcname': 'RevokeMsg'}
+    data = {"GroupID": mess.FromQQG,
+            "MsgSeq": mess.MsgSeq,
+            "MsgRandom": mess.MsgRandom}
+    res = requests.post(api, params=params, json=data, timeout=None)
+    try:
+        ret = res.json()['Ret']
+    except:
+        ret = '返回错误~'
+    print('撤回消息状态:{0} Ret:{1}'.format(res.status_code, ret))
     return
 
 
@@ -220,7 +245,7 @@ class Setu:
             return coding.decode()
 
     def api_0(self):
-        print('尝试从yubanのapi获取')
+        # print('尝试从yubanのapi获取')
         url = 'http://api.yuban10703.xyz:2333/setu_v3'
         params = {'type': self.r18,
                   'num': self.num,
@@ -230,7 +255,7 @@ class Setu:
             setu_data = res.json()
             status_code = res.status_code
             assert status_code == 200
-            print('获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
+            print('从yubanのapi获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
             self.num_real = setu_data['count']  # 实际获取到多少条
             for data in setu_data['data']:
                 filename = data['filename']
@@ -260,7 +285,7 @@ class Setu:
             r18 = 1
         else:
             r18 = 0
-        print('尝试从lolicon获取')
+        # print('尝试从lolicon获取')
         url = 'https://api.lolicon.app/setu/'
         params = {'r18': r18,
                   'apikey': color_pickey,
@@ -274,7 +299,7 @@ class Setu:
             status_code = res.status_code
             assert status_code == 200
             self.num_real = setu_data['count']  # 实际获取到多少条
-            print('获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
+            print('从lolicon获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
             for data in setu_data['data']:
                 msg = self.build_msg(data['title'], data['pid'], data['author'], data['uid'], data['p'], '无~')
                 self.msg.append(msg)
@@ -289,19 +314,19 @@ class Setu:
             self.api_1_num = self.num - self.num_real
             self.api_1()
             if self.num_real == 0:
-                q_text.put({'mess':self.msg_in,'msg':notfound_to_send,'atuser':0})
+                q_text.put({'mess': self.msg_in, 'msg': notfound_to_send, 'atuser': 0})
                 # send_text(self.msg_in, notfound_to_send,0)
         for i in range(len(self.msg)):
-            print('进入队列')
+            # print('进入队列')
             q_pic.put({'mess': self.msg_in, 'msg': self.msg[i], 'download_url': self.download_url[i],
-                   'base64code': self.base64_codes[i]})
+                       'base64code': self.base64_codes[i]})
 
 
 def send_setu(mess, num, tag, r18):
     if num != '':  # 如果指定了色图数量
         try:  # 将str转换成int
             num = int(num)
-            if num > int(setu_threshold):  # 如果指定数量超过设定值就返回指定消息
+            if num > setu_threshold:  # 如果指定数量超过设定值就返回指定消息
                 # send_text(mess, threshold_to_send)
                 q_text.put({'mess': mess, 'msg': threshold_to_send, 'atuser': 0})
                 return
@@ -318,6 +343,7 @@ def send_setu(mess, num, tag, r18):
     setu = Setu(mess, tag, num, r18)
     setu.main()
 
+
 def sendpic_queue():
     while True:
         data = q_pic.get()
@@ -326,6 +352,7 @@ def sendpic_queue():
         t.start()
         q_pic.task_done()
         time.sleep(1.2)
+
 
 def sendtext_queue():
     while True:
@@ -336,26 +363,42 @@ def sendtext_queue():
         q_text.task_done()
         time.sleep(0.9)
 
+
 def heartbeat():
     while True:
         for botqq in botqqs:
             sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
         time.sleep(300)
-        
+
+
+def withdraw_queue():
+    while True:
+        data = q_withdraw.get()
+        # print(data['mess'].CurrentQQ)
+        # print(data['mess'].MsgSeq)
+        # print(data['mess'].MsgRandom)
+        time.sleep(RevokeMsg_time)
+        t = threading.Thread(target=withdraw_message,
+                             args=(data['mess'],))
+        t.start()
+        q_withdraw.task_done()
+
+
 @sio.event
 def connect():
     beat = threading.Thread(target=heartbeat)
     text_queue = threading.Thread(target=sendtext_queue)
     pic_queue = threading.Thread(target=sendpic_queue)
+    withdrawqueue = threading.Thread(target=withdraw_queue)
     beat.start()
     text_queue.start()
     pic_queue.start()
-
-
+    withdrawqueue.start()
 
 
 @sio.event
 def OnGroupMsgs(message):
+    # print(message)
     a = GMess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
@@ -386,6 +429,11 @@ def OnGroupMsgs(message):
         # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
+    # -----------------------------------------------------
+    if RevokeMsg and a.MsgType == 'PicMsg' and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的图片就撤回
+        # print(a.MsgSeq,a.MsgRandom)
+        q_withdraw.put({'mess': a})
+        return
 
 
 @sio.event
@@ -414,7 +462,6 @@ def OnFriendMsgs(message):
         # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
-
 
 
 @sio.event
