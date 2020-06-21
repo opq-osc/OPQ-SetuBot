@@ -144,6 +144,7 @@ def withdraw_message(mess):
     data = {"GroupID": mess.FromQQG,
             "MsgSeq": mess.MsgSeq,
             "MsgRandom": mess.MsgRandom}
+    time.sleep(RevokeMsg_time)
     res = requests.post(api, params=params, json=data, timeout=None)
     try:
         ret = res.json()['Ret']
@@ -377,7 +378,6 @@ def withdraw_queue():
         # print(data['mess'].CurrentQQ)
         # print(data['mess'].MsgSeq)
         # print(data['mess'].MsgRandom)
-        time.sleep(RevokeMsg_time)
         t = threading.Thread(target=withdraw_message,
                              args=(data['mess'],))
         t.start()
