@@ -17,6 +17,7 @@ threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文�
 notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
 wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
 before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
+before_setu_to_send_switch = config['before_setu_to_send_switch']  # 发色图之前是否发送消息
 before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
 blacklist = config['blacklist']
 whitelist = config['whitelist']
@@ -24,6 +25,8 @@ r18_whitelist = config['r18_whitelist']
 r18_only_whitelist = config['r18_only_whitelist']
 RevokeMsg = config['RevokeMsg']
 RevokeMsg_time = int(config['RevokeMsg_time'])
+sentlist_switch = config['sentlist_switch']  # 发色图之前是否发送消息
+clear_sentlist_time = int(config['clear_sentlist_time'])
 # -----------------------------------------------------
 sio = socketio.Client()
 q_pic = Queue(maxsize=0)
@@ -223,6 +226,7 @@ class Setu:
         self.tag = tag
         self.num = num  # 尝试获取的数量
         self.num_real = 0  # 实际的数量
+        self.num_real_api_1 = 0  # api1的实际的数量
         self.api_1_num = 0  # api1
         self.r18 = r18
         self.setudata = None
@@ -255,29 +259,35 @@ class Setu:
             res = requests.get(url, params, timeout=5)
             setu_data = res.json()
             status_code = res.status_code
-            assert status_code == 200
             print('从yubanのapi获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
-            self.num_real = setu_data['count']  # 实际获取到多少条
-            for data in setu_data['data']:
-                filename = data['filename']
-                url_original = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics_original/' + filename
-                msg = self.build_msg(data['title'], data['artwork'], data['author'], data['artist'], data['page'],
-                                     url_original)
-                self.msg.append(msg)
-                if setu_path == '':  # 非本地
-                    self.base64_codes.append('')
-                    if send_pic_original:  # 发送原画
-                        self.download_url.append(url_original)
-                    else:
-                        self.download_url.append('https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename)
-                else:  # 本地
-                    self.base64_codes.append(self.base_64(setu_path + filename))
-                    self.download_url.append('')
-                    # self.download_url.append(data[send_pic_type])
-        except:
-            pass
+            if status_code == 200:
+                self.num_real = setu_data['count']  # 实际获取到多少条
+                for data in setu_data['data']:
+                    filename = data['filename']
+                    if filename in sent_list and sentlist_switch:  # 如果发送过
+                        print('发送过~')
+                        self.num_real -= 1
+                        continue
+                    url_original = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics_original/' + filename
+                    msg = self.build_msg(data['title'], data['artwork'], data['author'], data['artist'], data['page'],
+                                         url_original)
+                    self.msg.append(msg)
+                    if setu_path == '':  # 非本地
+                        self.base64_codes.append('')
+                        if send_pic_original:  # 发送原画
+                            self.download_url.append(url_original)
+                        else:
+                            self.download_url.append('https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename)
+                    else:  # 本地
+                        self.base64_codes.append(self.base_64(setu_path + filename))
+                        self.download_url.append('')
+                        # self.download_url.append(data[send_pic_type])
+                    sent_list.append(filename)  # 记录发送过的图
+        except Exception as e:
+            print(e)
 
     def api_1(self):
+        # 兼容api
         if self.r18 == 1:
             r18 = 0
         elif self.r18 == 3:
@@ -299,7 +309,7 @@ class Setu:
             setu_data = res.json()
             status_code = res.status_code
             assert status_code == 200
-            self.num_real = setu_data['count']  # 实际获取到多少条
+            self.num_real_api_1 = setu_data['count']  # 实际获取到多少条
             print('从lolicon获取到{0}张setu'.format(setu_data['count']))  # 打印获取到多少条
             for data in setu_data['data']:
                 msg = self.build_msg(data['title'], data['pid'], data['author'], data['uid'], data['p'], '无~')
@@ -314,16 +324,29 @@ class Setu:
         if self.num_real < self.num:  # 如果实际数量小于尝试获取的数量
             self.api_1_num = self.num - self.num_real
             self.api_1()
-            if self.num_real == 0:
+            if self.num_real == 0 and self.num_real_api_1 == 0:  # 2个api都没获取到数据
                 q_text.put({'mess': self.msg_in, 'msg': notfound_to_send, 'atuser': 0})
                 # send_text(self.msg_in, notfound_to_send,0)
+                return
         for i in range(len(self.msg)):
             # print('进入队列')
             q_pic.put({'mess': self.msg_in, 'msg': self.msg[i], 'download_url': self.download_url[i],
                        'base64code': self.base64_codes[i]})
 
 
-def send_setu(mess, num, tag, r18):
+def send_setu(mess, num, tag):
+    if blacklist != [] and whitelist != []:  # 如果黑白名单中有数据
+        if mess.FromQQG in blacklist:  # 如果在黑名单直接返回
+            return
+        if mess.FromQQG not in whitelist and whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
+            return
+    if mess.FromQQG in r18_whitelist:  # 如果在r18列表中,返回混合内容
+        r18 = 3
+        if mess.FromQQG in r18_only_whitelist:  # 如果在r18only中,返回porn的内容
+            r18 = 2
+    else:
+        r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
+    # 阿巴阿巴阿巴阿巴阿巴阿巴
     if num != '':  # 如果指定了色图数量
         try:  # 将str转换成int
             num = int(num)
@@ -341,6 +364,8 @@ def send_setu(mess, num, tag, r18):
             return
     else:  # 没指定的话默认是1
         num = 1
+    if before_setu_to_send_switch:
+        q_text.put({'mess': mess, 'msg': before_setu_to_send, 'atuser': 0})
     setu = Setu(mess, tag, num, r18)
     setu.main()
 
@@ -348,31 +373,33 @@ def send_setu(mess, num, tag, r18):
 def sendpic_queue():
     while True:
         data = q_pic.get()
-        t = threading.Thread(target=send_pic,
-                             args=(data['mess'], data['msg'], 0, data['download_url'], data['base64code']))
-        t.start()
+        # t = threading.Thread(target=send_pic,
+        #                      args=(data['mess'], data['msg'], 0, data['download_url'], data['base64code']))
+        # t.start()
+        send_pic(data['mess'], data['msg'], 0, data['download_url'], data['base64code'])
         q_pic.task_done()
-        time.sleep(1.2)
+        time.sleep(1.1)
 
 
 def sendtext_queue():
     while True:
         data = q_text.get()
-        t = threading.Thread(target=send_text,
-                             args=(data['mess'], data['msg'], data['atuser']))
-        t.start()
+        # t = threading.Thread(target=send_text,
+        #                      args=(data['mess'], data['msg'], data['atuser']))
+        # t.start()
+        send_text(data['mess'], data['msg'], data['atuser'])
         q_text.task_done()
-        time.sleep(0.9)
+        time.sleep(1.1)
 
 
-def heartbeat():
+def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
     while True:
         for botqq in botqqs:
             sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
         time.sleep(300)
 
 
-def withdraw_queue():
+def withdraw_queue():  # 撤回队列
     while True:
         data = q_withdraw.get()
         # print(data['mess'].CurrentQQ)
@@ -384,16 +411,24 @@ def withdraw_queue():
         q_withdraw.task_done()
 
 
+def sentlist_clear():  # 重置发送列表
+    while True:
+        time.sleep(clear_sentlist_time)
+        sent_list.clear()
+
+
 @sio.event
 def connect():
     beat = threading.Thread(target=heartbeat)
     text_queue = threading.Thread(target=sendtext_queue)
     pic_queue = threading.Thread(target=sendpic_queue)
     withdrawqueue = threading.Thread(target=withdraw_queue)
+    sent_list_clear = threading.Thread(target=sentlist_clear)
     beat.start()
     text_queue.start()
     pic_queue.start()
     withdrawqueue.start()
+    sent_list_clear.start()
 
 
 @sio.event
@@ -402,20 +437,9 @@ def OnGroupMsgs(message):
     a = GMess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
-        if blacklist != [] and whitelist != []:  # 如果黑白名单中有数据
-            if a.FromQQG in blacklist:  # 如果在黑名单直接返回
-                return
-            if a.FromQQG not in whitelist and whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
-                return
-        if a.FromQQG in r18_whitelist:  # 如果在r18列表中,返回混合内容
-            r18 = 3
-            if a.FromQQG in r18_only_whitelist:  # 如果在r18only中,返回porn的内容
-                r18 = 2
-        else:
-            r18 = random.choice([0, 1])  # 从普通和性感中二选一
         num = setu_keyword.group(1)  # 提取数量
         tag = setu_keyword.group(2)  # 提取tag
-        send_setu(a, num, tag, r18)
+        send_setu(a, num, tag)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
@@ -441,14 +465,9 @@ def OnFriendMsgs(message):
     a = Mess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
-        if blacklist != [] and whitelist != []:  # 如果黑白名单中有数据
-            if a.FromQQG in blacklist:
-                return
-            if a.FromQQG not in whitelist and whitelist != []:
-                return
         num = setu_keyword.group(1)  # 提取数量
         tag = setu_keyword.group(2)  # 提取tag
-        send_setu(a, num, tag, 2)
+        send_setu(a, num, tag)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
