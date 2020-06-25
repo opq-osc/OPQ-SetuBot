@@ -13,7 +13,7 @@
 | r18_whitelist              | array    | 开启r18的群白名单(能搜到r18的图)                             |
 | r18_only_whitelist         | array    | r18only的名单(只发r18图)  [需要r18_whitelist也添加这些群才生效] |
 | setu_pattern               | str      | 识别用的正则表达式                                           |
-| path                       | str      | 本地图库的路径,比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
+| path                       | str      | 本地图库的路径(本地没图空着就行),比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
 | setu_threshold             | int      | 限制一次能要多少色图...                                      |
 | RevokeMsg                  | bool     | 是否撤回图片消息                                             |
 | RevokeMsg_time             | int      | 撤回倒计时(秒)                                               |
