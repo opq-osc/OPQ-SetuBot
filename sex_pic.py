@@ -5,7 +5,6 @@ from queue import Queue
 
 with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
     config = json.loads(f.read())
-    print('获取配置成功~')
 color_pickey = config['color_pickey']  # 申请地址api.lolicon.app
 webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
 botqqs = config['botqqs']  # 机器人QQ号
@@ -25,7 +24,7 @@ r18_whitelist = config['r18_whitelist']
 r18_only_whitelist = config['r18_only_whitelist']
 RevokeMsg = config['RevokeMsg']
 RevokeMsg_time = int(config['RevokeMsg_time'])
-sentlist_switch = config['sentlist_switch']  # 发色图之前是否发送消息
+sentlist_switch = config['sentlist_switch']
 clear_sentlist_time = int(config['clear_sentlist_time'])
 # -----------------------------------------------------
 sio = socketio.Client()
@@ -35,6 +34,7 @@ q_withdraw = Queue(maxsize=0)
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 sent_list = []
+print('获取配置成功~')
 
 
 # -----------------------------------------------------
@@ -394,9 +394,9 @@ def sendtext_queue():
 
 def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
     while True:
+        time.sleep(300)
         for botqq in botqqs:
             sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
-        time.sleep(300)
 
 
 def withdraw_queue():  # 撤回队列
@@ -419,16 +419,9 @@ def sentlist_clear():  # 重置发送列表
 
 @sio.event
 def connect():
-    beat = threading.Thread(target=heartbeat)
-    text_queue = threading.Thread(target=sendtext_queue)
-    pic_queue = threading.Thread(target=sendpic_queue)
-    withdrawqueue = threading.Thread(target=withdraw_queue)
-    sent_list_clear = threading.Thread(target=sentlist_clear)
-    beat.start()
-    text_queue.start()
-    pic_queue.start()
-    withdrawqueue.start()
-    sent_list_clear.start()
+    for botqq in botqqs:
+        sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
+    print('连接成功')
 
 
 @sio.event
@@ -492,6 +485,16 @@ def OnEvents(message):
 if __name__ == '__main__':
     try:
         sio.connect(webapi, transports=['websocket'])
+        beat = threading.Thread(target=heartbeat)  # 保持连接
+        text_queue = threading.Thread(target=sendtext_queue)  # 文字消息队列
+        pic_queue = threading.Thread(target=sendpic_queue)  # 图片消息队列
+        withdrawqueue = threading.Thread(target=withdraw_queue)  # 撤回队列
+        sent_list_clear = threading.Thread(target=sentlist_clear)  # 定时清除发生过的列表
+        beat.start()
+        text_queue.start()
+        pic_queue.start()
+        withdrawqueue.start()
+        sent_list_clear.start()
         sio.wait()
     except BaseException as e:
         print(e)
