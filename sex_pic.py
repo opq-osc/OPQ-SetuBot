@@ -18,10 +18,17 @@ wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的�
 before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
 before_setu_to_send_switch = config['before_setu_to_send_switch']  # 发色图之前是否发送消息
 before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
-blacklist = config['blacklist']
-whitelist = config['whitelist']
-r18_whitelist = config['r18_whitelist']
-r18_only_whitelist = config['r18_only_whitelist']
+group_blacklist = config['group_blacklist']
+group_whitelist = config['group_whitelist']
+group_r18_whitelist = config['group_r18_whitelist']
+group_r18_only_whitelist = config['group_r18_only_whitelist']
+private_for_group_blacklist = config['private_for_group_blacklist']
+private_for_group_whitelist = config['private_for_group_whitelist']
+private_for_group_r18_whitelist = config['private_for_group_r18_whitelist']
+private_for_group_r18_only_whitelist = config['private_for_group_r18_only_whitelist']
+private_r18 = config['private_r18']
+group_r18_default = config['group_r18_default']
+private_for_group_r18_default = config['private_for_group_r18_default']
 RevokeMsg = config['RevokeMsg']
 RevokeMsg_time = int(config['RevokeMsg_time'])
 sentlist_switch = config['sentlist_switch']
@@ -300,10 +307,11 @@ class Setu:
         url = 'https://api.lolicon.app/setu/'
         params = {'r18': r18,
                   'apikey': color_pickey,
-                  'keyword': self.tag,
                   'num': self.api_1_num,
                   'size1200': not send_pic_original,
                   'proxy': 'disable'}
+        if (len(self.tag) != 0) and (not self.tag.isspace()):  # 如果tag不为空(字符串字数不为零且不为空)
+            params['keyword'] = self.tag
         try:
             res = requests.get(url, params, timeout=5)
             setu_data = res.json()
@@ -335,18 +343,33 @@ class Setu:
 
 
 def send_setu(mess, num, tag):
-    if blacklist != [] and whitelist != []:  # 如果黑白名单中有数据
-        if mess.FromQQG in blacklist:  # 如果在黑名单直接返回
-            return
-        if mess.FromQQG not in whitelist and whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
-            return
-    if mess.FromQQG in r18_whitelist:  # 如果在r18列表中,返回混合内容
-        r18 = 3
-        if mess.FromQQG in r18_only_whitelist:  # 如果在r18only中,返回porn的内容
-            r18 = 2
-    else:
+    if mess.messtype == 'group':  # 群聊
+        r18 = group_r18_default  # 默认
+        if group_blacklist != [] and group_whitelist != []:  # 如果群黑白名单中有数据
+            if mess.FromQQG in group_blacklist:  # 如果在黑名单直接返回
+                return
+            if mess.FromQQG not in group_whitelist and group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
+                return
+        if mess.FromQQG in group_r18_whitelist:  # 如果在r18列表中,返回混合内容
+            r18 = 3
+            if mess.FromQQG in group_r18_only_whitelist:  # 如果在r18only中,返回porn的内容
+                r18 = 2
+    elif mess.messtype == 'private' and mess.FromQQG != 0:  # 临时会话
+        r18 = private_for_group_r18_default  # 默认
+        if private_for_group_blacklist != [] and private_for_group_whitelist != []:  # 是临时会话且黑白名单中有数据
+            if mess.FromQQG in private_for_group_blacklist:  # 如果在黑名单直接返回
+                return
+            if mess.FromQQG not in private_for_group_whitelist and private_for_group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
+                return
+        if mess.FromQQG in private_for_group_r18_whitelist:  # 如果在r18列表中,返回混合内容
+            r18 = 3
+            if mess.FromQQG in private_for_group_r18_only_whitelist:  # 如果在r18only中,返回porn的内容
+                r18 = 2
+    elif mess.FromQQG == 0 and private_r18:  # 好友会话
+        r18 = private_r18
+    else:  # 好像没什么用的else.....
         r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
-    # 阿巴阿巴阿巴阿巴阿巴阿巴
+    # 阿巴阿巴阿巴阿巴阿巴阿巴----------------------------------------------------------------------------
     if num != '':  # 如果指定了色图数量
         try:  # 将str转换成int
             num = int(num)

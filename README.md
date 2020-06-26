@@ -2,29 +2,37 @@
 
 在config里填上bot的qq号和对应webapi地址和[key](https://api.lolicon.app/)运行就好了
 
-| config                     | 数据类型 | 说明                                                         |
-| -------------------------- | -------- | ------------------------------------------------------------ |
-| color_pickey               | str      | lolicon的key                                                 |
-| send_pic_original          | bool     | 是否发送原图                                                 |
-| webapi                     | str      | webapi的的地址                                               |
-| botqqs                     | array    | bot的qq(支持多QQ)                                            |
-| blacklist                  | array    | 群黑名单(加入后会无视这些群,与白名单二选一)  [如果黑名单和白名单都没数据就默认对所有群生效] |
-| whitelist                  | array    | 群白名单(加入后只对里面的群生效,与黑名单二选一)              |
-| r18_whitelist              | array    | 开启r18的群白名单(能搜到r18的图)                             |
-| r18_only_whitelist         | array    | r18only的名单(只发r18图)  [需要r18_whitelist也添加这些群才生效] |
-| setu_pattern               | str      | 识别用的正则表达式                                           |
-| path                       | str      | 本地图库的路径(本地没图空着就行),比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
-| setu_threshold             | int      | 限制一次能要多少色图...                                      |
-| RevokeMsg                  | bool     | 是否撤回图片消息                                             |
-| RevokeMsg_time             | int      | 撤回倒计时(秒)                                               |
-| sentlist_switch            | bool     | 记录我api发送过的图片,在一段时间里不再发送                   |
-| clear_sentlist_time        | int      | 重置我api发送过的图片的倒计时(秒)                            |
-| threshold_to_send          | str      | 超过setu_threshold后发送的消息                               |
-| notfound_to_send           | str      | 没找到色图时的消息                                           |
-| wrong_input_to_send        | str      | 输入错误时的消息                                             |
-| before_nmsl_to_send        | str      | 嘴臭前的消息                                                 |
-| before_setu_to_send_switch | bool     | 是否在发色图之前发送消息                                     |
-| before_setu_to_send        | str      | 在发色图前发送的消息                                         |
+| config                               | 数据类型 | 说明                                                         |
+| ------------------------------------ | -------- | ------------------------------------------------------------ |
+| color_pickey                         | str      | lolicon的key                                                 |
+| send_pic_original                    | bool     | 是否发送原图                                                 |
+| webapi                               | str      | webapi的的地址                                               |
+| botqqs                               | array    | bot的qq(支持多QQ)                                            |
+| group_r18_default                    | int      | 群聊默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
+| private_for_group_r18_default        | int      | 群临时会话默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)    |
+| private_r18                          | int      | 好友私聊发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
+| group_blacklist                      | array    | 群黑名单(加入后会无视这些群,与白名单二选一)  [如果黑名单和白名单都没数据就默认对所有群生效] |
+| group_whitelist                      | array    | 群白名单(加入后只对里面的群生效,与黑名单二选一)              |
+| group_r18_whitelist                  | array    | 开启r18的群白名单(能搜到r18的图)                             |
+| group_r18_only_whitelist             | array    | r18only的名单(只发r18图)  [需要group_r18_whitelist也添加这些群才生效] |
+| private_for_group_blacklist          | array    | 群临时会话黑名单,加入的群 临时会话不会发色图   (黑白名单二选一,不能都填) |
+| private_for_group_whitelist          | array    | 群临时会话白名单,只有加入的群 临时会话才有用  (黑白名单二选一,不能都填) |
+| private_for_group_r18_whitelist      | array    | 开启r18的群的临时会话白名单(能搜到r18的图)                   |
+| private_for_group_r18_only_whitelist | array    | r18only的群的临时会话名单(只发r18图)  [需要private_for_group_r18_whitelist也添加这些群才生效] |
+| setu_pattern                         | str      | 识别用的正则表达式                                           |
+| path                                 | str      | 本地图库的路径(本地没图空着就行),比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
+| setu_threshold                       | int      | 限制一次能要多少色图...(最大20)                              |
+| RevokeMsg                            | bool     | 是否撤回图片消息                                             |
+| RevokeMsg_time                       | int      | 撤回倒计时(秒)                                               |
+| sentlist_switch                      | bool     | 记录我api发送过的图片,在一段时间里不再发送                   |
+| clear_sentlist_time                  | int      | 重置我api发送过的图片的倒计时(秒)                            |
+| threshold_to_send                    | str      | 超过setu_threshold后发送的消息                               |
+| notfound_to_send                     | str      | 没找到色图时的消息                                           |
+| wrong_input_to_send                  | str      | 输入错误时的消息                                             |
+| before_nmsl_to_send                  | str      | 嘴臭前的消息                                                 |
+| before_setu_to_send_switch           | bool     | 是否在发色图之前发送消息                                     |
+| before_setu_to_send                  | str      | 在发色图前发送的消息                                         |
+
 
 path是针对我的api的,会根据api返回的filename去path对应的路径找图,然后转换成base64发送,可以省下下载的时间..
 
