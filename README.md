@@ -1,6 +1,6 @@
 # [IOTBOT](https://github.com/IOTQQ/IOTQQ)的色图姬插件
 
-在config里填上bot的qq号和对应webapi地址和[key](https://api.lolicon.app/)运行就好了
+在config里填上bot的qq号和对应webapi地址和[key](https://api.lolicon.app/)运行就好了,那些黑名单 白名单什么的没特殊要求就不用管了....
 
 | config                               | 数据类型 | 说明                                                         |
 | ------------------------------------ | -------- | ------------------------------------------------------------ |
