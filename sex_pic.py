@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading
+import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading, sys
 from queue import Queue
 
 with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
@@ -109,12 +109,16 @@ def send_text(mess, msg, atuser=0):
             "content": msg,
             "groupid": mess.FromQQG,
             "atUser": atuser}
-    res = requests.post(api, params=params, json=data, timeout=None)
     try:
+        res = requests.post(api, params=params, json=data, timeout=3)
         ret = res.json()['Ret']
-    except:
+    except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
+        ret = '超时~'
+    except ValueError:
         ret = '返回错误~'
-    print('文字消息发送状态:{0} Ret:{1}'.format(res.status_code, ret))
+    except:
+        ret = ("未知错误:", sys.exc_info()[0])
+    print('文字消息执行状态:[Ret:{}]'.format(ret))
     return
 
 
@@ -139,12 +143,16 @@ def send_pic(mess, msg, atuser=0, picurl='', picbase64='', picmd5=''):
             "picUrl": picurl,
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
-    res = requests.post(api, params=params, json=data, timeout=None)
     try:
+        res = requests.post(api, params=params, json=data, timeout=5)
         ret = res.json()['Ret']
-    except:
+    except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
+        ret = '超时~'
+    except ValueError:
         ret = '返回错误~'
-    print('图片消息发送状态:{0} Ret:{1}'.format(res.status_code, ret))
+    except:
+        ret = ("未知错误:", sys.exc_info()[0])
+    print('图片消息执行状态:[Ret:{}]'.format(ret))
     return
 
 
@@ -155,12 +163,16 @@ def withdraw_message(mess):
             "MsgSeq": mess.MsgSeq,
             "MsgRandom": mess.MsgRandom}
     time.sleep(RevokeMsg_time)
-    res = requests.post(api, params=params, json=data, timeout=None)
     try:
+        res = requests.post(api, params=params, json=data, timeout=3)
         ret = res.json()['Ret']
-    except:
+    except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
+        ret = '超时~'
+    except ValueError:
         ret = '返回错误~'
-    print('撤回消息状态:{0} Ret:{1}'.format(res.status_code, ret))
+    except:
+        ret = ("未知错误:", sys.exc_info()[0])
+    print('撤回消息执行状态:[Ret:{}]'.format(ret))
     return
 
 
