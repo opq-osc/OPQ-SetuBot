@@ -5,7 +5,8 @@
 | config                               | 数据类型 | 说明                                                         |
 | ------------------------------------ | -------- | ------------------------------------------------------------ |
 | color_pickey                         | str      | lolicon的key                                                 |
-| send_pic_original                    | bool     | 是否发送原图                                                 |
+| send_original_pic                    | bool     | 是否发送原图                                                 |
+| send_pic_only                        | bool     | 是否只发送图片                                               |
 | webapi                               | str      | webapi的的地址                                               |
 | botqqs                               | array    | bot的qq(支持多QQ)                                            |
 | group_r18_default                    | int      | 群聊默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
@@ -36,6 +37,7 @@
 | before_setu_to_send_switch           | bool     | 是否在发色图之前发送消息                                     |
 | before_setu_to_send                  | str      | 在发色图前发送的消息                                         |
 | frequency_cap_to_send                | str      | 当达到频率限制后发送的消息                                   |
+
 
 
 path是针对我的api的,会根据api返回的filename去path对应的路径找图,然后转换成base64发送,可以省下下载的时间..

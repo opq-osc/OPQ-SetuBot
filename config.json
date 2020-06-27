@@ -1,6 +1,7 @@
 {
   "color_pickey": "",
-  "send_pic_original": false,
+  "send_original_pic": false,
+  "send_pic_only": false,
   "webapi": "http://127.0.0.1:8888",
   "botqqs": [123456,123456],
   "group_r18_default": 1,

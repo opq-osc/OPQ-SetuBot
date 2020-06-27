@@ -10,7 +10,8 @@ webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
 botqqs = config['botqqs']  # 机器人QQ号
 setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
 setu_path = config['path']  # 色图路径
-send_pic_original = config['send_pic_original']  # 是否发送原图
+send_original_pic = config['send_original_pic']  # 是否发送原图
+send_pic_only = config['send_pic_only']  # 是否只发图
 setu_threshold = int(config['setu_threshold'])  # 发送上限
 threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
 notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
@@ -260,12 +261,15 @@ class Setu:
         self.base64_codes = []
 
     def build_msg(self, title, artworkid, author, artistid, page, url_original):
-        purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
-        uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
-        page = 'p' + str(page)
-        msg = ('标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
-            title=title, purl=purl, page=page, author=author,
-            uurl=uurl, url_original=url_original))
+        if send_pic_only:
+            msg = ''
+        else:
+            purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
+            uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
+            page = 'p' + str(page)
+            msg = ('标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
+                title=title, purl=purl, page=page, author=author,
+                uurl=uurl, url_original=url_original))
         return msg
 
     def base_64(self, filename):
@@ -299,7 +303,7 @@ class Setu:
                     self.msg.append(msg)
                     if setu_path == '':  # 非本地
                         self.base64_codes.append('')
-                        if send_pic_original:  # 发送原画
+                        if send_original_pic:  # 发送原画
                             self.download_url.append(url_original)
                         else:
                             self.download_url.append('https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename)
@@ -326,7 +330,7 @@ class Setu:
         params = {'r18': r18,
                   'apikey': color_pickey,
                   'num': self.api_1_num,
-                  'size1200': not send_pic_original,
+                  'size1200': not send_original_pic,
                   'proxy': 'disable'}
         if (len(self.tag) != 0) and (not self.tag.isspace()):  # 如果tag不为空(字符串字数不为零且不为空)
             params['keyword'] = self.tag
@@ -342,8 +346,8 @@ class Setu:
                 self.msg.append(msg)
                 self.download_url.append(data['url'])
                 self.base64_codes.append('')
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
     def main(self):
         self.api_0()
