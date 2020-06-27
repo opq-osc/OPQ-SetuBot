@@ -32,6 +32,11 @@ private_for_group_r18_default = config['private_for_group_r18_default']
 RevokeMsg = config['RevokeMsg']
 RevokeMsg_time = int(config['RevokeMsg_time'])
 sentlist_switch = config['sentlist_switch']
+
+frequency = config['frequency']
+frequency_additional = config['frequency_additional']
+reset_freq_time = config['reset_freq_time']
+
 clear_sentlist_time = int(config['clear_sentlist_time'])
 # -----------------------------------------------------
 sio = socketio.Client()
@@ -41,6 +46,7 @@ q_withdraw = Queue(maxsize=0)
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 sent_list = []
+freq_group_list = {}
 print('获取配置成功~')
 
 
@@ -114,7 +120,7 @@ def send_text(mess, msg, atuser=0):
         ret = res.json()['Ret']
     except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
         ret = '超时~'
-    except ValueError:
+    except (ValueError, KeyError):
         ret = '返回错误~'
     except:
         ret = ("未知错误:", sys.exc_info()[0])
@@ -144,11 +150,11 @@ def send_pic(mess, msg, atuser=0, picurl='', picbase64='', picmd5=''):
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
     try:
-        res = requests.post(api, params=params, json=data, timeout=5)
+        res = requests.post(api, params=params, json=data, timeout=10)
         ret = res.json()['Ret']
     except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
         ret = '超时~'
-    except ValueError:
+    except (ValueError, KeyError):
         ret = '返回错误~'
     except:
         ret = ("未知错误:", sys.exc_info()[0])
@@ -168,7 +174,7 @@ def withdraw_message(mess):
         ret = res.json()['Ret']
     except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
         ret = '超时~'
-    except ValueError:
+    except (ValueError, KeyError):
         ret = '返回错误~'
     except:
         ret = ("未知错误:", sys.exc_info()[0])
@@ -355,6 +361,8 @@ class Setu:
 
 
 def send_setu(mess, num, tag):
+    # ------------------------------------------群聊黑白名单-------------------------------------------------------
+
     if mess.messtype == 'group':  # 群聊
         r18 = group_r18_default  # 默认
         if group_blacklist != [] and group_whitelist != []:  # 如果群黑白名单中有数据
@@ -366,6 +374,8 @@ def send_setu(mess, num, tag):
             r18 = 3
             if mess.FromQQG in group_r18_only_whitelist:  # 如果在r18only中,返回porn的内容
                 r18 = 2
+    # ------------------------------------------临时会话黑白名单----------------------------------------------
+
     elif mess.messtype == 'private' and mess.FromQQG != 0:  # 临时会话
         r18 = private_for_group_r18_default  # 默认
         if private_for_group_blacklist != [] and private_for_group_whitelist != []:  # 是临时会话且黑白名单中有数据
@@ -381,7 +391,8 @@ def send_setu(mess, num, tag):
         r18 = private_r18
     else:  # 好像没什么用的else.....
         r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
-    # 阿巴阿巴阿巴阿巴阿巴阿巴----------------------------------------------------------------------------
+
+    # 阿巴阿巴阿巴阿巴阿巴阿巴--------------------num部分----------------------------------------------------
     if num != '':  # 如果指定了色图数量
         try:  # 将str转换成int
             num = int(num)
@@ -399,6 +410,23 @@ def send_setu(mess, num, tag):
             return
     else:  # 没指定的话默认是1
         num = 1
+    # -----------------------------频率控制--------------------------------------------------------
+    try:
+        if str(mess.FromQQG) not in frequency_additional.keys() and frequency != 0:  # 非自定义频率的群且限制不为0
+            if (num + int(freq_group_list[mess.FromQQG])) > int(frequency) or (num > frequency):  # 大于限制频率
+                q_text.put({'mess': mess, 'msg': '爬', 'atuser': 0})
+                return
+            freq_group_list[mess.FromQQG] += num  # 计数
+        else:
+            if int(frequency_additional[str(mess.FromQQG)]):  # 如果自定义频率不为0
+                if num + int(freq_group_list[mess.FromQQG]) > int(frequency_additional[str(mess.FromQQG)]) or (
+                        num > int(frequency_additional[str(mess.FromQQG)])):  # 大于限制频率
+                    q_text.put({'mess': mess, 'msg': '爬', 'atuser': 0})
+                    return
+                freq_group_list[mess.FromQQG] += num
+    except:
+        freq_group_list[mess.FromQQG] = num
+    # --------------------------------------------------------------------------------------------------
     if before_setu_to_send_switch:
         q_text.put({'mess': mess, 'msg': before_setu_to_send, 'atuser': 0})
     setu = Setu(mess, tag, num, r18)
@@ -429,7 +457,7 @@ def sendtext_queue():
 
 def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
     while True:
-        time.sleep(300)
+        time.sleep(180)
         for botqq in botqqs:
             sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
 
@@ -450,6 +478,13 @@ def sentlist_clear():  # 重置发送列表
     while True:
         time.sleep(clear_sentlist_time)
         sent_list.clear()
+
+
+def reset_freq_group_list():  # 重置时间
+    while reset_freq_time:
+        time.sleep(reset_freq_time)
+        for key in freq_group_list.keys():
+            freq_group_list[key] = 0
 
 
 @sio.event
@@ -525,11 +560,13 @@ if __name__ == '__main__':
         pic_queue = threading.Thread(target=sendpic_queue)  # 图片消息队列
         withdrawqueue = threading.Thread(target=withdraw_queue)  # 撤回队列
         sent_list_clear = threading.Thread(target=sentlist_clear)  # 定时清除发生过的列表
+        reset_freq_grouplist = threading.Thread(target=reset_freq_group_list)  # 定时清除发生过的列表
         beat.start()
         text_queue.start()
         pic_queue.start()
         withdrawqueue.start()
         sent_list_clear.start()
+        reset_freq_grouplist.start()
         sio.wait()
     except BaseException as e:
         print(e)

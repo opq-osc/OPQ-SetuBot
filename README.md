@@ -22,6 +22,9 @@
 | setu_pattern                         | str      | 识别用的正则表达式                                           |
 | path                                 | str      | 本地图库的路径(本地没图空着就行),比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
 | setu_threshold                       | int      | 限制一次能要多少色图...(最大20)                              |
+| frequency                            | int      | 发图的限制数量(设置0为不做限制)                              |
+| reset_freq_time                      | int      | 重置frequency的倒计时(秒)----------(如果frequency设置20,reset_freq_time设置60,那就是60s内可以发20张图)   [设置0为不重置] |
+| frequency_additional                 | dict     | 额外的群,如果有些群需要单独设置限制频率就添加在这个里面( 比如123456群不做限制,654321群限制40:   "frequency_additional": {"123456":0,"654321":40}, ) |
 | RevokeMsg                            | bool     | 是否撤回图片消息                                             |
 | RevokeMsg_time                       | int      | 撤回倒计时(秒)                                               |
 | sentlist_switch                      | bool     | 记录我api发送过的图片,在一段时间里不再发送                   |
@@ -32,6 +35,7 @@
 | before_nmsl_to_send                  | str      | 嘴臭前的消息                                                 |
 | before_setu_to_send_switch           | bool     | 是否在发色图之前发送消息                                     |
 | before_setu_to_send                  | str      | 在发色图前发送的消息                                         |
+| frequency_cap_to_send                | str      | 当达到频率限制后发送的消息                                   |
 
 
 path是针对我的api的,会根据api返回的filename去path对应的路径找图,然后转换成base64发送,可以省下下载的时间..
