@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading, sys
-from queue import Queue
+from queue import Queue, LifoQueue
 
 with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
     config = json.loads(f.read())
@@ -41,13 +41,14 @@ reset_freq_time = config['reset_freq_time']
 clear_sentlist_time = int(config['clear_sentlist_time'])
 # -----------------------------------------------------
 sio = socketio.Client()
-q_pic = Queue(maxsize=0)
-q_text = Queue(maxsize=0)
+q_pic = LifoQueue(maxsize=0)
+q_text = LifoQueue(maxsize=0)
 q_withdraw = Queue(maxsize=0)
 # -----------------------------------------------------
 api = webapi + '/v1/LuaApiCaller'
 sent_list = []
 freq_group_list = {}
+group_cache = {"text": {'time': time.time(), 'group': 0}, "pic": {'time': time.time(), 'group': 0}}
 time_tmp = time.time()
 print('获取配置成功~')
 
@@ -158,8 +159,9 @@ def send_pic(mess, msg, atuser=0, picurl='', picbase64='', picmd5=''):
         ret = '超时~'
     except (ValueError, KeyError):
         ret = '返回错误~'
-    except:
-        ret = ("未知错误:", sys.exc_info()[0])
+    except BaseException as e:
+        # ret = ("未知错误:", sys.exc_info()[0])
+        ret = ("未知错误:", e)
     print('图片消息执行状态:[Ret:{}]'.format(ret))
     return
 
@@ -280,7 +282,6 @@ class Setu:
             return coding.decode()
 
     def api_0(self):
-        # print('尝试从yubanのapi获取')
         url = 'http://api.yuban10703.xyz:2333/setu_v3'
         params = {'type': self.r18,
                   'num': self.num,
@@ -326,7 +327,6 @@ class Setu:
             r18 = 1
         else:
             r18 = 0
-        # print('尝试从lolicon获取')
         url = 'https://api.lolicon.app/setu/'
         params = {'r18': r18,
                   'apikey': color_pickey,
@@ -451,31 +451,42 @@ def send_setu(mess, num, tag):
     setu.main()
 
 
-def sendpic_queue():
-    while True:
-        data = q_pic.get()
-        # t = threading.Thread(target=send_pic,
-        #                      args=(data['mess'], data['msg'], 0, data['download_url'], data['base64code']))
-        # t.start()
-        send_pic(data['mess'], data['msg'], 0, data['download_url'], data['base64code'])
-        q_pic.task_done()
+def judgment_delay(new_group, group, time_old):  # 判断延时
+    if new_group != group or time.time() - time_old >= 1.1:
+        # print('{}:不延时~~~~~~~~'.format(new_group))
+        return
+    else:
+        # print('{}:延时~~~~~~~~'.format(new_group))
         time.sleep(1.1)
+        return
+
+
+def sendpic_queue():
+    sent_group = {'time': time.time(), 'group': 0}
+    while True:
+        data = q_pic.get()  # 从队列取出数据
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'])
+        send_pic(data['mess'], data['msg'], 0, data['download_url'], data['base64code'])  # 等待完成
+        q_pic.task_done()
+        sent_group['time'] = time.time()
+        sent_group['group'] = data['mess'].FromQQG
+
 
 
 def sendtext_queue():
+    sent_group = {'time': time.time(), 'group': 0}
     while True:
         data = q_text.get()
-        # t = threading.Thread(target=send_text,
-        #                      args=(data['mess'], data['msg'], data['atuser']))
-        # t.start()
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'])
         send_text(data['mess'], data['msg'], data['atuser'])
         q_text.task_done()
-        time.sleep(1.1)
+        sent_group['time'] = time.time()
+        sent_group['group'] = data['mess'].FromQQG
 
 
 def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
     while True:
-        time.sleep(180)
+        time.sleep(60)
         for botqq in botqqs:
             sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
 
@@ -483,9 +494,7 @@ def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
 def withdraw_queue():  # 撤回队列
     while True:
         data = q_withdraw.get()
-        # print(data['mess'].CurrentQQ)
-        # print(data['mess'].MsgSeq)
-        # print(data['mess'].MsgRandom)
+        # withdraw_message(data['mess'])
         t = threading.Thread(target=withdraw_message,
                              args=(data['mess'],))
         t.start()
@@ -504,11 +513,12 @@ def reset_freq_group_list():  # 重置时间
         time.sleep(reset_freq_time)
         for key in freq_group_list.keys():
             freq_group_list[key] = 0
-            time_tmp = time.time()
+        time_tmp = time.time()
 
 
 @sio.event
 def connect():
+    time.sleep(1)  # 等1s,不然可能连不上
     for botqq in botqqs:
         sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
     print('连接成功')
@@ -534,6 +544,7 @@ def OnGroupMsgs(message):
     if a.At_Content == 'nmsl':
         msg = nmsl()
         # send_text(a, msg)
+        q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
@@ -561,6 +572,7 @@ def OnFriendMsgs(message):
     # -----------------------------------------------------
     if a.Content == 'nmsl':
         msg = nmsl()
+        q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
         # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
