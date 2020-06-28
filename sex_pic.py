@@ -417,27 +417,31 @@ def send_setu(mess, num, tag):
         num = 1
     # -----------------------------频率控制--------------------------------------------------------
     try:
-        if str(mess.FromQQG) not in frequency_additional.keys() and frequency != 0:  # 非自定义频率的群且限制不为0
-            if (num + int(freq_group_list[mess.FromQQG])) > int(frequency) or (num > frequency):  # 大于限制频率
-                q_text.put(
-                    {'mess': mess, 'msg': '本群每{}s能发送{}张色图,已发送{}张,下一波色图time还有{}s'.format(reset_freq_time, int(frequency),
-                                                                                        int(freq_group_list[
-                                                                                                mess.FromQQG]), round(
-                            reset_freq_time - (time.time() - time_tmp))),
-                     'atuser': 0})
-                return
-            freq_group_list[mess.FromQQG] += num  # 计数
-        else:
-            if int(frequency_additional[str(mess.FromQQG)]):  # 如果自定义频率不为0
-                if num + int(freq_group_list[mess.FromQQG]) > int(frequency_additional[str(mess.FromQQG)]) or (
-                        num > int(frequency_additional[str(mess.FromQQG)])):  # 大于限制频率
-                    q_text.put({'mess': mess,
-                                'msg': '本群每{}s能发送{}张色图,已发送{}张,下一波色图time还有{}s'.format(reset_freq_time, int(
-                                    frequency_additional[str(mess.FromQQG)]), int(freq_group_list[mess.FromQQG]), round(
-                                    reset_freq_time - (time.time() - time_tmp))),
-                                'atuser': 0})
+        if mess.messtype == 'group':  # 只控制群聊
+            if str(mess.FromQQG) not in frequency_additional.keys() and frequency != 0:  # 非自定义频率的群且限制不为0
+                if (num + int(freq_group_list[mess.FromQQG])) > int(frequency) or (num > frequency):  # 大于限制频率
+                    q_text.put(
+                        {'mess': mess,
+                         'msg': '本群每{}s能发送{}张色图,已发送{}张,下一波色图time还有{}s'.format(reset_freq_time, int(frequency),
+                                                                              int(freq_group_list[
+                                                                                      mess.FromQQG]), round(
+                                 reset_freq_time - (time.time() - time_tmp))),
+                         'atuser': 0})
                     return
-                freq_group_list[mess.FromQQG] += num
+                freq_group_list[mess.FromQQG] += num  # 计数
+            else:
+                if int(frequency_additional[str(mess.FromQQG)]):  # 如果自定义频率不为0
+                    if num + int(freq_group_list[mess.FromQQG]) > int(frequency_additional[str(mess.FromQQG)]) or (
+                            num > int(frequency_additional[str(mess.FromQQG)])):  # 大于限制频率
+                        q_text.put({'mess': mess,
+                                    'msg': '本群每{}s能发送{}张色图,已发送{}张,下一波色图time还有{}s'.format(reset_freq_time, int(
+                                        frequency_additional[str(mess.FromQQG)]), int(freq_group_list[mess.FromQQG]),
+                                                                                         round(
+                                                                                             reset_freq_time - (
+                                                                                                     time.time() - time_tmp))),
+                                    'atuser': 0})
+                        return
+                    freq_group_list[mess.FromQQG] += num
     except:
         freq_group_list[mess.FromQQG] = num
     # --------------------------------------------------------------------------------------------------
