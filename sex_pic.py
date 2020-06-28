@@ -48,7 +48,6 @@ q_withdraw = Queue(maxsize=0)
 api = webapi + '/v1/LuaApiCaller'
 sent_list = []
 freq_group_list = {}
-group_cache = {"text": {'time': time.time(), 'group': 0}, "pic": {'time': time.time(), 'group': 0}}
 time_tmp = time.time()
 print('获取配置成功~')
 
@@ -73,7 +72,7 @@ class GMess:
             self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
             self.At_Content = ''
         elif message['CurrentPacket']['Data']['MsgType'] == 'AtMsg':  # at消息
-            self.At_Content = re.sub(r'@.* ', '',
+            self.At_Content = re.sub(r'.*@.* ', '',
                                      json.loads(message['CurrentPacket']['Data']['Content'])['Content'])  # AT消息内容
             self.Content = ''  # 消息内容
         else:
@@ -542,9 +541,9 @@ def OnGroupMsgs(message):
         return
     # -----------------------------------------------------
     if a.At_Content == 'nmsl':
+        q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
         msg = nmsl()
         # send_text(a, msg)
-        q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
@@ -571,8 +570,8 @@ def OnFriendMsgs(message):
         return
     # -----------------------------------------------------
     if a.Content == 'nmsl':
-        msg = nmsl()
         q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
+        msg = nmsl()
         # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
