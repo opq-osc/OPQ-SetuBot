@@ -6,7 +6,7 @@
 | ------------------------------------ | -------- | ------------------------------------------------------------ |
 | color_pickey                         | str      | lolicon的key                                                 |
 | send_original_pic                    | bool     | 是否发送原图                                                 |
-| not_send_pic_info                    | bool     | 是否发送图片信息                                             |
+| not_send_pic_info                    | bool     | 是否不发送图片信息                                             |
 | send_setu_at                         | bool     | 在发图时是否@                                                |
 | webapi                               | str      | webapi的的地址                                               |
 | botqqs                               | array    | bot的qq(支持多QQ)                                            |
