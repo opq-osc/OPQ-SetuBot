@@ -118,6 +118,8 @@ api的代码在https://github.com/yuban10703/Pixiv_download_to_mongodb
 
 [lolicon](https://api.lolicon.app/#/setu)
 
+[沙雕APP](https://shadiao.app/)
+
 [mcoo/iotqq-plugins-demo](https://github.com/mcoo/iotqq-plugins-demo)
 
 
