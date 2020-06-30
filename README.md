@@ -6,7 +6,8 @@
 | ------------------------------------ | -------- | ------------------------------------------------------------ |
 | color_pickey                         | str      | lolicon的key                                                 |
 | send_original_pic                    | bool     | 是否发送原图                                                 |
-| send_pic_only                        | bool     | 是否只发送图片                                               |
+| not_send_pic_info                    | bool     | 是否发送图片信息                                             |
+| send_setu_at                         | bool     | 在发图时是否@                                                |
 | webapi                               | str      | webapi的的地址                                               |
 | botqqs                               | array    | bot的qq(支持多QQ)                                            |
 | group_r18_default                    | int      | 群聊默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
@@ -33,6 +34,7 @@
 | threshold_to_send                    | str      | 超过setu_threshold后发送的消息                               |
 | notfound_to_send                     | str      | 没找到色图时的消息                                           |
 | wrong_input_to_send                  | str      | 输入错误时的消息                                             |
+| frequency_cap_to_send                | str      | 可以轻微自定义语句,里面的`{reset_freq_time},{frequency},{num},{refresh_time}`位置可以换,但不能没有 |
 | before_nmsl_to_send                  | str      | 嘴臭前的消息                                                 |
 | before_setu_to_send_switch           | bool     | 是否在发色图之前发送消息                                     |
 | before_setu_to_send                  | str      | 在发色图前发送的消息                                         |

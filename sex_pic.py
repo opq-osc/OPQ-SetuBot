@@ -11,7 +11,7 @@ botqqs = config['botqqs']  # 机器人QQ号
 setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
 setu_path = config['path']  # 色图路径
 send_original_pic = config['send_original_pic']  # 是否发送原图
-send_pic_only = config['send_pic_only']  # 是否只发图
+not_send_pic_info = config['not_send_pic_info']  # 是否只发图
 setu_threshold = int(config['setu_threshold'])  # 发送上限
 threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
 notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
@@ -265,7 +265,7 @@ class Setu:
         self.base64_codes = []
 
     def build_msg(self, title, artworkid, author, artistid, page, url_original):
-        if send_pic_only:
+        if not_send_pic_info:
             if send_setu_at and self.msg_in.messtype == 'group':
                 msg = '[ATUSER({qq})]'.format(qq=self.msg_in.FromQQ)
             else:
