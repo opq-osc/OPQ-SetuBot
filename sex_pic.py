@@ -15,9 +15,11 @@ send_pic_only = config['send_pic_only']  # 是否只发图
 setu_threshold = int(config['setu_threshold'])  # 发送上限
 threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
 notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
+frequency_cap_to_send = config['frequency_cap_to_send']  # 达到频率上限后发送语句
 wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
 before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
 before_setu_to_send_switch = config['before_setu_to_send_switch']  # 发色图之前是否发送消息
+send_setu_at = config['send_setu_at']  # 发色图时是否@
 before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
 group_blacklist = config['group_blacklist']
 group_whitelist = config['group_whitelist']
@@ -264,14 +266,22 @@ class Setu:
 
     def build_msg(self, title, artworkid, author, artistid, page, url_original):
         if send_pic_only:
-            msg = ''
+            if send_setu_at and self.msg_in.messtype == 'group':
+                msg = '[ATUSER({qq})]'.format(qq=self.msg_in.FromQQ)
+            else:
+                msg = ''
         else:
             purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
             uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
             page = 'p' + str(page)
-            msg = ('标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
-                title=title, purl=purl, page=page, author=author,
-                uurl=uurl, url_original=url_original))
+            if send_setu_at and self.msg_in.messtype == 'group':
+                msg = '[ATUSER({qq})]\r\n标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
+                    qq=self.msg_in.FromQQ, title=title, purl=purl, page=page, author=author,
+                    uurl=uurl, url_original=url_original)
+            else:
+                msg = '标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
+                    title=title, purl=purl, page=page, author=author,
+                    uurl=uurl, url_original=url_original)
         return msg
 
     def base_64(self, filename):
@@ -356,7 +366,7 @@ class Setu:
             self.api_1()
             if self.num_real == 0 and self.num_real_api_1 == 0:  # 2个api都没获取到数据
                 q_text.put({'mess': self.msg_in, 'msg': notfound_to_send, 'atuser': 0})
-                # send_text(self.msg_in, notfound_to_send,0)
+                # freq_group_list[self.msg_in.FromQQG] -= self.num
                 return
         for i in range(len(self.msg)):
             # print('进入队列')
@@ -421,9 +431,9 @@ def send_setu(mess, num, tag):
                 if (num + int(freq_group_list[mess.FromQQG])) > int(frequency) or (num > frequency):  # 大于限制频率
                     q_text.put(
                         {'mess': mess,
-                         'msg': '本群每{}s能发送{}张色图,已发送{}张,下一波色图time还有{}s'.format(reset_freq_time, int(frequency),
-                                                                              int(freq_group_list[
-                                                                                      mess.FromQQG]), round(
+                         'msg': frequency_cap_to_send.format(reset_freq_time=reset_freq_time, frequency=int(frequency),
+                                                             num=int(freq_group_list[
+                                                                         mess.FromQQG]), refresh_time=round(
                                  reset_freq_time - (time.time() - time_tmp))),
                          'atuser': 0})
                     return
@@ -433,11 +443,12 @@ def send_setu(mess, num, tag):
                     if num + int(freq_group_list[mess.FromQQG]) > int(frequency_additional[str(mess.FromQQG)]) or (
                             num > int(frequency_additional[str(mess.FromQQG)])):  # 大于限制频率
                         q_text.put({'mess': mess,
-                                    'msg': '本群每{}s能发送{}张色图,已发送{}张,下一波色图time还有{}s'.format(reset_freq_time, int(
-                                        frequency_additional[str(mess.FromQQG)]), int(freq_group_list[mess.FromQQG]),
-                                                                                         round(
-                                                                                             reset_freq_time - (
-                                                                                                     time.time() - time_tmp))),
+                                    'msg': frequency_cap_to_send.format(reset_freq_time=reset_freq_time, frequency=int(
+                                        frequency_additional[str(mess.FromQQG)]),
+                                                                        num=int(freq_group_list[mess.FromQQG]),
+                                                                        refresh_time=round(
+                                                                            reset_freq_time - (
+                                                                                    time.time() - time_tmp))),
                                     'atuser': 0})
                         return
                     freq_group_list[mess.FromQQG] += num
@@ -469,7 +480,6 @@ def sendpic_queue():
         q_pic.task_done()
         sent_group['time'] = time.time()
         sent_group['group'] = data['mess'].FromQQG
-
 
 
 def sendtext_queue():
