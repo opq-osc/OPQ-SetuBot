@@ -557,7 +557,7 @@ def OnGroupMsgs(message):
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
-    if RevokeMsg and a.MsgType == 'PicMsg' and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的图片就撤回
+    if RevokeMsg and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的图片就撤回
         # print(a.MsgSeq,a.MsgRandom)
         q_withdraw.put({'mess': a})
         return
