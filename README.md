@@ -10,9 +10,6 @@
 | send_setu_at                    | bool     | 在发图时是否@                                                |
 | webapi                          | str      | webapi的的地址                                               |
 | botqqs                          | array    | bot的qq(支持多QQ)                                            |
-| group_r18_default               | int      | 群聊默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
-| private_for_group_r18_default   | int      | 群临时会话默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)    |
-| private_r18                     | int      | 好友私聊发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
 | group_blacklist                 | array    | 群黑名单(加入后会无视这些群,与白名单二选一)  [如果黑名单和白名单都没数据就默认对所有群生效] |
 | group_whitelist                 | array    | 群白名单(加入后只对里面的群生效,与黑名单二选一)              |
 | group_r18_whitelist             | array    | 开启r18的群白名单(可以调用`来张r18色图`)                     |
@@ -39,12 +36,12 @@
 | frequency_cap_to_send           | str      | 当达到频率限制后发送的消息                                   |
 | good_morning                    | bool     | 是否开启早安功能                                             |
 | morning_keyword                 | array    | 触发早安的关键字                                             |
-| morning_conf                    | dict     | 各个时间段的回复,可以修改or添加(按照格式往下添加就好了,时间段必须全部覆盖,24小时制) |
+| morning_conf                    | dict     | 各个时间段的回复,可以修改or添加(按照格式往下添加就好了,时间段必须全部覆盖,24小时制)**[必须以00:00开始,00:00结束]** |
 | morning_num_msg                 | str      | 可以自定义但是`{num}`不能少,`\r\n`是换行符                   |
 | morning_repeat                  | str      | 重复触发的消息                                               |
 | good_night                      | bool     | 是否开启晚安功能                                             |
 | night_keyword                   | array    | 晚安关键字                                                   |
-| night_conf                      | dict     | 各个时间段的回复,可以修改or添加(按照格式往下添加就好了,时间段必须全部覆盖,24小时制) |
+| night_conf                      | dict     | 各个时间段的回复,可以修改or添加(按照格式往下添加就好了,时间段必须全部覆盖,24小时制)**[必须以00:00开始,00:00结束]** |
 | night_num_msg                   | str      | 可以自定义但是`{num}`不能少,`\r\n`是换行符                   |
 | night_repeat                    | str      | 重复触发的消息                                               |
 

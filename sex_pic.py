@@ -27,9 +27,6 @@ group_r18_whitelist = config['group_r18_whitelist']
 private_for_group_blacklist = config['private_for_group_blacklist']
 private_for_group_whitelist = config['private_for_group_whitelist']
 private_for_group_r18_whitelist = config['private_for_group_r18_whitelist']
-private_r18_default = config['private_r18_default']
-group_r18_default = config['group_r18_default']
-private_for_group_r18_default = config['private_for_group_r18_default']
 RevokeMsg = config['RevokeMsg']
 RevokeMsg_time = int(config['RevokeMsg_time'])
 sentlist_switch = config['sentlist_switch']
@@ -81,10 +78,10 @@ class GMess:
         self.MsgSeq = message['CurrentPacket']['Data']['MsgSeq']
         self.MsgRandom = message['CurrentPacket']['Data']['MsgRandom']
         self.MsgType = message['CurrentPacket']['Data']['MsgType']
-        if message['CurrentPacket']['Data']['MsgType'] == 'TextMsg':  # 普通消息
+        if self.MsgType == 'TextMsg':  # 普通消息
             self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
             self.At_Content = ''
-        elif message['CurrentPacket']['Data']['MsgType'] == 'AtMsg':  # at消息
+        elif self.MsgType == 'AtMsg':  # at消息
             self.At_Content = re.sub(r'.*@.* ', '',
                                      json.loads(message['CurrentPacket']['Data']['Content'])['Content'])  # AT消息内容
             self.Content = ''  # 消息内容
@@ -101,10 +98,11 @@ class Mess:
         self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的QQ
         self.QQ = message['CurrentPacket']['Data']['ToUin']  # 接收到这条消息的QQ
         self.FromQQ = message['CurrentPacket']['Data']['FromUin']  # 哪个QQ发过来的
-        if message['CurrentPacket']['Data']['MsgType'] == 'TextMsg':  # 普通消息
+        self.MsgType = message['CurrentPacket']['Data']['MsgType']
+        if self.MsgType == 'TextMsg':  # 普通消息
             self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
             self.FromQQG = 0
-        elif message['CurrentPacket']['Data']['MsgType'] == 'TempSessionMsg':  # 临时消息
+        elif self.MsgType == 'TempSessionMsg':  # 临时消息
             self.FromQQG = message['CurrentPacket']['Data']['TempUin']  # 通过哪个QQ群发起的
             self.Content = json.loads(message['CurrentPacket']['Data']['Content'])['Content']
         else:
@@ -389,17 +387,17 @@ def send_setu(mess, setu_keyword):
     num = setu_keyword.group(1)  # 提取数量
     tag = setu_keyword.group(2)  # 提取tag
     R18 = setu_keyword.group(3)  # 是否r18
+    r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
     # ------------------------------------------群聊黑白名单-------------------------------------------------------
 
     if mess.messtype == 'group':  # 群聊
-        r18 = group_r18_default  # 默认
         if group_blacklist != [] and group_whitelist != []:  # 如果群黑白名单中有数据
             if mess.FromQQG in group_blacklist:  # 如果在黑名单直接返回
                 return
             if mess.FromQQG not in group_whitelist and group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
                 return
         if R18 != '':
-            if mess.FromQQG in group_r18_whitelist:  # 如果在r18列表中,返回混合内容
+            if mess.FromQQG in group_r18_whitelist:
                 r18 = 2
             else:
                 q_text.put({'mess': mess, 'msg': '本群未开启r18~', 'atuser': 0})
@@ -407,23 +405,19 @@ def send_setu(mess, setu_keyword):
     # ------------------------------------------临时会话黑白名单----------------------------------------------
 
     elif mess.messtype == 'private' and mess.FromQQG != 0:  # 临时会话
-        r18 = private_for_group_r18_default  # 默认
         if private_for_group_blacklist != [] and private_for_group_whitelist != []:  # 是临时会话且黑白名单中有数据
             if mess.FromQQG in private_for_group_blacklist:  # 如果在黑名单直接返回
                 return
             if mess.FromQQG not in private_for_group_whitelist and private_for_group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
                 return
         if R18 != '':
-            if mess.FromQQG in private_for_group_r18_whitelist:  # 如果在r18列表中,返回混合内容
+            if mess.FromQQG in private_for_group_r18_whitelist:
                 r18 = 2
             else:
                 q_text.put({'mess': mess, 'msg': '本群未开启r18~', 'atuser': 0})
                 return
-
-    elif mess.FromQQG == 0 and private_r18_default:  # 好友会话
-        r18 = private_r18_default
-    else:  # 好像没什么用的else.....
-        r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
+    elif mess.FromQQG == 0 and R18 !='':  # 好友会话
+        r18 = 2
 
     # 阿巴阿巴阿巴阿巴阿巴阿巴--------------------num部分----------------------------------------------------
     if num != '':  # 如果指定了色图数量
@@ -585,7 +579,7 @@ def rest_greet_list():
 def run_all_schedule():
     while True:
         schedule.run_pending()
-        time.sleep(0.1)
+        time.sleep(0.5)
 
 
 @sio.event
@@ -618,7 +612,7 @@ def OnGroupMsgs(message):
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
-    if RevokeMsg and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的就撤回
+    if RevokeMsg and a.MsgType == 'AtMsg' and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的就撤回
         # print(a.MsgSeq,a.MsgRandom)
         q_withdraw.put({'mess': a})
         return
