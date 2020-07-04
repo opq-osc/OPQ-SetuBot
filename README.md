@@ -2,43 +2,51 @@
 
 在config里填上bot的qq号和对应webapi地址和[key](https://api.lolicon.app/)运行就好了,那些黑名单 白名单什么的没特殊要求就不用管了....
 
-| config                               | 数据类型 | 说明                                                         |
-| ------------------------------------ | -------- | ------------------------------------------------------------ |
-| color_pickey                         | str      | lolicon的key                                                 |
-| send_original_pic                    | bool     | 是否发送原图                                                 |
-| not_send_pic_info                    | bool     | 是否不发送图片信息                                             |
-| send_setu_at                         | bool     | 在发图时是否@                                                |
-| webapi                               | str      | webapi的的地址                                               |
-| botqqs                               | array    | bot的qq(支持多QQ)                                            |
-| group_r18_default                    | int      | 群聊默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
-| private_for_group_r18_default        | int      | 群临时会话默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)    |
-| private_r18                          | int      | 好友私聊发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
-| group_blacklist                      | array    | 群黑名单(加入后会无视这些群,与白名单二选一)  [如果黑名单和白名单都没数据就默认对所有群生效] |
-| group_whitelist                      | array    | 群白名单(加入后只对里面的群生效,与黑名单二选一)              |
-| group_r18_whitelist                  | array    | 开启r18的群白名单(能搜到r18的图)                             |
-| group_r18_only_whitelist             | array    | r18only的名单(只发r18图)  [需要group_r18_whitelist也添加这些群才生效] |
-| private_for_group_blacklist          | array    | 群临时会话黑名单,加入的群 临时会话不会发色图   (黑白名单二选一,不能都填) |
-| private_for_group_whitelist          | array    | 群临时会话白名单,只有加入的群 临时会话才有用  (黑白名单二选一,不能都填) |
-| private_for_group_r18_whitelist      | array    | 开启r18的群的临时会话白名单(能搜到r18的图)                   |
-| private_for_group_r18_only_whitelist | array    | r18only的群的临时会话名单(只发r18图)  [需要private_for_group_r18_whitelist也添加这些群才生效] |
-| setu_pattern                         | str      | 识别用的正则表达式                                           |
-| path                                 | str      | 本地图库的路径(本地没图空着就行),比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
-| setu_threshold                       | int      | 限制一次能要多少色图...(最大20)                              |
-| frequency                            | int      | 发图的限制数量(设置0为不做限制)                              |
-| reset_freq_time                      | int      | 重置frequency的倒计时(秒)----------(如果frequency设置20,reset_freq_time设置60,那就是60s内可以发20张图)   [设置0为不重置] |
-| frequency_additional                 | dict     | 额外的群,如果有些群需要单独设置限制频率就添加在这个里面( 比如123456群不做限制,654321群限制40:   "frequency_additional": {"123456":0,"654321":40}, ) |
-| RevokeMsg                            | bool     | 是否撤回图片消息                                             |
-| RevokeMsg_time                       | int      | 撤回倒计时(秒)                                               |
-| sentlist_switch                      | bool     | 记录我api发送过的图片,在一段时间里不再发送                   |
-| clear_sentlist_time                  | int      | 重置我api发送过的图片的倒计时(秒)                            |
-| threshold_to_send                    | str      | 超过setu_threshold后发送的消息                               |
-| notfound_to_send                     | str      | 没找到色图时的消息                                           |
-| wrong_input_to_send                  | str      | 输入错误时的消息                                             |
-| frequency_cap_to_send                | str      | 可以轻微自定义语句,里面的`{reset_freq_time},{frequency},{num},{refresh_time}`位置可以换,但不能没有 |
-| before_nmsl_to_send                  | str      | 嘴臭前的消息                                                 |
-| before_setu_to_send_switch           | bool     | 是否在发色图之前发送消息                                     |
-| before_setu_to_send                  | str      | 在发色图前发送的消息                                         |
-| frequency_cap_to_send                | str      | 当达到频率限制后发送的消息                                   |
+| config                          | 数据类型 | 说明                                                         |
+| ------------------------------- | -------- | ------------------------------------------------------------ |
+| color_pickey                    | str      | lolicon的key                                                 |
+| send_original_pic               | bool     | 是否发送原图                                                 |
+| not_send_pic_info               | bool     | 是否不发送图片信息                                           |
+| send_setu_at                    | bool     | 在发图时是否@                                                |
+| webapi                          | str      | webapi的的地址                                               |
+| botqqs                          | array    | bot的qq(支持多QQ)                                            |
+| group_r18_default               | int      | 群聊默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
+| private_for_group_r18_default   | int      | 群临时会话默认发什么等级的图(0:普通,1:性感,2:色情,3:混合)    |
+| private_r18                     | int      | 好友私聊发什么等级的图(0:普通,1:性感,2:色情,3:混合)          |
+| group_blacklist                 | array    | 群黑名单(加入后会无视这些群,与白名单二选一)  [如果黑名单和白名单都没数据就默认对所有群生效] |
+| group_whitelist                 | array    | 群白名单(加入后只对里面的群生效,与黑名单二选一)              |
+| group_r18_whitelist             | array    | 开启r18的群白名单(可以调用`来张r18色图`)                     |
+| private_for_group_blacklist     | array    | 群临时会话黑名单,加入的群 临时会话不会发色图   (黑白名单二选一,不能都填) |
+| private_for_group_whitelist     | array    | 群临时会话白名单,只有加入的群 临时会话才有用  (黑白名单二选一,不能都填) |
+| private_for_group_r18_whitelist | array    | 开启r18的群的临时会话白名单(可以调用`来张r18色图`)           |
+| setu_pattern                    | str      | 识别用的正则表达式                                           |
+| path                            | str      | 本地图库的路径(本地没图空着就行),比如'/root/setu/PICS/',可以把色图仓库gitclone下来..... |
+| setu_threshold                  | int      | 限制一次能要多少色图...(最大20)                              |
+| frequency                       | int      | 发图的限制数量(设置0为不做限制)                              |
+| reset_freq_time                 | int      | 重置frequency的倒计时(秒)----------(如果frequency设置20,reset_freq_time设置60,那就是60s内可以发20张图)   [设置0为不重置] |
+| frequency_additional            | dict     | 额外的群,如果有些群需要单独设置限制频率就添加在这个里面( 比如123456群不做限制,654321群限制40:   "frequency_additional": {"123456":0,"654321":40}, ) |
+| RevokeMsg                       | bool     | 是否撤回图片消息                                             |
+| RevokeMsg_time                  | int      | 撤回倒计时(秒)                                               |
+| sentlist_switch                 | bool     | 记录我api发送过的图片,在一段时间里不再发送                   |
+| clear_sentlist_time             | int      | 重置我api发送过的图片的倒计时(秒)                            |
+| threshold_to_send               | str      | 超过setu_threshold后发送的消息                               |
+| notfound_to_send                | str      | 没找到色图时的消息                                           |
+| wrong_input_to_send             | str      | 输入错误时的消息                                             |
+| frequency_cap_to_send           | str      | 可以轻微自定义语句,里面的`{reset_freq_time},{frequency},{num},{refresh_time}`位置可以换,但不能没有 |
+| before_nmsl_to_send             | str      | 嘴臭前的消息                                                 |
+| before_setu_to_send_switch      | bool     | 是否在发色图之前发送消息                                     |
+| before_setu_to_send             | str      | 在发色图前发送的消息                                         |
+| frequency_cap_to_send           | str      | 当达到频率限制后发送的消息                                   |
+| good_morning                    | bool     | 是否开启早安功能                                             |
+| morning_keyword                 | array    | 触发早安的关键字                                             |
+| morning_conf                    | dict     | 各个时间段的回复,可以修改or添加(按照格式往下添加就好了,时间段必须全部覆盖,24小时制) |
+| morning_num_msg                 | str      | 可以自定义但是`{num}`不能少,`\r\n`是换行符                   |
+| morning_repeat                  | str      | 重复触发的消息                                               |
+| good_night                      | bool     | 是否开启晚安功能                                             |
+| night_keyword                   | array    | 晚安关键字                                                   |
+| night_conf                      | dict     | 各个时间段的回复,可以修改or添加(按照格式往下添加就好了,时间段必须全部覆盖,24小时制) |
+| night_num_msg                   | str      | 可以自定义但是`{num}`不能少,`\r\n`是换行符                   |
+| night_repeat                    | str      | 重复触发的消息                                               |
 
 
 
@@ -54,11 +62,19 @@ path是针对我的api的,会根据api返回的filename去path对应的路径找
 
 ![img](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200509060759.png)
 
-关键字用了正则`r'来?(.*?)[点丶份张](.*?)的?[色瑟涩]图'`:
+关键字用了正则`来(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩][图圖]`:
 
-![111](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200519215641.png)
+![image-20200704192100243](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200704192100.png)
 
-效果图(群聊或者私聊,@不行)[群聊:R18=False,私聊:R18=True]:
+效果图(群聊或者私聊,@不行):
+
+**ps:**
+
+​	来张r18色图 :,r18:true
+
+​	来张r18的色图,r18:false
+
+​	来张r18的r18色图,r18:true
 
 <img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200509062130.jpg" alt="IMG_20200509_062059" style="zoom: 33%;" />
 

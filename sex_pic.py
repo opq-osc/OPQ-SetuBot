@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading, sys
+import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading, sys, schedule
 from queue import Queue, LifoQueue
 
 with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
@@ -24,17 +24,25 @@ before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
 group_blacklist = config['group_blacklist']
 group_whitelist = config['group_whitelist']
 group_r18_whitelist = config['group_r18_whitelist']
-group_r18_only_whitelist = config['group_r18_only_whitelist']
 private_for_group_blacklist = config['private_for_group_blacklist']
 private_for_group_whitelist = config['private_for_group_whitelist']
 private_for_group_r18_whitelist = config['private_for_group_r18_whitelist']
-private_for_group_r18_only_whitelist = config['private_for_group_r18_only_whitelist']
-private_r18 = config['private_r18']
+private_r18_default = config['private_r18_default']
 group_r18_default = config['group_r18_default']
 private_for_group_r18_default = config['private_for_group_r18_default']
 RevokeMsg = config['RevokeMsg']
 RevokeMsg_time = int(config['RevokeMsg_time'])
 sentlist_switch = config['sentlist_switch']
+good_morning = config['good_morning']
+morning_keyword = config['morning_keyword']
+good_night = config['good_night']
+night_keyword = config['night_keyword']
+morning_conf = config['morning_conf']
+night_conf = config['night_conf']
+morning_repeat = config['morning_repeat']
+morning_num_msg = config['morning_num_msg']
+night_repeat = config['night_repeat']
+night_num_msg = config['night_num_msg']
 
 frequency = config['frequency']
 frequency_additional = config['frequency_additional']
@@ -50,6 +58,9 @@ q_withdraw = Queue(maxsize=0)
 api = webapi + '/v1/LuaApiCaller'
 sent_list = []
 freq_group_list = {}
+morning_list = {}
+night_list = {}
+# night_list = {123456:[13546,12345]}
 time_tmp = time.time()
 print('获取配置成功~')
 
@@ -374,7 +385,10 @@ class Setu:
                        'base64code': self.base64_codes[i]})
 
 
-def send_setu(mess, num, tag):
+def send_setu(mess, setu_keyword):
+    num = setu_keyword.group(1)  # 提取数量
+    tag = setu_keyword.group(2)  # 提取tag
+    R18 = setu_keyword.group(3)  # 是否r18
     # ------------------------------------------群聊黑白名单-------------------------------------------------------
 
     if mess.messtype == 'group':  # 群聊
@@ -384,10 +398,12 @@ def send_setu(mess, num, tag):
                 return
             if mess.FromQQG not in group_whitelist and group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
                 return
-        if mess.FromQQG in group_r18_whitelist:  # 如果在r18列表中,返回混合内容
-            r18 = 3
-            if mess.FromQQG in group_r18_only_whitelist:  # 如果在r18only中,返回porn的内容
+        if R18 != '':
+            if mess.FromQQG in group_r18_whitelist:  # 如果在r18列表中,返回混合内容
                 r18 = 2
+            else:
+                q_text.put({'mess': mess, 'msg': '本群未开启r18~', 'atuser': 0})
+                return
     # ------------------------------------------临时会话黑白名单----------------------------------------------
 
     elif mess.messtype == 'private' and mess.FromQQG != 0:  # 临时会话
@@ -397,12 +413,15 @@ def send_setu(mess, num, tag):
                 return
             if mess.FromQQG not in private_for_group_whitelist and private_for_group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
                 return
-        if mess.FromQQG in private_for_group_r18_whitelist:  # 如果在r18列表中,返回混合内容
-            r18 = 3
-            if mess.FromQQG in private_for_group_r18_only_whitelist:  # 如果在r18only中,返回porn的内容
+        if R18 != '':
+            if mess.FromQQG in private_for_group_r18_whitelist:  # 如果在r18列表中,返回混合内容
                 r18 = 2
-    elif mess.FromQQG == 0 and private_r18:  # 好友会话
-        r18 = private_r18
+            else:
+                q_text.put({'mess': mess, 'msg': '本群未开启r18~', 'atuser': 0})
+                return
+
+    elif mess.FromQQG == 0 and private_r18_default:  # 好友会话
+        r18 = private_r18_default
     else:  # 好像没什么用的else.....
         r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
 
@@ -461,6 +480,39 @@ def send_setu(mess, num, tag):
     setu.main()
 
 
+def greet(mess, flag):
+    if flag:  # morning
+        conf = morning_conf
+        list_tmp = morning_list
+        repeat_msg = morning_repeat
+        num_msg_tmp = morning_num_msg
+    else:
+        conf = night_conf
+        list_tmp = night_list
+        repeat_msg = night_repeat
+        num_msg_tmp = night_num_msg
+    try:  # 计数
+        if mess.FromQQ in list_tmp[mess.FromQQG]:  # 判断重复
+            q_text.put({'mess': mess, 'msg': repeat_msg, 'atuser': 0})
+            return
+        list_tmp[mess.FromQQG].append(mess.FromQQ)
+    except:
+        list_tmp[mess.FromQQG] = [mess.FromQQ]  # 出错就说明没有这个群,添加
+    num_msg = num_msg_tmp.format(num=len(list_tmp[mess.FromQQG]))
+    now_time = datetime.datetime.now()  # 获取当前时间
+    for msg, time_range in conf.items():
+        d_time = datetime.datetime.strptime(str(now_time.date()) + time_range[0], '%Y-%m-%d%H:%M')
+        d_time1 = datetime.datetime.strptime(str(now_time.date()) + time_range[1], '%Y-%m-%d%H:%M')
+        if d_time > d_time1:  # 如果前面的时间大于后面的就加一天
+            d_time1 = datetime.datetime.strptime(
+                str((now_time + datetime.timedelta(days=1)).date()) + time_range[1], '%Y-%m-%d%H:%M')
+        if d_time <= now_time < d_time1:
+            q_text.put({'mess': mess, 'msg': num_msg + msg, 'atuser': 0})
+            return
+    q_text.put({'mess': mess, 'msg': '未匹配到时间~~', 'atuser': 0})
+    return
+
+
 def judgment_delay(new_group, group, time_old):  # 判断延时
     if new_group != group or time.time() - time_old >= 1.1:
         # print('{}:不延时~~~~~~~~'.format(new_group))
@@ -494,10 +546,10 @@ def sendtext_queue():
 
 
 def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
-    while True:
-        time.sleep(60)
-        for botqq in botqqs:
-            sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
+    # while True:
+    #     time.sleep(60)
+    for botqq in botqqs:
+        sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
 
 
 def withdraw_queue():  # 撤回队列
@@ -511,18 +563,28 @@ def withdraw_queue():  # 撤回队列
 
 
 def sentlist_clear():  # 重置发送列表
-    while True:
-        time.sleep(clear_sentlist_time)
-        sent_list.clear()
+    # while True:
+    #     time.sleep(clear_sentlist_time)
+    sent_list.clear()
 
 
 def reset_freq_group_list():  # 重置时间
     global time_tmp
-    while reset_freq_time:
-        time.sleep(reset_freq_time)
+    if reset_freq_time:
+        # time.sleep(reset_freq_time)
         for key in freq_group_list.keys():
             freq_group_list[key] = 0
         time_tmp = time.time()
+
+
+def rest_greet_list():
+    morning_list.clear()
+    night_list.clear()
+
+
+def run_all_schedule():
+    while True:
+        schedule.run_pending()
 
 
 @sio.event
@@ -539,9 +601,7 @@ def OnGroupMsgs(message):
     a = GMess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
-        num = setu_keyword.group(1)  # 提取数量
-        tag = setu_keyword.group(2)  # 提取tag
-        send_setu(a, num, tag)
+        send_setu(a, setu_keyword)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
@@ -557,9 +617,17 @@ def OnGroupMsgs(message):
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
-    if RevokeMsg and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的图片就撤回
+    if RevokeMsg and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的就撤回
         # print(a.MsgSeq,a.MsgRandom)
         q_withdraw.put({'mess': a})
+        return
+    # -----------------------------------------------------
+    if a.Content in morning_keyword and good_morning:
+        greet(a, 1)
+        return
+    # -----------------------------------------------------
+    if a.Content in night_keyword and good_night:
+        greet(a, 0)
         return
 
 
@@ -568,9 +636,7 @@ def OnFriendMsgs(message):
     a = Mess(message)
     setu_keyword = setu_pattern.match(a.Content)
     if setu_keyword:
-        num = setu_keyword.group(1)  # 提取数量
-        tag = setu_keyword.group(2)  # 提取tag
-        send_setu(a, num, tag)
+        send_setu(a, setu_keyword)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
@@ -596,18 +662,24 @@ def OnEvents(message):
 if __name__ == '__main__':
     try:
         sio.connect(webapi, transports=['websocket'])
-        beat = threading.Thread(target=heartbeat)  # 保持连接
+        # beat = threading.Thread(target=heartbeat)  # 保持连接
         text_queue = threading.Thread(target=sendtext_queue)  # 文字消息队列
         pic_queue = threading.Thread(target=sendpic_queue)  # 图片消息队列
         withdrawqueue = threading.Thread(target=withdraw_queue)  # 撤回队列
-        sent_list_clear = threading.Thread(target=sentlist_clear)  # 定时清除发生过的列表
-        reset_freq_grouplist = threading.Thread(target=reset_freq_group_list)  # 定时清除发生过的列表
-        beat.start()
+        # sent_list_clear = threading.Thread(target=sentlist_clear)  # 定时清除发生过的列表
+        # reset_freq_grouplist = threading.Thread(target=reset_freq_group_list)  # 定时清除发生过的列表
+        # beat.start()
         text_queue.start()
         pic_queue.start()
         withdrawqueue.start()
-        sent_list_clear.start()
-        reset_freq_grouplist.start()
+        # sent_list_clear.start()
+        # reset_freq_grouplist.start()
+        schedule.every(reset_freq_time).seconds.do(reset_freq_group_list)
+        schedule.every(clear_sentlist_time).seconds.do(sentlist_clear)  # 定时清除发生过的列表
+        schedule.every(60).seconds.do(heartbeat)
+        schedule.every().day.at("00:00").do(rest_greet_list)  # 0点刷新
+        all_schedule = threading.Thread(target=run_all_schedule)  # 定时清除发生过的列表
+        all_schedule.start()
         sio.wait()
     except BaseException as e:
         print(e)
