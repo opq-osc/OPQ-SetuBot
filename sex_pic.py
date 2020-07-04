@@ -585,6 +585,7 @@ def rest_greet_list():
 def run_all_schedule():
     while True:
         schedule.run_pending()
+        time.sleep(0.1)
 
 
 @sio.event
