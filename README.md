@@ -138,5 +138,5 @@ api的代码在https://github.com/yuban10703/Pixiv_download_to_mongodb
 
 [mcoo/iotqq-plugins-demo](https://github.com/mcoo/iotqq-plugins-demo)
 
-
+[CQ-picfinder-robot](https://github.com/Tsuk1ko/CQ-picfinder-robot)
 
