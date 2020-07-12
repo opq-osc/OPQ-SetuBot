@@ -75,7 +75,7 @@ class Mess:
 class Event:
     # 相关事件
     def __init__(self, message):
-        print(message)
+        # print(message)
         self.messtype = 'event'  # 标记
         self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的botQQ
         self.QQ = message['CurrentPacket']['Data']['EventMsg']['ToUin']  # 被操作的qq,比如成为管理员
