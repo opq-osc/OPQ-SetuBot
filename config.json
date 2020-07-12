@@ -5,8 +5,7 @@
     "send_setu_at": true,
     "webapi": "http://127.0.0.1:8888",
     "botqqs": [
-        123456,
-		123456
+        123456
     ],
     "superAdminQQ": 0,
     "adminQQs": [],
