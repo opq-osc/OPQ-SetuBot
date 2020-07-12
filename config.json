@@ -1,50 +1,83 @@
 {
-  "color_pickey": "",
-  "send_original_pic": false,
-  "not_send_pic_info": false,
-  "send_setu_at": true,
-  "webapi": "http://127.0.0.1:8888",
-  "botqqs": [123456,123456],
-  "group_blacklist": [],
-  "group_whitelist": [],
-  "group_r18_whitelist": [],
-  "private_for_group_blacklist": [],
-  "private_for_group_whitelist": [],
-  "private_for_group_r18_whitelist": [],
-  "setu_pattern": "来(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩][图圖]",
-  "path": "",
-  "setu_threshold": 5,
-  "frequency": 20,
-  "reset_freq_time": 60,
-  "frequency_additional": {},
-  "RevokeMsg": true,
-  "RevokeMsg_time": 25,
-  "sentlist_switch": true,
-  "clear_sentlist_time": 300,
-  "threshold_to_send": "要这么多色图你怎么不冲死呢?",
-  "notfound_to_send": "淦 你的xp好奇怪啊",
-  "wrong_input_to_send": "必须是正整数数字哦",
-  "frequency_cap_to_send": "本群每{reset_freq_time}s能调用{frequency}次色图,已调用{num}次,离刷新还有{refresh_time}s",
-  "before_nmsl_to_send" : "酝酿ing",
-  "before_setu_to_send_switch" : true,
-  "before_setu_to_send" : "发送ing",
-  "good_morning" : true,
-  "morning_keyword" : ["早", "早安"],
-  "morning_conf": {
-                  "早~": ["00:00", "8:00"],
-                  "太阳都把你🐎晒化了你才起来?": ["8:00", "18:00"],
-                  "人家都睡觉了,你才起来?": ["18:00", "21:00"],
-                  "人家都睡觉了,你才起来?????": ["21:00", "22:00"],
-                  "早你🐎呢??": ["22:00", "00:00"]
-                  },
-  "morning_num_msg": "你是今天第{num}个起床的懒狗\r\n",
-  "morning_repeat": "你不是起过床了🐎?",
-  "good_night" : true,
-  "night_keyword" : ["晚安", "晚"],
-  "night_conf": {
-                  "还不睡?": ["00:00", "8:00"],
-                  "这就睡了?": ["8:00", "00:00"]
-                },
-  "night_num_msg": "你是今天第{num}个睡觉的懒狗\r\n",
-  "night_repeat": "你不是睡了🐎?"
+    "color_pickey": "",
+    "send_original_pic": false,
+    "not_send_pic_info": false,
+    "send_setu_at": true,
+    "webapi": "http://127.0.0.1:8888",
+    "botqqs": [
+        123456,
+		123456
+    ],
+    "superAdminQQ": 0,
+    "adminQQs": [],
+    "group_blacklist": [],
+    "group_whitelist": [],
+    "private_for_group_blacklist": [],
+    "private_for_group_whitelist": [],
+    "group_r18_whitelist": [],
+    "private_for_group_r18_whitelist": [],
+    "setu_pattern": "来(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩][图圖]",
+    "path": "",
+    "setu_threshold": 3,
+    "frequency": 5,
+    "reset_freq_time": 120,
+    "frequency_additional": {},
+    "RevokeMsg": true,
+    "RevokeMsg_time": 30,
+    "sentlist_switch": true,
+    "clear_sentlist_time": 300,
+    "threshold_to_send": "要这么多色图你怎么不冲死呢?",
+    "notfound_to_send": "淦 你的xp好奇怪啊",
+    "wrong_input_to_send": "必须是正整数数字哦",
+    "Permission_denied_to_send": "¿很好玩🐎¿",
+    "frequency_cap_to_send": "本群每{reset_freq_time}s能调用{frequency}次色图,已调用{num}次,离刷新还有{refresh_time}s",
+    "before_nmsl_to_send": "酝酿ing",
+    "before_setu_to_send_switch": false,
+    "before_setu_to_send": "发送ing",
+    "good_morning": false,
+    "morning_keyword": [
+        "早",
+        "早安"
+    ],
+    "morning_conf": {
+        "早~": [
+            "00:00",
+            "8:00"
+        ],
+        "太阳都把你🐎晒化了你才起来?": [
+            "8:00",
+            "18:00"
+        ],
+        "人家都睡觉了,你才起来?": [
+            "18:00",
+            "21:00"
+        ],
+        "人家都睡觉了,你才起来?????": [
+            "21:00",
+            "22:00"
+        ],
+        "早你🐎呢??": [
+            "22:00",
+            "00:00"
+        ]
+    },
+    "morning_num_msg": "你是今天第{num}个起床的\r\n",
+    "morning_repeat": "你不是起过床了🐎?",
+    "good_night": false,
+    "night_keyword": [
+        "晚安",
+        "晚"
+    ],
+    "night_conf": {
+        "还不睡?": [
+            "5:30",
+            "00:00"
+        ],
+        "这就睡了?": [
+            "00:00",
+            "5:30"
+        ]
+    },
+    "night_num_msg": "你是今天第{num}个睡觉的懒狗\r\n",
+    "night_repeat": "你不是睡了🐎?"
 }

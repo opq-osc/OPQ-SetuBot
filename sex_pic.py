@@ -1,68 +1,24 @@
 from datetime import datetime
-
 import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading, sys, schedule
 from queue import Queue, LifoQueue
+from importlib import reload
+import config
 
-with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
-    config = json.loads(f.read())
-color_pickey = config['color_pickey']  # 申请地址api.lolicon.app
-webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
-botqqs = config['botqqs']  # 机器人QQ号
-setu_pattern = re.compile(config['setu_pattern'])  # 色图正则
-setu_path = config['path']  # 色图路径
-send_original_pic = config['send_original_pic']  # 是否发送原图
-not_send_pic_info = config['not_send_pic_info']  # 是否只发图
-setu_threshold = int(config['setu_threshold'])  # 发送上限
-threshold_to_send = config['threshold_to_send']  # 超过上限后发送的文字
-notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
-frequency_cap_to_send = config['frequency_cap_to_send']  # 达到频率上限后发送语句
-wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
-before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
-before_setu_to_send_switch = config['before_setu_to_send_switch']  # 发色图之前是否发送消息
-send_setu_at = config['send_setu_at']  # 发色图时是否@
-before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
-group_blacklist = config['group_blacklist']
-group_whitelist = config['group_whitelist']
-group_r18_whitelist = config['group_r18_whitelist']
-private_for_group_blacklist = config['private_for_group_blacklist']
-private_for_group_whitelist = config['private_for_group_whitelist']
-private_for_group_r18_whitelist = config['private_for_group_r18_whitelist']
-RevokeMsg = config['RevokeMsg']
-RevokeMsg_time = int(config['RevokeMsg_time'])
-sentlist_switch = config['sentlist_switch']
-good_morning = config['good_morning']
-morning_keyword = config['morning_keyword']
-good_night = config['good_night']
-night_keyword = config['night_keyword']
-morning_conf = config['morning_conf']
-night_conf = config['night_conf']
-morning_repeat = config['morning_repeat']
-morning_num_msg = config['morning_num_msg']
-night_repeat = config['night_repeat']
-night_num_msg = config['night_num_msg']
-
-frequency = config['frequency']
-frequency_additional = config['frequency_additional']
-reset_freq_time = config['reset_freq_time']
-
-clear_sentlist_time = int(config['clear_sentlist_time'])
 # -----------------------------------------------------
 sio = socketio.Client()
 q_pic = LifoQueue(maxsize=0)
 q_text = LifoQueue(maxsize=0)
 q_withdraw = Queue(maxsize=0)
 # -----------------------------------------------------
-api = webapi + '/v1/LuaApiCaller'
+api = '{}/v1/LuaApiCaller'.format(config.webapi)
+groupadmins = {}  # 记录bot加的所有群的admin
 sent_list = []
 freq_group_list = {}
 morning_list = {}
 night_list = {}
-# night_list = {123456:[13546,12345]}
 time_tmp = time.time()
-print('获取配置成功~')
-
-
 # -----------------------------------------------------
+change_pattern = re.compile('.修改本群频率 ?(.*)')
 
 
 class GMess:
@@ -78,16 +34,24 @@ class GMess:
         self.MsgSeq = message['CurrentPacket']['Data']['MsgSeq']
         self.MsgRandom = message['CurrentPacket']['Data']['MsgRandom']
         self.MsgType = message['CurrentPacket']['Data']['MsgType']
+        # ----------------------------------------------
+        self.At_Content = ''
+        self.AtUserIDs = []
+        self.Content = ''
+        self.At_Content_behind = ''
+        self.At_Content_front = ''
+        # ----------------------------------------------
         if self.MsgType == 'TextMsg':  # 普通消息
             self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
-            self.At_Content = ''
         elif self.MsgType == 'AtMsg':  # at消息
-            self.At_Content = re.sub(r'.*@.* ', '',
-                                     json.loads(message['CurrentPacket']['Data']['Content'])['Content'])  # AT消息内容
-            self.Content = ''  # 消息内容
-        else:
-            self.At_Content = ''
-            self.Content = ''  # 消息内容
+            self.At_Content = json.loads(message['CurrentPacket']['Data']['Content'])['Content']  # 完整的@消息
+            self.AtUserIDs = json.loads(message['CurrentPacket']['Data']['Content'])['UserID']  # @ 的人的qq
+            self.At_Content_behind = re.sub(r'.*@.* ', '', self.At_Content)  # @消息后面的内容
+            self.At_Content_front = re.sub(r'@.*', '', self.At_Content)  # @消息前面的内容
+            # print(self.At_Content)
+            # print(self.AtUserIDs)
+            # print(self.At_Content_behind)
+            # print(self.At_Content_front)
 
 
 class Mess:
@@ -99,15 +63,34 @@ class Mess:
         self.QQ = message['CurrentPacket']['Data']['ToUin']  # 接收到这条消息的QQ
         self.FromQQ = message['CurrentPacket']['Data']['FromUin']  # 哪个QQ发过来的
         self.MsgType = message['CurrentPacket']['Data']['MsgType']
+        self.Content = ''
+        self.FromQQG = 0
         if self.MsgType == 'TextMsg':  # 普通消息
             self.Content = message['CurrentPacket']['Data']['Content']  # 消息内容
-            self.FromQQG = 0
         elif self.MsgType == 'TempSessionMsg':  # 临时消息
             self.FromQQG = message['CurrentPacket']['Data']['TempUin']  # 通过哪个QQ群发起的
             self.Content = json.loads(message['CurrentPacket']['Data']['Content'])['Content']
-        else:
-            self.Content = ''
-            self.FromQQG = 0
+
+
+class Event:
+    # 相关事件
+    def __init__(self, message):
+        print(message)
+        self.messtype = 'event'  # 标记
+        self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的botQQ
+        self.QQ = message['CurrentPacket']['Data']['EventMsg']['ToUin']  # 被操作的qq,比如成为管理员
+        self.MsgType = message['CurrentPacket']['Data']['EventMsg']['MsgType']
+        self.Content = message['CurrentPacket']['Data']['EventMsg']['Content']  # 消息内容
+        self.FromQQG = message['CurrentPacket']['Data']['EventMsg']['FromUin']  # 哪个QQ发过来的
+        self.UserID = 0
+        if self.MsgType in ['ON_EVENT_GROUP_ADMIN', 'ON_EVENT_GROUP_JOIN', 'ON_EVENT_GROUP_EXIT']:  # 管理员变更
+            self.UserID = message['CurrentPacket']['Data']['EventData']['UserID']  # 被操作的qq,比如成为管理员
+            # self.FromQQG = message['CurrentPacket']['Data']['EventData']['GroupID']  # 哪个QQ群
+            # self.Flag = message['CurrentPacket']['Data']['EventData']['Flag']  # 1为成为管理员 0是被取消管理员
+        # if self.MsgType == 'ON_EVENT_GROUP_EXIT':  #退群
+
+
+# --------------------------------------------------------------------------------------------------------------
 
 
 def send_text(mess, msg, atuser=0):
@@ -182,7 +165,7 @@ def withdraw_message(mess):
     data = {"GroupID": mess.FromQQG,
             "MsgSeq": mess.MsgSeq,
             "MsgRandom": mess.MsgRandom}
-    time.sleep(RevokeMsg_time)
+    time.sleep(config.RevokeMsg_time)
     try:
         res = requests.post(api, params=params, json=data, timeout=3)
         ret = res.json()['Ret']
@@ -194,6 +177,65 @@ def withdraw_message(mess):
         ret = ("未知错误:", sys.exc_info()[0])
     print('撤回消息执行状态:[Ret:{}]'.format(ret))
     return
+
+
+# --------------------------------------------------------------------------------------------------------------
+
+
+class GetGroupAdmin:
+    def getGroupList(self, botqq, nextToken=''):
+        global groupadmins
+        while True:
+            params = {'qq': botqq,
+                      'funcname': 'GetGroupList'}
+            data_body = {'NextToken': nextToken}
+            data = requests.post(api, params=params, json=data_body, timeout=5).json()
+            # print(data)
+            nextToken = data['NextToken']
+            for group in data['TroopList']:
+                if group['GroupId'] not in groupadmins.keys():  # 不在列表里就新建,不需要处理bot被踢了的群
+                    groupadmins[group['GroupId']] = [group['GroupOwner']]  # 一个群号对应一个admin列表
+                else:
+                    groupadmins[group['GroupId']].pop(0)  # 删掉第一个,第一个是群主
+                    groupadmins[group['GroupId']].insert(0, group['GroupOwner'])  # 再插♂回去
+            if nextToken == '':  # 到最后一页就停止
+                break
+            time.sleep(0.8)
+        return
+
+    def getGroupUserList(self, botqq, groupid, lastuin=0):
+        global groupadmins
+        try:
+            groupadmins[groupid] = groupadmins[groupid][:1]  # 清空除群主外的admin
+        except:
+            print('getGroupUserList :error')
+            return
+
+        while True:
+            params = {'qq': botqq,
+                      'funcname': 'GetGroupUserList'}
+            data_body = {"GroupUin": groupid,
+                         "LastUin": lastuin}
+            data = requests.post(api, params=params, json=data_body, timeout=5).json()
+            lastuin = data['LastUin']
+            for adminqqinfo in data['MemberList']:
+                if adminqqinfo['GroupAdmin'] == 1:
+                    groupadmins[groupid].append(adminqqinfo['MemberUin'])
+            print('群:{}的admins:{}'.format(groupid, groupadmins[groupid]))
+            if lastuin == 0:
+                break
+            time.sleep(0.8)
+        return
+
+    def main(self):
+        for botqq in config.botqqs:
+            self.getGroupList(botqq)
+        for botqq in config.botqqs:
+            for group in groupadmins.keys():
+                self.getGroupUserList(botqq, group)
+
+
+# --------------------------------------------------------------------------------------------------------------
 
 
 def get_cpu_info():
@@ -274,8 +316,8 @@ class Setu:
         self.base64_codes = []
 
     def build_msg(self, title, artworkid, author, artistid, page, url_original):
-        if not_send_pic_info:
-            if send_setu_at and self.msg_in.messtype == 'group':
+        if config.not_send_pic_info:
+            if config.send_setu_at and self.msg_in.messtype == 'group':
                 msg = '[ATUSER({qq})]'.format(qq=self.msg_in.FromQQ)
             else:
                 msg = ''
@@ -283,7 +325,7 @@ class Setu:
             purl = "www.pixiv.net/artworks/" + str(artworkid)  # 拼凑p站链接
             uurl = "www.pixiv.net/users/" + str(artistid)  # 画师的p站链接
             page = 'p' + str(page)
-            if send_setu_at and self.msg_in.messtype == 'group':
+            if config.send_setu_at and self.msg_in.messtype == 'group':
                 msg = '[ATUSER({qq})]\r\n标题:{title}\r\n{purl}\r\npage:{page}\r\n作者:{author}\r\n{uurl}\r\n原图:{url_original}'.format(
                     qq=self.msg_in.FromQQ, title=title, purl=purl, page=page, author=author,
                     uurl=uurl, url_original=url_original)
@@ -313,7 +355,7 @@ class Setu:
                 self.num_real = setu_data['count']  # 实际获取到多少条
                 for data in setu_data['data']:
                     filename = data['filename']
-                    if filename in sent_list and sentlist_switch:  # 如果发送过
+                    if filename in sent_list and config.sentlist_switch:  # 如果发送过
                         print('发送过~')
                         self.num_real -= 1
                         continue
@@ -321,14 +363,14 @@ class Setu:
                     msg = self.build_msg(data['title'], data['artwork'], data['author'], data['artist'], data['page'],
                                          url_original)
                     self.msg.append(msg)
-                    if setu_path == '':  # 非本地
+                    if config.setu_path == '':  # 非本地
                         self.base64_codes.append('')
-                        if send_original_pic:  # 发送原画
+                        if config.send_original_pic:  # 发送原画
                             self.download_url.append(url_original)
                         else:
                             self.download_url.append('https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename)
                     else:  # 本地
-                        self.base64_codes.append(self.base_64(setu_path + filename))
+                        self.base64_codes.append(self.base_64(config.setu_path + filename))
                         self.download_url.append('')
                         # self.download_url.append(data[send_pic_type])
                     sent_list.append(filename)  # 记录发送过的图
@@ -347,14 +389,13 @@ class Setu:
             r18 = 0
         url = 'https://api.lolicon.app/setu/'
         params = {'r18': r18,
-                  'apikey': color_pickey,
+                  'apikey': config.color_pickey,
                   'num': self.api_1_num,
-                  'size1200': not send_original_pic,
-                  'proxy': 'disable'}
+                  'size1200': not config.send_original_pic}
         if (len(self.tag) != 0) and (not self.tag.isspace()):  # 如果tag不为空(字符串字数不为零且不为空)
             params['keyword'] = self.tag
         try:
-            res = requests.get(url, params, timeout=5)
+            res = requests.get(url, params, timeout=10)
             setu_data = res.json()
             status_code = res.status_code
             assert status_code == 200
@@ -374,7 +415,7 @@ class Setu:
             self.api_1_num = self.num - self.num_real
             self.api_1()
             if self.num_real == 0 and self.num_real_api_1 == 0:  # 2个api都没获取到数据
-                q_text.put({'mess': self.msg_in, 'msg': notfound_to_send, 'atuser': 0})
+                q_text.put({'mess': self.msg_in, 'msg': config.notfound_to_send, 'atuser': 0})
                 # freq_group_list[self.msg_in.FromQQG] -= self.num
                 return
         for i in range(len(self.msg)):
@@ -387,17 +428,18 @@ def send_setu(mess, setu_keyword):
     num = setu_keyword.group(1)  # 提取数量
     tag = setu_keyword.group(2)  # 提取tag
     R18 = setu_keyword.group(3)  # 是否r18
-    r18 = random.choices([0, 1], [1, 10], k=1)  # 从普通和性感中二选一
+    r18 = random.choices([0, 1], [1, 100], k=1)  # 从普通和性感中二选一
     # ------------------------------------------群聊黑白名单-------------------------------------------------------
 
     if mess.messtype == 'group':  # 群聊
-        if group_blacklist != [] and group_whitelist != []:  # 如果群黑白名单中有数据
-            if mess.FromQQG in group_blacklist:  # 如果在黑名单直接返回
+        # print(config.group_blacklist)
+        if config.group_blacklist != [] or config.group_whitelist != []:  # 如果群黑白名单中有数据
+            if mess.FromQQG in config.group_blacklist:  # 如果在黑名单直接返回
                 return
-            if mess.FromQQG not in group_whitelist and group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
+            if mess.FromQQG not in config.group_whitelist and config.group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
                 return
         if R18 != '':
-            if mess.FromQQG in group_r18_whitelist:
+            if mess.FromQQG in config.group_r18_whitelist:
                 r18 = 2
             else:
                 q_text.put({'mess': mess, 'msg': '本群未开启r18~', 'atuser': 0})
@@ -405,27 +447,27 @@ def send_setu(mess, setu_keyword):
     # ------------------------------------------临时会话黑白名单----------------------------------------------
 
     elif mess.messtype == 'private' and mess.FromQQG != 0:  # 临时会话
-        if private_for_group_blacklist != [] and private_for_group_whitelist != []:  # 是临时会话且黑白名单中有数据
-            if mess.FromQQG in private_for_group_blacklist:  # 如果在黑名单直接返回
+        if config.private_for_group_blacklist != [] and config.private_for_group_whitelist != []:  # 是临时会话且黑白名单中有数据
+            if mess.FromQQG in config.private_for_group_blacklist:  # 如果在黑名单直接返回
                 return
-            if mess.FromQQG not in private_for_group_whitelist and private_for_group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
+            if mess.FromQQG not in config.private_for_group_whitelist and config.private_for_group_whitelist != []:  # 如果不在白名单里,且白名单不为空,直接返回
                 return
         if R18 != '':
-            if mess.FromQQG in private_for_group_r18_whitelist:
+            if mess.FromQQG in config.private_for_group_r18_whitelist:
                 r18 = 2
             else:
                 q_text.put({'mess': mess, 'msg': '本群未开启r18~', 'atuser': 0})
                 return
-    elif mess.FromQQG == 0 and R18 !='':  # 好友会话
+    elif mess.FromQQG == 0 and R18 != '':  # 好友会话
         r18 = 2
 
     # 阿巴阿巴阿巴阿巴阿巴阿巴--------------------num部分----------------------------------------------------
     if num != '':  # 如果指定了色图数量
         try:  # 将str转换成int
             num = int(num)
-            if num > setu_threshold:  # 如果指定数量超过设定值就返回指定消息
+            if num > config.setu_threshold:  # 如果指定数量超过设定值就返回指定消息
                 # send_text(mess, threshold_to_send)
-                q_text.put({'mess': mess, 'msg': threshold_to_send, 'atuser': 0})
+                q_text.put({'mess': mess, 'msg': config.threshold_to_send, 'atuser': 0})
                 return
             if num <= 0:
                 q_text.put({'mess': mess, 'msg': '¿', 'atuser': 0})
@@ -433,58 +475,63 @@ def send_setu(mess, setu_keyword):
                 return
         except:  # 如果失败了就说明不是整数数字
             # send_text(mess, wrong_input_to_send)
-            q_text.put({'mess': mess, 'msg': wrong_input_to_send, 'atuser': 0})
+            q_text.put({'mess': mess, 'msg': config.wrong_input_to_send, 'atuser': 0})
             return
     else:  # 没指定的话默认是1
         num = 1
     # -----------------------------频率控制--------------------------------------------------------
     try:
         if mess.messtype == 'group':  # 只控制群聊
-            if str(mess.FromQQG) not in frequency_additional.keys() and frequency != 0:  # 非自定义频率的群且限制不为0
-                if (num + int(freq_group_list[mess.FromQQG])) > int(frequency) or (num > frequency):  # 大于限制频率
+            if str(mess.FromQQG) not in config.frequency_additional.keys() and config.frequency != 0:  # 非自定义频率的群且限制不为0
+                if (num + int(freq_group_list[mess.FromQQG])) > int(config.frequency) or (
+                        num > config.frequency):  # 大于限制频率
                     q_text.put(
                         {'mess': mess,
-                         'msg': frequency_cap_to_send.format(reset_freq_time=reset_freq_time, frequency=int(frequency),
-                                                             num=int(freq_group_list[
-                                                                         mess.FromQQG]), refresh_time=round(
-                                 reset_freq_time - (time.time() - time_tmp))),
+                         'msg': config.frequency_cap_to_send.format(reset_freq_time=config.reset_freq_time,
+                                                                    frequency=int(config.frequency),
+                                                                    num=int(freq_group_list[
+                                                                                mess.FromQQG]), refresh_time=round(
+                                 config.reset_freq_time - (time.time() - time_tmp))),
                          'atuser': 0})
                     return
                 freq_group_list[mess.FromQQG] += num  # 计数
             else:
-                if int(frequency_additional[str(mess.FromQQG)]):  # 如果自定义频率不为0
-                    if num + int(freq_group_list[mess.FromQQG]) > int(frequency_additional[str(mess.FromQQG)]) or (
-                            num > int(frequency_additional[str(mess.FromQQG)])):  # 大于限制频率
+                if int(config.frequency_additional[str(mess.FromQQG)]):  # 如果自定义频率不为0
+                    if num + int(freq_group_list[mess.FromQQG]) > int(
+                            config.frequency_additional[str(mess.FromQQG)]) or (
+                            num > int(config.frequency_additional[str(mess.FromQQG)])):  # 大于限制频率
                         q_text.put({'mess': mess,
-                                    'msg': frequency_cap_to_send.format(reset_freq_time=reset_freq_time, frequency=int(
-                                        frequency_additional[str(mess.FromQQG)]),
-                                                                        num=int(freq_group_list[mess.FromQQG]),
-                                                                        refresh_time=round(
-                                                                            reset_freq_time - (
-                                                                                    time.time() - time_tmp))),
+                                    'msg': config.frequency_cap_to_send.format(reset_freq_time=config.reset_freq_time,
+                                                                               frequency=int(
+                                                                                   config.frequency_additional[
+                                                                                       str(mess.FromQQG)]),
+                                                                               num=int(freq_group_list[mess.FromQQG]),
+                                                                               refresh_time=round(
+                                                                                   config.reset_freq_time - (
+                                                                                           time.time() - time_tmp))),
                                     'atuser': 0})
                         return
                     freq_group_list[mess.FromQQG] += num
     except:
         freq_group_list[mess.FromQQG] = num
     # --------------------------------------------------------------------------------------------------
-    if before_setu_to_send_switch:
-        q_text.put({'mess': mess, 'msg': before_setu_to_send, 'atuser': 0})
+    if config.before_setu_to_send_switch:
+        q_text.put({'mess': mess, 'msg': config.before_setu_to_send, 'atuser': 0})
     setu = Setu(mess, tag, num, r18)
     setu.main()
 
 
 def greet(mess, flag):
     if flag:  # morning
-        conf = morning_conf
+        conf = config.morning_conf
         list_tmp = morning_list
-        repeat_msg = morning_repeat
-        num_msg_tmp = morning_num_msg
+        repeat_msg = config.morning_repeat
+        num_msg_tmp = config.morning_num_msg
     else:
-        conf = night_conf
+        conf = config.night_conf
         list_tmp = night_list
-        repeat_msg = night_repeat
-        num_msg_tmp = night_num_msg
+        repeat_msg = config.night_repeat
+        num_msg_tmp = config.night_num_msg
     try:  # 计数
         if mess.FromQQ in list_tmp[mess.FromQQG]:  # 判断重复
             q_text.put({'mess': mess, 'msg': repeat_msg, 'atuser': 0})
@@ -492,7 +539,7 @@ def greet(mess, flag):
         list_tmp[mess.FromQQG].append(mess.FromQQ)
     except:
         list_tmp[mess.FromQQG] = [mess.FromQQ]  # 出错就说明没有这个群,添加
-    num_msg = num_msg_tmp.format(num=len(list_tmp[mess.FromQQG]))
+    num_msg = num_msg_tmp.format(num=len(list_tmp[mess.FromQQG]))  # 列表有几个qq号就是第几个
     now_time = datetime.datetime.now()  # 获取当前时间
     for msg, time_range in conf.items():
         d_time = datetime.datetime.strptime(str(now_time.date()) + time_range[0], '%Y-%m-%d%H:%M')
@@ -507,8 +554,138 @@ def greet(mess, flag):
     return
 
 
+# --------------------------------------------------------------------------------------------------------------
+
+
+def reload_config():
+    reload(config)
+    # print('重载~')
+    return
+
+
+def writeJson(data):
+    with open('config.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(data, ensure_ascii=False, indent=4))
+        # print('保存')
+    reload_config()
+
+
+def changeAdmin(flag, mess, conf):
+    reload_config()  # 重载一遍,以免手动修改的不生效
+    if flag:
+        for qq in mess.AtUserIDs:
+            if qq not in config.config[conf]:
+                config.config[conf].append(qq)
+                q_text.put({'mess': mess, 'msg': '"{}"-->"{}"'.format(qq, conf), 'atuser': 0})
+
+            else:
+                q_text.put({'mess': mess, 'msg': '"{}" already in "{}"'.format(qq, conf), 'atuser': 0})
+    else:
+        for qq in mess.AtUserIDs:
+            if qq in config.config[conf]:
+                config.config[conf].remove(qq)
+                q_text.put({'mess': mess, 'msg': '"{}"-->"{}"'.format(conf, qq), 'atuser': 0})
+
+            else:
+                q_text.put({'mess': mess, 'msg': '"{}" not in "{}"'.format(qq, conf), 'atuser': 0})
+    writeJson(config.config)  # 写入配置
+
+def changeOtherFreq(mess,keyword):
+    reload_config()  # 重载一遍,以免手动修改的不生效
+    num_str = keyword.group(1)
+    try:  # 将str转换成int
+        num = int(num_str)
+    except:  # 如果失败了就说明不是整数数字
+        # send_text(mess, wrong_input_to_send)
+        q_text.put({'mess': mess, 'msg': '必须是阿拉伯数字哦', 'atuser': 0})
+        return
+    config.frequency_additional[str(mess.FromQQG)] = num
+    writeJson(config.config)  # 写入配置
+    if num == 0:
+        q_text.put({'mess': mess, 'msg': '本群已取消限制~', 'atuser': 0})
+        return
+    q_text.put({'mess': mess, 'msg': '本群每{}s能调用{}次'.format(config.reset_freq_time,num), 'atuser': 0})
+    return
+
+
+def list_tf(flag, mess, conf):
+    reload_config()  # 重载一遍,以免手动修改的不生效
+    if mess.FromQQG != 0:  # 不为0
+        groupqq = mess.FromQQG
+        if flag:
+            if groupqq not in config.config[conf]:
+                config.config[conf].append(groupqq)
+                msg = '"{}"-->"{}"'.format(groupqq, conf)
+            else:
+                msg = '"{}" already in "{}"'.format(groupqq, conf)
+        else:  # 关闭
+            if groupqq in config.config[conf]:
+                config.config[conf].remove(groupqq)
+                msg = '"{}"-->"{}"'.format(conf, groupqq)
+            else:
+                msg = '"{}" not in "{}"'.format(groupqq, conf)
+        q_text.put({'mess': mess, 'msg': msg, 'atuser': 0})
+        writeJson(config.config)  # 写入配置
+        return
+
+
+# def authentication(qq):
+def command(mess):
+    # print(mess.FromQQ)
+    try:
+        if mess.FromQQ in groupadmins[mess.FromQQG] or mess.FromQQ in config.adminQQs or mess.FromQQ == config.superAdminQQ:
+            # -------------------------------------------------
+            keyword_changefreq = change_pattern.match(mess.Content)
+            # --------------------普通admin-------------------------
+            if mess.Content == '.开启r18':
+                list_tf(True, mess, 'group_r18_whitelist')
+            elif mess.Content == '.关闭r18':
+                list_tf(False, mess, 'group_r18_whitelist')
+            elif mess.Content == '.开启私聊r18':
+                list_tf(True, mess, 'private_for_group_r18_whitelist')
+            elif mess.Content == '.关闭私聊r18':
+                list_tf(False, mess, 'private_for_group_r18_whitelist')
+            elif mess.Content == '.开启私聊':
+                list_tf(False, mess, 'private_for_group_blacklist')
+            elif mess.Content == '.关闭私聊':
+                list_tf(True, mess, 'private_for_group_blacklist')
+            elif mess.Content == '.开启色图':
+                list_tf(False, mess, 'group_blacklist')
+            elif mess.Content == '.关闭色图':
+                list_tf(True, mess, 'group_blacklist')
+            elif keyword_changefreq:
+                changeOtherFreq(mess,keyword_changefreq)
+            # -----------------------------------------------------
+            elif mess.FromQQ == config.superAdminQQ: #superadmin
+                if mess.Content == '.reload':
+                    reload_config()
+                    q_text.put({'mess': mess, 'msg': '{} OK'.format(mess.Content), 'atuser': 0})
+            # -----------------------------------------------------
+            else:
+                q_text.put({'mess': mess, 'msg': '??', 'atuser': 0})
+        else:
+            q_text.put({'mess': mess, 'msg': config.Permission_denied_to_send, 'atuser': 0})
+    except (ValueError, KeyError):
+        print('群{}尝试重新获取admin列表'.format(mess.FromQQG))
+        getgroupadmin = GetGroupAdmin()
+        getgroupadmin.getGroupList(mess.CurrentQQ)
+        getgroupadmin.getGroupUserList(mess.CurrentQQ, mess.FromQQG)
+    except:
+        print('群{}error'.format(mess.FromQQG))
+
+def at_command(mess):
+    if mess.FromQQ == config.superAdminQQ:
+        if mess.At_Content_front == '.增加管理员':
+            changeAdmin(True, mess, 'adminQQs')
+        elif mess.At_Content_front == '.删除管理员':
+            changeAdmin(False, mess, 'adminQQs')
+    else:
+        q_text.put({'mess': mess, 'msg': config.Permission_denied_to_send, 'atuser': 0})
+
+
+# --------------------------------------------------------------------------------------------------------------
 def judgment_delay(new_group, group, time_old):  # 判断延时
-    if new_group != group or time.time() - time_old >= 1.1:
+    if new_group != group or time.time() - time_old >= 1.1:  # 如果不是相同群 或 离上次发消息已经超过1.1s就不延时
         # print('{}:不延时~~~~~~~~'.format(new_group))
         return
     else:
@@ -517,18 +694,19 @@ def judgment_delay(new_group, group, time_old):  # 判断延时
         return
 
 
-def sendpic_queue():
+def sendpic_queue():  # 图片队列
     sent_group = {'time': time.time(), 'group': 0}
     while True:
         data = q_pic.get()  # 从队列取出数据
-        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'])
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'])  # 判断是否延时
         send_pic(data['mess'], data['msg'], 0, data['download_url'], data['base64code'])  # 等待完成
         q_pic.task_done()
+        '''记录时间和群号'''
         sent_group['time'] = time.time()
         sent_group['group'] = data['mess'].FromQQG
 
 
-def sendtext_queue():
+def sendtext_queue():  # 文字队列
     sent_group = {'time': time.time(), 'group': 0}
     while True:
         data = q_text.get()
@@ -539,53 +717,61 @@ def sendtext_queue():
         sent_group['group'] = data['mess'].FromQQG
 
 
-def heartbeat():  # 定时获取QQ连接,偶尔会突然断开
-    # while True:
-    #     time.sleep(60)
-    for botqq in botqqs:
-        sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
-
-
 def withdraw_queue():  # 撤回队列
     while True:
         data = q_withdraw.get()
-        # withdraw_message(data['mess'])
-        t = threading.Thread(target=withdraw_message,
-                             args=(data['mess'],))
-        t.start()
+        withdraw_message(data['mess'])
         q_withdraw.task_done()
+        time.sleep(0.6)
+
+
+# def superadminExclusive(, ):
+#     config.config['group_r18_whitelist'].remove(groupqq)
+
+
+def heartbeat():  # 获取QQ连接,偶尔会突然断开
+    for botqq in config.botqqs:
+        sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
+    return
 
 
 def sentlist_clear():  # 重置发送列表
-    # while True:
-    #     time.sleep(clear_sentlist_time)
     sent_list.clear()
+    return
 
 
 def reset_freq_group_list():  # 重置时间
     global time_tmp
-    if reset_freq_time:
-        # time.sleep(reset_freq_time)
+    if config.reset_freq_time:
         for key in freq_group_list.keys():
             freq_group_list[key] = 0
         time_tmp = time.time()
+    return
 
 
-def rest_greet_list():
+def rest_greet_list():  # 清除早安晚安列表
     morning_list.clear()
     night_list.clear()
+    return
 
 
-def run_all_schedule():
+def run_all_schedule():  # 运行所有定时任务
     while True:
         schedule.run_pending()
         time.sleep(0.5)
 
 
+# --------------------------------------------------------------------------------------------------------------
+
+
 @sio.event
 def connect():
-    time.sleep(1)  # 等1s,不然可能连不上
-    for botqq in botqqs:
+    print('获取bot加的所有群的管理者')
+    getadmin = GetGroupAdmin()
+    getadmin.main()
+    print(groupadmins)
+    # time.sleep(1)  # 等1s,不然可能连不上
+    for botqq in config.botqqs:
         sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
     print('连接成功')
 
@@ -594,7 +780,7 @@ def connect():
 def OnGroupMsgs(message):
     # print(message)
     a = GMess(message)
-    setu_keyword = setu_pattern.match(a.Content)
+    setu_keyword = config.setu_pattern.match(a.Content)
     if setu_keyword:
         send_setu(a, setu_keyword)
         return
@@ -605,45 +791,53 @@ def OnGroupMsgs(message):
         # send_text(a, msg)
         return
     # -----------------------------------------------------
-    if a.At_Content == 'nmsl':
-        q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
+    if a.At_Content_behind == 'nmsl':
+        q_text.put({'mess': a, 'msg': config.before_nmsl_to_send, 'atuser': 0})
         msg = nmsl()
-        # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
-    if RevokeMsg and a.MsgType == 'AtMsg' and (a.FromQQ in botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的就撤回
-        # print(a.MsgSeq,a.MsgRandom)
+    if config.RevokeMsg and a.MsgType == 'AtMsg' and (
+            a.FromQQ in config.botqqs) and a.FromQQ == a.CurrentQQ:  # 是机器人发的就撤回
         q_withdraw.put({'mess': a})
         return
     # -----------------------------------------------------
-    if a.Content in morning_keyword and good_morning:
+    if a.Content in config.morning_keyword and config.good_morning:
         greet(a, 1)
         return
     # -----------------------------------------------------
-    if a.Content in night_keyword and good_night:
+    if (a.Content in config.night_keyword) and config.good_night:
         greet(a, 0)
         return
+    # ------------------------普通文字消息命令-------------------------
+    if a.FromQQ not in config.botqqs:
+        if a.Content[:1] == '.':
+            command(a)
+            return
+        # ------------------------@消息命令-------------------------
+        if a.At_Content[:1] == '.':
+            at_command(a)
+            return
+
+        # -----------------------------------------------------
 
 
 @sio.event
 def OnFriendMsgs(message):
     a = Mess(message)
-    setu_keyword = setu_pattern.match(a.Content)
+    setu_keyword = config.setu_pattern.match(a.Content)
     if setu_keyword:
         send_setu(a, setu_keyword)
         return
     # -----------------------------------------------------
     if a.Content == 'sysinfo':
         msg = sysinfo()
-        # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
     # -----------------------------------------------------
     if a.Content == 'nmsl':
-        q_text.put({'mess': a, 'msg': before_nmsl_to_send, 'atuser': 0})
+        q_text.put({'mess': a, 'msg': config.before_nmsl_to_send, 'atuser': 0})
         msg = nmsl()
-        # send_text(a, msg)
         q_text.put({'mess': a, 'msg': msg, 'atuser': 0})
         return
 
@@ -651,30 +845,45 @@ def OnFriendMsgs(message):
 @sio.event
 def OnEvents(message):
     ''' 监听相关事件'''
-    # print(message)
+    a = Event(message)
+    if a.MsgType == 'ON_EVENT_GROUP_ADMIN':
+        print('群:{}管理员发生变更'.format(a.FromQQG))
+        getgroupadmin = GetGroupAdmin()
+        getgroupadmin.getGroupUserList(a.CurrentQQ, a.FromQQG)
+    if a.MsgType == 'ON_EVENT_GROUP_JOIN' and a.UserID in config.botqqs:
+        print('bot{} 加入群:{}'.format(a.CurrentQQ, a.FromQQG))
+        getgroupadmin = GetGroupAdmin()
+        getgroupadmin.getGroupList(a.CurrentQQ)
+        getgroupadmin.getGroupUserList(a.CurrentQQ, a.FromQQG)
 
+
+# --------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     try:
-        sio.connect(webapi, transports=['websocket'])
-        # beat = threading.Thread(target=heartbeat)  # 保持连接
+        sio.connect(config.webapi, transports=['websocket'])
+        # -----------------------------------------------------
         text_queue = threading.Thread(target=sendtext_queue)  # 文字消息队列
         pic_queue = threading.Thread(target=sendpic_queue)  # 图片消息队列
         withdrawqueue = threading.Thread(target=withdraw_queue)  # 撤回队列
-        # sent_list_clear = threading.Thread(target=sentlist_clear)  # 定时清除发生过的列表
-        # reset_freq_grouplist = threading.Thread(target=reset_freq_group_list)  # 定时清除发生过的列表
-        # beat.start()
+        # -----------------------------------------------------
+        '''启动线程'''
         text_queue.start()
         pic_queue.start()
         withdrawqueue.start()
-        # sent_list_clear.start()
-        # reset_freq_grouplist.start()
-        schedule.every(reset_freq_time).seconds.do(reset_freq_group_list)
-        schedule.every(clear_sentlist_time).seconds.do(sentlist_clear)  # 定时清除发生过的列表
-        schedule.every(60).seconds.do(heartbeat)
+        # -----------------------------------------------------
+        '''定时任务'''
+        schedule.every(config.reset_freq_time).seconds.do(reset_freq_group_list)
+        schedule.every(config.clear_sentlist_time).seconds.do(sentlist_clear)  # 定时清除发生过的列表
+        schedule.every(60).seconds.do(heartbeat)  # 60s获取一次连接防止偶尔断开
         schedule.every().day.at("00:00").do(rest_greet_list)  # 0点刷新
-        all_schedule = threading.Thread(target=run_all_schedule)  # 定时清除发生过的列表
+        all_schedule = threading.Thread(target=run_all_schedule)  # 启动所有定时任务
+        # -----------------------------------------------------
         all_schedule.start()
+        # -----------------------------------------------------
+
+        # -----------------------------------------------------
+
         sio.wait()
     except BaseException as e:
-        print(e)
+        print('boom~~~~  :{}'.format(e))
