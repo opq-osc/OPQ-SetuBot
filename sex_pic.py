@@ -79,10 +79,10 @@ class Event:
         # print(message)
         self.messtype = 'event'  # 标记
         self.CurrentQQ = message['CurrentQQ']  # 接收到这条消息的botQQ
-        self.QQ = message['CurrentPacket']['Data']['EventMsg']['ToUin']  # 被操作的qq,比如成为管理员
+        self.ToUin = message['CurrentPacket']['Data']['EventMsg']['ToUin']  # 接收到这条消息的qq
         self.MsgType = message['CurrentPacket']['Data']['EventMsg']['MsgType']
         self.Content = message['CurrentPacket']['Data']['EventMsg']['Content']  # 消息内容
-        self.FromQQG = message['CurrentPacket']['Data']['EventMsg']['FromUin']  # 哪个QQ发过来的
+        self.FromQQG = message['CurrentPacket']['Data']['EventMsg']['FromUin']  # 哪个id发过来的 群号?
         self.UserID = 0
         if self.MsgType in ['ON_EVENT_GROUP_ADMIN', 'ON_EVENT_GROUP_JOIN', 'ON_EVENT_GROUP_EXIT']:  # 管理员变更
             self.UserID = message['CurrentPacket']['Data']['EventData']['UserID']  # 被操作的qq,比如成为管理员
@@ -783,7 +783,7 @@ def run_all_schedule():  # 运行所有定时任务
 
 @sio.event
 def connect():
-    print('获取bot加的所有群的管理者')
+    print('开始获取bot加的所有群的管理者~~~~')
     getadmin = GetGroupAdmin()
     getadmin.main()
     # print(groupadmins)
@@ -867,8 +867,8 @@ def OnEvents(message):
         print('群:{}管理员发生变更'.format(a.FromQQG))
         getgroupadmin = GetGroupAdmin()
         getgroupadmin.getGroupUserList(a.CurrentQQ, a.FromQQG)
-    if a.MsgType in ['ON_EVENT_GROUP_JOIN', 'ON_EVENT_GROUP_JOIN_SUCC'] and a.QQ in config.botqqs:
-        print('bot{} 加入群:{}'.format(a.CurrentQQ, a.FromQQG))
+    if (a.MsgType == 'ON_EVENT_GROUP_JOIN' and a.UserID in config.botqqs) or a.MsgType == 'ON_EVENT_GROUP_JOIN_SUCC':
+        print('bot{} 加入群:{}'.format(a.UserID, a.FromQQG))
         getgroupadmin = GetGroupAdmin()
         getgroupadmin.getGroupList(a.CurrentQQ)
         getgroupadmin.getGroupUserList(a.CurrentQQ, a.FromQQG)
