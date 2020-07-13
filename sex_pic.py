@@ -641,7 +641,7 @@ def command(mess):
     try:
         if (mess.FromQQ in groupadmins[
             mess.FromQQG]) or mess.FromQQ in config.adminQQs or mess.FromQQ == config.superAdminQQ:
-            print(type(mess.FromQQ))
+            # print(type(mess.FromQQ))
             # -------------------------------------------------
             keyword_changefreq = change_pattern.match(mess.Content)
             # --------------------普通admin-------------------------
