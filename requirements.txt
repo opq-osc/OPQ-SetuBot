@@ -1,6 +1,7 @@
 requests
 retrying
 psutil
+schedule
 py-cpuinfo
 python-socketio
 websocket-client
