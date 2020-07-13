@@ -1,5 +1,6 @@
 from datetime import datetime
 import socketio, requests, re, time, base64, random, json, psutil, cpuinfo, datetime, threading, sys, schedule
+from retrying import retry
 from queue import Queue, LifoQueue
 from importlib import reload
 import config
@@ -112,7 +113,7 @@ def send_text(mess, msg, atuser=0):
             "groupid": mess.FromQQG,
             "atUser": atuser}
     try:
-        res = requests.post(api, params=params, json=data, timeout=3)
+        res = requests.post(api, params=params, json=data, timeout=8)
         ret = res.json()['Ret']
     except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
         ret = '超时~'
@@ -146,7 +147,7 @@ def send_pic(mess, msg, atuser=0, picurl='', picbase64='', picmd5=''):
             "picBase64Buf": picbase64,
             "fileMd5": picmd5}
     try:
-        res = requests.post(api, params=params, json=data, timeout=10)
+        res = requests.post(api, params=params, json=data, timeout=12)
         ret = res.json()['Ret']
     except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
         ret = '超时~'
@@ -167,7 +168,7 @@ def withdraw_message(mess):
             "MsgRandom": mess.MsgRandom}
     time.sleep(config.RevokeMsg_time)
     try:
-        res = requests.post(api, params=params, json=data, timeout=3)
+        res = requests.post(api, params=params, json=data, timeout=5)
         ret = res.json()['Ret']
     except (requests.exceptions.ConnectTimeout, requests.exceptions.Timeout):
         ret = '超时~'
@@ -183,6 +184,7 @@ def withdraw_message(mess):
 
 
 class GetGroupAdmin:
+    @retry(stop_max_attempt_number=3, wait_fixed=1100)
     def getGroupList(self, botqq, nextToken=''):
         global groupadmins
         while True:
@@ -200,9 +202,10 @@ class GetGroupAdmin:
                     groupadmins[group['GroupId']].insert(0, group['GroupOwner'])  # 再插♂回去
             if nextToken == '':  # 到最后一页就停止
                 break
-            time.sleep(0.8)
+            time.sleep(1)
         return
 
+    @retry(stop_max_attempt_number=3, wait_fixed=1100)
     def getGroupUserList(self, botqq, groupid, lastuin=0):
         global groupadmins
         try:
@@ -224,15 +227,17 @@ class GetGroupAdmin:
             print('群:{}的admins:{}'.format(groupid, groupadmins[groupid]))
             if lastuin == 0:
                 break
-            time.sleep(0.8)
+            time.sleep(1)
         return
 
     def main(self):
         for botqq in config.botqqs:
             self.getGroupList(botqq)
+            time.sleep(1.1)
         for botqq in config.botqqs:
             for group in groupadmins.keys():
                 self.getGroupUserList(botqq, group)
+                time.sleep(1.1)
 
 
 # --------------------------------------------------------------------------------------------------------------
