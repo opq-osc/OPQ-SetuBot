@@ -400,7 +400,7 @@ class Setu:
         if (len(self.tag) != 0) and (not self.tag.isspace()):  # 如果tag不为空(字符串字数不为零且不为空)
             params['keyword'] = self.tag
         try:
-            res = requests.get(url, params, timeout=10)
+            res = requests.get(url, params, timeout=13)
             setu_data = res.json()
             status_code = res.status_code
             assert status_code == 200
@@ -639,8 +639,9 @@ def list_tf(flag, mess, conf):
 def command(mess):
     # print(mess.FromQQ)
     try:
-        if mess.FromQQ in groupadmins[
-            mess.FromQQG] or mess.FromQQ in config.adminQQs or mess.FromQQ == config.superAdminQQ:
+        if (mess.FromQQ in groupadmins[
+            mess.FromQQG]) or mess.FromQQ in config.adminQQs or mess.FromQQ == config.superAdminQQ:
+            print(type(mess.FromQQ))
             # -------------------------------------------------
             keyword_changefreq = change_pattern.match(mess.Content)
             # --------------------普通admin-------------------------
@@ -692,13 +693,13 @@ def at_command(mess):
 
 
 # --------------------------------------------------------------------------------------------------------------
-def judgment_delay(new_group, group, time_old):  # 判断延时
-    if new_group != group or time.time() - time_old >= 1.1:  # 如果不是相同群 或 离上次发消息已经超过1.1s就不延时
+def judgment_delay(new_group, group, time_old,sleep):  # 判断延时
+    if new_group != group or time.time() - time_old >= sleep:  # 如果不是相同群 或 离上次发消息已经超过1.1s就不延时
         # print('{}:不延时~~~~~~~~'.format(new_group))
         return
     else:
         # print('{}:延时~~~~~~~~'.format(new_group))
-        time.sleep(1.1)
+        time.sleep(sleep)
         return
 
 
@@ -706,7 +707,7 @@ def sendpic_queue():  # 图片队列
     sent_group = {'time': time.time(), 'group': 0}
     while True:
         data = q_pic.get()  # 从队列取出数据
-        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'])  # 判断是否延时
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'], 1.1)  # 判断是否延时
         send_pic(data['mess'], data['msg'], 0, data['download_url'], data['base64code'])  # 等待完成
         q_pic.task_done()
         '''记录时间和群号'''
@@ -718,7 +719,7 @@ def sendtext_queue():  # 文字队列
     sent_group = {'time': time.time(), 'group': 0}
     while True:
         data = q_text.get()
-        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'])
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'], 1.1)
         send_text(data['mess'], data['msg'], data['atuser'])
         q_text.task_done()
         sent_group['time'] = time.time()
@@ -726,12 +727,17 @@ def sendtext_queue():  # 文字队列
 
 
 def withdraw_queue():  # 撤回队列
+    sent_group = {'time': time.time(), 'group': 0}
     while True:
         data = q_withdraw.get()
-        withdraw_message(data['mess'])
+        # withdraw_message(data['mess'])
+        t = threading.Thread(target=withdraw_message,
+                             args=(data['mess'],))
+        t.start()
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'],0.8)  # 判断是否延时
         q_withdraw.task_done()
-        time.sleep(0.6)
-
+        sent_group['time'] = time.time()
+        sent_group['group'] = data['mess'].FromQQG
 
 # def superadminExclusive(, ):
 #     config.config['group_r18_whitelist'].remove(groupqq)
@@ -858,7 +864,7 @@ def OnEvents(message):
         print('群:{}管理员发生变更'.format(a.FromQQG))
         getgroupadmin = GetGroupAdmin()
         getgroupadmin.getGroupUserList(a.CurrentQQ, a.FromQQG)
-    if a.MsgType in ['ON_EVENT_GROUP_JOIN', 'ON_EVENT_GROUP_JOIN_SUCC'] and a.UserID in config.botqqs:
+    if a.MsgType in ['ON_EVENT_GROUP_JOIN', 'ON_EVENT_GROUP_JOIN_SUCC'] and a.QQ in config.botqqs:
         print('bot{} 加入群:{}'.format(a.CurrentQQ, a.FromQQG))
         getgroupadmin = GetGroupAdmin()
         getgroupadmin.getGroupList(a.CurrentQQ)

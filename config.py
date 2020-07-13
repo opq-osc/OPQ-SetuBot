@@ -1,8 +1,10 @@
 import re,json
+
 with open('config.json', 'r', encoding='utf-8') as f:  # 从json读配置
     config = json.loads(f.read())
     print('加载配置成功')
 
+# configData = config
 color_pickey = config['color_pickey']  # 申请地址api.lolicon.app
 webapi = config['webapi']  # Webapi接口 http://127.0.0.1:8888
 botqqs = config['botqqs']  # 机器人QQ号
@@ -16,6 +18,7 @@ notfound_to_send = config['notfound_to_send']  # 没找到色图返回的文字
 frequency_cap_to_send = config['frequency_cap_to_send']  # 达到频率上限后发送语句
 wrong_input_to_send = config['wrong_input_to_send']  # 关键字错误返回的文字
 before_nmsl_to_send = config['before_nmsl_to_send']  # 嘴臭之前发送的语句
+Permission_denied_to_send = config['Permission_denied_to_send']  # 嘴臭之前发送的语句
 before_setu_to_send_switch = config['before_setu_to_send_switch']  # 发色图之前是否发送消息
 send_setu_at = config['send_setu_at']  # 发色图时是否@
 before_setu_to_send = config['before_setu_to_send']  # 发色图之前的语句
