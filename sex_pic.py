@@ -222,10 +222,10 @@ class GetGroupAdmin:
             data = requests.post(api, params=params, json=data_body, timeout=5).json()
             lastuin = data['LastUin']
             for adminqqinfo in data['MemberList']:
-                if adminqqinfo['GroupAdmin'] == 1:
+                if adminqqinfo['GroupAdmin'] == 1:  # 找出管理员qq并添加
                     groupadmins[groupid].append(adminqqinfo['MemberUin'])
-            print('群:{}的admins:{}'.format(groupid, groupadmins[groupid]))
             if lastuin == 0:
+                print('群:{}的admins:{}'.format(groupid, groupadmins[groupid]))
                 break
             time.sleep(1)
         return
@@ -667,10 +667,12 @@ def command(mess):
             elif mess.FromQQ == config.superAdminQQ:  # superadmin
                 if mess.Content == '.reload':
                     reload_config()
-                    q_text.put({'mess': mess, 'msg': '{} OK'.format(mess.Content), 'atuser': 0})
-            # -----------------------------------------------------
+                    q_text.put({'mess': mess, 'msg': '"{}" OK'.format(mess.Content), 'atuser': 0})
+                # -----------------------------------------------------
+                else:
+                    q_text.put({'mess': mess, 'msg': '"{}" 是啥?'.format(mess.Content), 'atuser': 0})
             else:
-                q_text.put({'mess': mess, 'msg': '??', 'atuser': 0})
+                q_text.put({'mess': mess, 'msg': '"{}" 是啥?'.format(mess.Content), 'atuser': 0})
         else:
             q_text.put({'mess': mess, 'msg': config.Permission_denied_to_send, 'atuser': 0})
     except (ValueError, KeyError):
@@ -693,7 +695,7 @@ def at_command(mess):
 
 
 # --------------------------------------------------------------------------------------------------------------
-def judgment_delay(new_group, group, time_old,sleep):  # 判断延时
+def judgment_delay(new_group, group, time_old, sleep):  # 判断延时
     if new_group != group or time.time() - time_old >= sleep:  # 如果不是相同群 或 离上次发消息已经超过1.1s就不延时
         # print('{}:不延时~~~~~~~~'.format(new_group))
         return
@@ -734,10 +736,11 @@ def withdraw_queue():  # 撤回队列
         t = threading.Thread(target=withdraw_message,
                              args=(data['mess'],))
         t.start()
-        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'],0.8)  # 判断是否延时
+        judgment_delay(data['mess'].FromQQG, sent_group['group'], sent_group['time'], 0.8)  # 判断是否延时
         q_withdraw.task_done()
         sent_group['time'] = time.time()
         sent_group['group'] = data['mess'].FromQQG
+
 
 # def superadminExclusive(, ):
 #     config.config['group_r18_whitelist'].remove(groupqq)
