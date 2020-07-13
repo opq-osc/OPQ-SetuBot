@@ -595,7 +595,8 @@ def changeAdmin(flag, mess, conf):
                 q_text.put({'mess': mess, 'msg': '"{}" not in "{}"'.format(qq, conf), 'atuser': 0})
     writeJson(config.config)  # 写入配置
 
-def changeOtherFreq(mess,keyword):
+
+def changeOtherFreq(mess, keyword):
     reload_config()  # 重载一遍,以免手动修改的不生效
     num_str = keyword.group(1)
     try:  # 将str转换成int
@@ -609,7 +610,7 @@ def changeOtherFreq(mess,keyword):
     if num == 0:
         q_text.put({'mess': mess, 'msg': '本群已取消限制~', 'atuser': 0})
         return
-    q_text.put({'mess': mess, 'msg': '本群每{}s能调用{}次'.format(config.reset_freq_time,num), 'atuser': 0})
+    q_text.put({'mess': mess, 'msg': '本群每{}s能调用{}次'.format(config.reset_freq_time, num), 'atuser': 0})
     return
 
 
@@ -638,7 +639,8 @@ def list_tf(flag, mess, conf):
 def command(mess):
     # print(mess.FromQQ)
     try:
-        if mess.FromQQ in groupadmins[mess.FromQQG] or mess.FromQQ in config.adminQQs or mess.FromQQ == config.superAdminQQ:
+        if mess.FromQQ in groupadmins[
+            mess.FromQQG] or mess.FromQQ in config.adminQQs or mess.FromQQ == config.superAdminQQ:
             # -------------------------------------------------
             keyword_changefreq = change_pattern.match(mess.Content)
             # --------------------普通admin-------------------------
@@ -659,9 +661,9 @@ def command(mess):
             elif mess.Content == '.关闭色图':
                 list_tf(True, mess, 'group_blacklist')
             elif keyword_changefreq:
-                changeOtherFreq(mess,keyword_changefreq)
+                changeOtherFreq(mess, keyword_changefreq)
             # -----------------------------------------------------
-            elif mess.FromQQ == config.superAdminQQ: #superadmin
+            elif mess.FromQQ == config.superAdminQQ:  # superadmin
                 if mess.Content == '.reload':
                     reload_config()
                     q_text.put({'mess': mess, 'msg': '{} OK'.format(mess.Content), 'atuser': 0})
@@ -677,6 +679,7 @@ def command(mess):
         getgroupadmin.getGroupUserList(mess.CurrentQQ, mess.FromQQG)
     except:
         print('群{}error'.format(mess.FromQQG))
+
 
 def at_command(mess):
     if mess.FromQQ == config.superAdminQQ:
@@ -774,7 +777,7 @@ def connect():
     print('获取bot加的所有群的管理者')
     getadmin = GetGroupAdmin()
     getadmin.main()
-    print(groupadmins)
+    # print(groupadmins)
     # time.sleep(1)  # 等1s,不然可能连不上
     for botqq in config.botqqs:
         sio.emit('GetWebConn', str(botqq))  # 取得当前已经登录的QQ链接
@@ -855,7 +858,7 @@ def OnEvents(message):
         print('群:{}管理员发生变更'.format(a.FromQQG))
         getgroupadmin = GetGroupAdmin()
         getgroupadmin.getGroupUserList(a.CurrentQQ, a.FromQQG)
-    if a.MsgType == 'ON_EVENT_GROUP_JOIN' and a.UserID in config.botqqs:
+    if a.MsgType in ['ON_EVENT_GROUP_JOIN', 'ON_EVENT_GROUP_JOIN_SUCC'] and a.UserID in config.botqqs:
         print('bot{} 加入群:{}'.format(a.CurrentQQ, a.FromQQG))
         getgroupadmin = GetGroupAdmin()
         getgroupadmin.getGroupList(a.CurrentQQ)
