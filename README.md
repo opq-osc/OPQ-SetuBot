@@ -1,6 +1,26 @@
 # [IOTBOT](https://github.com/IOTQQ/IOTQQ)的色图姬插件
 
-在config里填上bot的qq号和对应webapi地址和[key](https://api.lolicon.app/)运行就好了,那些黑名单 白名单什么的没特殊要求就不用管了....
+
+
+### 食用方法(Windows)
+
+**先去申请一个key  https://api.lolicon.app/#/setu?id=apikey**
+
+**先安装python3环境,到https://www.python.org/downloads/安装对应版本**
+
+**然后到项目文件夹里shift+右键,打开Powershell窗口**
+
+![image-20200714230137286](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200714230137.png)
+
+**输入  `pip install -r .\requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`**
+
+**然后等待安装完成 (我这里都安装过了)**
+
+![image-20200714230325559](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200714230325.png)
+
+**然后修改config.json 把botqqs中的qq换成你bot的,webapi的话iotbot和py在一台机子上运行就不用修改,把superAdminQQ的值换成你qq,保存退出,然后双击sex_pic.py运行应该就行了....**
+
+![image-20200714231142648](https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20200714231142.png)
 
 ### 关于命令
 
