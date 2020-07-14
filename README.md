@@ -6,7 +6,7 @@
 
 **先去申请一个key  https://api.lolicon.app/#/setu?id=apikey**
 
-**先安装python3环境,到https://www.python.org/downloads/安装对应版本**
+**先安装python3环境,到  https://www.python.org/downloads/  安装对应版本**
 
 **然后到项目文件夹里shift+右键,打开Powershell窗口**
 
