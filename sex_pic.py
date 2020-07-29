@@ -231,14 +231,16 @@ class GetGroupAdmin:
         return
 
     def main(self):
-        for botqq in config.botqqs:
-            self.getGroupList(botqq)
-            time.sleep(1.1)
-        for botqq in config.botqqs:
-            for group in groupadmins.keys():
-                self.getGroupUserList(botqq, group)
+        try:
+            for botqq in config.botqqs:
+                self.getGroupList(botqq)
                 time.sleep(1.1)
-
+            for botqq in config.botqqs:
+                for group in groupadmins.keys():
+                    self.getGroupUserList(botqq, group)
+                    time.sleep(1.1)
+        except:
+            print('获取admin失败')
 
 # --------------------------------------------------------------------------------------------------------------
 
