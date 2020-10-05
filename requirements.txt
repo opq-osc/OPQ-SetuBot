@@ -1,7 +1,7 @@
+python-iotbot
 requests
 retrying
-psutil
-schedule
-py-cpuinfo
+Pillow
+tinydb
 python-socketio
 websocket-client
