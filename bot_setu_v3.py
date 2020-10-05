@@ -32,12 +32,11 @@ except:
     sys.exit()
 try:
     pathlib.Path('db').mkdir()
-    logger.info('db创建成功')
+    logger.success('db创建成功')
 except:
     logger.info('db目录已存在')
 bot = IOTBOT(config['botQQ'], log=False)
 action = Action(bot, queue=False)
-action_noQueue = Action(bot)
 pattern_setu = '来(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩🐍][图圖🤮]'
 # ------------------db-------------------------
 group_config = TinyDB('./db/group_config.json')
@@ -68,14 +67,14 @@ class Send:
         if ctx.__class__.__name__ == 'GroupMsg':
             if atUser:
                 action.send_group_pic_msg(ctx.FromGroupId, picUrl, flashPic, ctx.FromUserId, text, picBase64Buf,
-                                          fileMd5)
+                                          fileMd5, timeout=15)
             else:
-                action.send_group_pic_msg(ctx.FromGroupId, picUrl, flashPic, 0, text, picBase64Buf, fileMd5)
+                action.send_group_pic_msg(ctx.FromGroupId, picUrl, flashPic, 0, text, picBase64Buf, fileMd5, timeout=15)
         else:
             if ctx.TempUin == None:
-                action.send_friend_pic_msg(ctx.FromUin, text, picUrl, picBase64Buf, fileMd5, flashPic)
+                action.send_friend_pic_msg(ctx.FromUin, text, picUrl, picBase64Buf, fileMd5, flashPic, timeout=15)
             else:
-                action.send_private_pic_msg(ctx.FromUin, ctx.TempUin, picUrl, picBase64Buf, text, fileMd5)
+                action.send_private_pic_msg(ctx.FromUin, ctx.TempUin, picUrl, picBase64Buf, text, fileMd5, timeout=15)
         return
 
     # ---------------------------------------------
@@ -140,10 +139,10 @@ class PixivToken:
         while True:
             if time.time() - pixivid['time'] >= int(pixivid['expires_in']):  # 刷新
                 pixivid = self.refresh_token(pixivid['refresh_token'])
-                self.saveToken(pixivid)
                 logger.success('刷新token成功~')
+                self.saveToken(pixivid)
             else:
-                time.sleep((time.time() - pixivid['time']) + 1)
+                time.sleep(int(pixivid['expires_in'])-(time.time() - pixivid['time']))
 
     def saveToken(self, data):
         with open('.Pixiv_Token.json', 'w', encoding='utf-8') as f:
@@ -363,7 +362,7 @@ class Setu:
                 logger.info(
                     '从Pixiv热度榜获取到{}张setu  实际发送{}张'.format(len(data['illusts']), self.api_pixiv_realnum))  # 打印获取到多少条
             else:
-                logger.warning('Pixiv热度榜:{}'.format(res.status_code))
+                logger.warning('Pixiv热度榜:{},{}'.format(res.status_code, res.json()))
 
     def _freq(func):
         def wrapper(self, *args, **kwargs):
@@ -763,11 +762,11 @@ class Getdata:
     @retry(stop_max_attempt_number=3, wait_random_max=2000)
     def updateAllGroupData(self):
         logger.info('开始更新所有群数据~')
-        data = action_noQueue.get_group_list()['TroopList']
+        data = action.get_group_list()['TroopList']
         allgroups_get = [x['GroupId'] for x in data]
         for group in data:
             del group['GroupNotice']  # 删除不需要的key
-            admins = action_noQueue.get_group_all_admin_list(group['GroupId'])
+            admins = action.get_group_all_admin_list(group['GroupId'])
             admins_QQid = [i['MemberUin'] for i in admins]
             group['admins'] = admins_QQid  # 管理员列表
             self._updateData(group, group['GroupId'])
@@ -783,11 +782,11 @@ class Getdata:
     @retry(stop_max_attempt_number=3, wait_random_max=2000)
     def updateGroupData(self, groupid: int):
         logger.info('开始刷新群:{}的数据'.format(groupid))
-        data = action_noQueue.get_group_list()['TroopList']
+        data = action.get_group_list()['TroopList']
         for group in data:
             if group['GroupId'] == groupid:
                 del group['GroupNotice']  # 删除不需要的key
-                admins = action_noQueue.get_group_all_admin_list(groupid)
+                admins = action.get_group_all_admin_list(groupid)
                 admins_QQid = [i['MemberUin'] for i in admins]
                 group['admins'] = admins_QQid
                 logger.info('群:{}的admins:{}'.format(groupid, admins_QQid))
@@ -1126,31 +1125,27 @@ def receive_group_msg(ctx: GroupMsg):
         delay = random.randint(30, 60)
     time.sleep(delay)
 
-    action_noQueue.revoke_msg(
+    action.revoke_msg(
         groupid=ctx.FromGroupId, msgseq=ctx.MsgSeq, msgrandom=ctx.MsgRandom
     )
 
 
-@bot.when_connected
-def connected():
-    print('该函数只在程序启动后第一次连接成功后执行, 不能有参数')
-
-
-@bot.when_disconnected
+@bot.when_disconnected(every_time=True)
 def disconnected():
-    print('该函数只在第一次断开连接后才执行, 不能有参数')
+    logger.warning('socket断开~')
 
 
 @bot.when_connected(every_time=True)
 def connected():
-    logger.info('socket连接成功~')
+    logger.success('socket连接成功~')
+    # botdata.updateAllGroupData()
 
 
 # todo:tag替换完善 #记录调用tag,做一个排行
 if __name__ == '__main__':
     if os.path.isfile('.bot_setu_v3_flag'):  # 有文件
-        pass
-        threading.Thread(target=botdata.updateAllGroupData).start()
+        # pass
+        threading.Thread(target=botdata.updateAllGroupData, daemon=True).start()
     else:
         logger.info('第一次启动~')
         botdata.updateAllGroupData()
@@ -1158,14 +1153,13 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------
     pixiv = PixivToken(config['pixiv_username'], config['pixiv_password'])
     if os.path.isfile('.Pixiv_Token.json'):  # 有文件
-        logger.info('有Pixiv_Token文件 尝试载入~')
         try:
             with open('.Pixiv_Token.json', 'r', encoding='utf-8') as f:
                 pixivid = json.loads(f.read())
+                logger.success('Pixiv_Token载入成功~')
         except:
-            logger.error('载入失败,请删除.Pixiv_Token.json重新登录~')
+            logger.error('Pixiv_Token载入失败,请删除.Pixiv_Token.json重新启动~')
             sys.exit()
-        threading.Thread(target=pixiv.if_refresh_token, daemon=True).start()
     else:
         logger.info('无Pixiv_Token文件')
         pixivid = pixiv.get_token()
@@ -1173,5 +1167,6 @@ if __name__ == '__main__':
             logger.error('获取失败~\n' + pixivid['errors']['system']['message'])
             sys.exit()
         pixiv.saveToken(pixivid)
+    threading.Thread(target=pixiv.if_refresh_token, daemon=True).start()
     # ---------------------------------------------------------------------------------
     bot.run()
