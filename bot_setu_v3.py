@@ -37,7 +37,7 @@ except:
     logger.info('db目录已存在')
 bot = IOTBOT(config['botQQ'], log=False)
 action = Action(bot, queue=False)
-pattern_setu = '来?(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩😍🐍][图圖🤮]'
+pattern_setu = '来(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩😍🐍][图圖🤮]'
 # ------------------db-------------------------
 group_config = TinyDB('./db/group_config.json')
 friend_config = TinyDB('./db/friend_config.json')
