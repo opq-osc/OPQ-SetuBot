@@ -501,9 +501,9 @@ class Setu:
     @_freq  # 频率
     def send(self):  # 判断数量
         self.api_0()
-        if len(self.tag) == 1:
+        if len(self.tag) in [0, 1]:
             self.api_1()
-        if config['pixiv_api']:
+        if config['pixiv_api'] and len(self.tag) != 0:
             self.api_pixiv()
         if self.api_0_realnum == 0 and self.api_1_realnum == 0 and self.api_pixiv_realnum == 0:
             sendMsg.send_text(self.ctx, self.db_config['msg_notFind'], self.db_config['at_warning'])
