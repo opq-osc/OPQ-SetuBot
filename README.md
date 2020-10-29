@@ -3,7 +3,7 @@
 #### 详细信息看[wiki](https://github.com/yuban10703/OPQ-SetuBot/wiki)
 
 ### TODO:
-  拆分成多个模块 
+  拆分成多个模块,更换库为[botoy](https://github.com/xiyaowong/botoy)
 
   TAG映射 
 
