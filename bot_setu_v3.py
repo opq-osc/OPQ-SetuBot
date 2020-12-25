@@ -251,16 +251,16 @@ class Setu:
             if res.status_code == 200:
                 for data in setu_data['data']:
                     filename = data['filename']
-                    if self.if_sent('https://cdn.jsdelivr.net/gh/laosepi/setu/pics_original/' + filename):  # 判断是否发送过
+                    if self.if_sent(data['original']):  # 判断是否发送过
                         continue
-                    url_original = 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics_original/' + filename
+                    url_original = data['original']
                     msg = self.build_msg(data['title'], data['artwork'], data['author'], data['artist'],
                                          data['page'], url_original)
                     if config['path'] == '':
                         if self.db_config['original']:
                             sendMsg.send_pic(self.ctx, msg, url_original, False, self.db_config['at'])
                         else:
-                            sendMsg.send_pic(self.ctx, msg, 'https://cdn.jsdelivr.net/gh/laosepi/setu/pics/' + filename,
+                            sendMsg.send_pic(self.ctx, msg, data['large'],
                                              False, self.db_config['at'])
                     else:  # 本地base64
                         sendMsg.send_pic(self.ctx, msg, '', False, self.db_config['at'],
