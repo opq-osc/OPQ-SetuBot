@@ -70,7 +70,7 @@ class BasicOperation:
             return conf
         else:
             return {
-                'setuinfoLv': {
+                'setuinfo': {
                     'title': True,
                     'pid': False,
                     'purl': True,
