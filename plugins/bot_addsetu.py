@@ -134,12 +134,10 @@ class AddSetu:
 
 
 @deco.ignore_botself
-@deco.queued_up
 def receive_group_msg(ctx: GroupMsg):
     AddSetu(ctx).main()
 
 
 @deco.ignore_botself
-@deco.queued_up
 def receive_friend_msg(ctx: FriendMsg):
     AddSetu(ctx).main()

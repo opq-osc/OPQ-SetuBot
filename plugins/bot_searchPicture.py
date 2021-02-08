@@ -51,7 +51,6 @@ class SearchPic:
 
 @deco.ignore_botself
 @deco.in_content('.*搜图')
-@deco.queued_up
 @deco.these_msgtypes(MsgTypes.PicMsg)
 def receive_group_msg(ctx):
     SearchPic(ctx).main()
@@ -59,7 +58,6 @@ def receive_group_msg(ctx):
 
 @deco.ignore_botself
 @deco.in_content('.*搜图')
-@deco.queued_up
 @deco.these_msgtypes(MsgTypes.PicMsg)
 def receive_friend_msg(ctx):
     SearchPic(ctx).main()

@@ -4,6 +4,7 @@ import cpuinfo
 import psutil
 from botoy import decorators as deco
 from module.send import Send as send
+from loguru import logger
 
 
 class Sysinfo:
@@ -80,6 +81,7 @@ class Sysinfo:
 
     @classmethod
     def allInfo(cls):
+        logger.info('sysinfo')
         return '{cpu}\r\n' \
                '{star}\r\n' \
                '{mem}\r\n' \
@@ -94,14 +96,12 @@ class Sysinfo:
 
 
 @deco.ignore_botself
-@deco.queued_up
 @deco.equal_content('sysinfo')
 def receive_group_msg(ctx):
     send.text(ctx, Sysinfo.allInfo())
 
 
 @deco.ignore_botself
-@deco.queued_up
 @deco.equal_content('sysinfo')
 def receive_friend_msg(ctx):
     send.text(ctx, Sysinfo.allInfo())

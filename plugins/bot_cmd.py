@@ -124,13 +124,11 @@ class Cmd:
 
 @deco.ignore_botself
 @deco.in_content('_cmd')
-@deco.queued_up
 def receive_group_msg(ctx: GroupMsg):
     Cmd(ctx).main()
 
 
 @deco.ignore_botself
 @deco.in_content('_cmd')
-@deco.queued_up
 def receive_friend_msg(ctx: FriendMsg):
     Cmd(ctx).main()

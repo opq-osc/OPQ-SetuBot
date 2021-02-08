@@ -296,8 +296,6 @@ class Setu:
         apis.remove(func)
         func()
         apis[0]()
-        # self.localSetu()
-        # self.api_0()
         if len(self.tags) in [0, 1]:  # api1不支持多tag
             self.api_1()
         if len(self.tags) != 0:
@@ -314,13 +312,11 @@ class Setu:
 
 @deco.ignore_botself
 @deco.with_pattern(setuPattern)
-@deco.queued_up
 def receive_group_msg(ctx: GroupMsg):
     Setu(ctx).main()
 
 
 @deco.ignore_botself
 @deco.with_pattern(setuPattern)
-@deco.queued_up
 def receive_friend_msg(ctx: FriendMsg):
     Setu(ctx).main()
