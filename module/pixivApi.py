@@ -124,6 +124,8 @@ class Pixiv:
                     time.sleep(10)
             else:
                 time.sleep(int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time']))
+                logger.info('pixivtoken下次离刷新还有{}s'.format(
+                    int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time'])))
         logger.warning('未开启pixivapi或循环异常结束')
 
     # def loadToken(self):
