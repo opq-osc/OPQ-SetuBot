@@ -2,8 +2,6 @@
 
 #### 详细信息看[wiki](https://github.com/yuban10703/OPQ-SetuBot/wiki) (wiki正在重写,有问题直接提issue~~~~........)
 
-# 问题有点多,重写ing.....
-
 
 
 ### TODO:
