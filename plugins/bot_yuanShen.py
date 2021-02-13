@@ -53,14 +53,26 @@ class YuanShen:
             self.articleList.append(random.choice(
                 [str(i) for i in Path(self.config['upArticle']['{}Star'.format(stars[1])]).glob('*.png')]))
             # self.articleList.append(random.choice(self.config['upArticle']['{}Star'.format(stars[1])]))
-        else:  # 没中UP
+
+        else:  # 没中UP or 无up的池子
             # print('非up')
+            type_pool = random.choices(['role', 'arms'], [self.config['probability']['{}StarRole'.format(stars[1])],
+                                                          self.config['probability'][
+                                                              '{}StarArms'.format(stars[1])]])[0]
+            # print(type_pool)
+            if self.config['upArticle']['{}Star'.format(stars[1])] == None:  # 无up的池子
+                # print('普通池子')
+                if stars[2] == '4':  # 4星都是非限定
+                    filePath = '**/*.png'
+                elif stars[2] == '5':  # 5星都是限定...普池没有
+                    filePath = '*.png'
+            else:  # up池
+                # print('up池')
+                filePath = '*.png'
             res = random.choice(
-                [str(i) for i in Path('./config/yuanShenPools/{}_{}'.format(random.choices(['role', 'arms'], [
-                    self.config['probability']['{}StarRole'.format(stars[1])],
-                    self.config['probability']['{}StarArms'.format(stars[1])]])[0], stars[2])).rglob('*.png')])
+                [str(i) for i in Path('./config/yuanShenPools/{}_{}'.format(type_pool, stars[2])).rglob(filePath)])
+            # print(res)
             self.articleList.append(res)
-            # print('非up,下次必定up or 普通池')
             self.userconf['certainly{}StarUp'.format(stars[0])] = True
 
     def draw(self):
