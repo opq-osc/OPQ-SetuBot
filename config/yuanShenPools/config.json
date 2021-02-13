@@ -1,0 +1,79 @@
+{
+  "permanent": {
+    "probability": {
+      "fiveStarRole": 0.3,
+      "fiveStarArms": 0.3,
+      "fourStarRole": 2.55,
+      "fourStarArms": 2.55,
+      "fiveStarUp": 0,
+      "fourStarUp": 0
+    },
+    "fourStarFloorsProbability": {
+      "fiveStar": 0.6,
+      "fourStar": 99.4
+    },
+    "upArticle": {
+      "fiveStar": [
+      ],
+      "fourStar": [
+      ]
+    },
+    "fiveStarFloorsCount": 90,
+    "fourStarFloorsCount": 10
+  },
+  "roleUp": {
+    "probability": {
+      "fiveStarRole": 0.6,
+      "fiveStarArms": 0,
+      "fourStarRole": 2.55,
+      "fourStarArms": 2.55,
+      "fiveStarUp": 50,
+      "fourStarUp": 50
+    },
+    "fourStarFloorsProbability": {
+      "fiveStar": 0.6,
+      "fourStar": 99.4
+    },
+    "upArticle": {
+      "fiveStar": [
+        "config/yuanShenPools/role_5/魈.png"
+      ],
+      "fourStar": [
+        "config/yuanShenPools/role_4/迪奥娜.png",
+        "config/yuanShenPools/role_4/北斗.png",
+        "config/yuanShenPools/role_4/辛焱.png"
+      ]
+    },
+    "fiveStarFloorsCount": 90,
+    "fourStarFloorsCount": 10
+  },
+  "armsUp": {
+    "probability": {
+      "fiveStarRole": 0,
+      "fiveStarArms": 0.7,
+      "fourStarRole": 3,
+      "fourStarArms": 3,
+      "fiveStarUp": 75,
+      "fourStarUp": 75
+    },
+    "fourStarFloorsProbability": {
+      "fiveStar": 0.7,
+      "fourStar": 99.3
+    },
+    "upArticle": {
+      "fiveStar": [
+        "config/yuanShenPools/arms_5/和璞鸢.png",
+        "config/yuanShenPools/arms_5/磐岩结绿.png"
+      ],
+      "fourStar": [
+        "config/yuanShenPools/arms_4/笛剑.png",
+        "config/yuanShenPools/arms_4/祭礼大剑.png",
+        "config/yuanShenPools/arms_4/弓藏.png",
+        "config/yuanShenPools/arms_4/昭心.png",
+        "config/yuanShenPools/arms_4/西风长枪.png"
+      ]
+    },
+    "fiveStarFloorsCount": 80,
+    "fourStarFloorsCount": 10
+  }
+}

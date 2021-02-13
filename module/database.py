@@ -1,4 +1,4 @@
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, where
 from tinydb.storages import MemoryStorage
 from tinydb.operations import add
 from loguru import logger
@@ -279,6 +279,32 @@ class Setu(BasicOperation):
                         # data[str(k)] = v
             # print(res)
             return res
+
+
+class Lottery:
+    @staticmethod
+    def getUserInfo(qq: int, conf: dict, pool: str):
+        if res := lotteryData.table(pool).get(where('qq') == qq):
+            return res
+        else:
+            data = {
+                'qq': qq,
+                'allCount': 0,  # 总次数
+                'farFiveStarFloors': conf[pool]['fiveStarFloorsCount'],  # 离5星保底次数
+                'farFourStarFloors': conf[pool]['fourStarFloorsCount'],  # 离4星保底次数
+                'FiveStarFloorsCount': 0,  # 5星保底数
+                'FourStarFloorsCount': 0,  # 4星保底数
+                'FiveStarCount': 0,  # 获取到的5星数量
+                'FourStarCount': 0,  # 获取到的4星数量
+                'certainlyFiveStarUp': False,  # 必定5星up
+                'certainlyFourStarUp': False,  # 必定4星up
+            }
+            lotteryData.table(pool).insert(data)
+            return data
+
+    @staticmethod
+    def updateUserinfo(qq, pool, data):
+        lotteryData.table(pool).update(data, where('qq') == qq)
 
 
 class Event:
