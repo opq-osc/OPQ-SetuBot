@@ -115,17 +115,18 @@ class YuanShen:
             self.userconf['allCount'] += 1
             self.userconf['farFiveStarFloors'] -= 1
             self.userconf['farFourStarFloors'] -= 1
+
+            if self.userconf['farFiveStarFloors'] <= 0:  # 5星保底
+                # print('5星保底')
+                self.userconf['farFiveStarFloors'] = self.config['fiveStarFloorsCount']
+                self.floors(('Five', 'five', '5'))
+                continue
             if self.userconf['farFourStarFloors'] <= 0:  # 4星保底
                 # print('4星保底')
                 self.userconf['farFourStarFloors'] = self.config['fourStarFloorsCount']
                 random.choices([lambda: self.floors(('Four', 'four', '4')), lambda: self.floors(('Four', 'four', '4'))],
                                [self.config['fourStarFloorsProbability']['fourStar'],
                                 self.config['fourStarFloorsProbability']['fiveStar']])[0]()
-                continue
-            elif self.userconf['farFiveStarFloors'] <= 0:  # 5星保底
-                # print('5星保底')
-                self.userconf['farFiveStarFloors'] = self.config['fiveStarFloorsCount']
-                self.floors(('Five', 'five', '5'))
                 continue
             res = random.choices([5, 4, 3], [
                 self.config['probability']['fiveStarRole'] + self.config['probability']['fiveStarArms'],
