@@ -39,16 +39,20 @@ class YuanShen:
         self.articleList = []
 
     def floors(self, stars: tuple):
-        if self.userconf['certainly{}StarUp'.format(stars[0])] and self.pool != 'permanent':  # UP保底
+        if self.userconf['certainly{}StarUp'.format(stars[0])] and self.config['upArticle'][
+            '{}Star'.format(stars[1])] != None:  # UP保底
             # print('上次没有up的保底')
             self.userconf['certainly{}StarUp'.format(stars[0])] = False
-            self.articleList.append(random.choice(self.config['upArticle']['{}Star'.format(stars[1])]))
+            self.articleList.append(random.choice(
+                [str(i) for i in Path(self.config['upArticle']['{}Star'.format(stars[1])]).glob('*.png')]))
         elif random.choices([True, False], [self.config['probability']['{}StarUp'.format(stars[1])],
                                             100 - self.config['probability']['{}StarUp'.format(stars[1])]])[
-            0] and self.pool != 'permanent':  # 概率抽UP
+            0] and self.config['upArticle']['{}Star'.format(stars[1])] != None:  # 概率抽UP
             # print('概率的抽到up')
             self.userconf['certainly{}StarUp'.format(stars[0])] = False
-            self.articleList.append(random.choice(self.config['upArticle']['{}Star'.format(stars[1])]))
+            self.articleList.append(random.choice(
+                [str(i) for i in Path(self.config['upArticle']['{}Star'.format(stars[1])]).glob('*.png')]))
+            # self.articleList.append(random.choice(self.config['upArticle']['{}Star'.format(stars[1])]))
         else:  # 没中UP
             # print('非up')
             res = random.choice(
@@ -56,9 +60,8 @@ class YuanShen:
                     self.config['probability']['{}StarRole'.format(stars[1])],
                     self.config['probability']['{}StarArms'.format(stars[1])]])[0], stars[2])).rglob('*.png')])
             self.articleList.append(res)
-            if res not in self.config['upArticle']['{}Star'.format(stars[1])]:  # 不是up的物品??????????????
-                # print('非up,下次必定up')
-                self.userconf['certainly{}StarUp'.format(stars[0])] = True
+            print('非up,下次必定up or 普通池')
+            self.userconf['certainly{}StarUp'.format(stars[0])] = True
 
     def draw(self):
         pic = iter(self.articleList)

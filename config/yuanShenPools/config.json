@@ -13,10 +13,8 @@
       "fourStar": 99.4
     },
     "upArticle": {
-      "fiveStar": [
-      ],
-      "fourStar": [
-      ]
+      "fiveStar": null,
+      "fourStar": null
     },
     "fiveStarFloorsCount": 90,
     "fourStarFloorsCount": 10
@@ -35,14 +33,8 @@
       "fourStar": 99.4
     },
     "upArticle": {
-      "fiveStar": [
-        "config/yuanShenPools/role_5/魈.png"
-      ],
-      "fourStar": [
-        "config/yuanShenPools/role_4/迪奥娜.png",
-        "config/yuanShenPools/role_4/北斗.png",
-        "config/yuanShenPools/role_4/辛焱.png"
-      ]
+      "fiveStar": "config/yuanShenPools/role_5/up",
+      "fourStar": "config/yuanShenPools/role_4/up"
     },
     "fiveStarFloorsCount": 90,
     "fourStarFloorsCount": 10
@@ -61,17 +53,8 @@
       "fourStar": 99.3
     },
     "upArticle": {
-      "fiveStar": [
-        "config/yuanShenPools/arms_5/和璞鸢.png",
-        "config/yuanShenPools/arms_5/磐岩结绿.png"
-      ],
-      "fourStar": [
-        "config/yuanShenPools/arms_4/笛剑.png",
-        "config/yuanShenPools/arms_4/祭礼大剑.png",
-        "config/yuanShenPools/arms_4/弓藏.png",
-        "config/yuanShenPools/arms_4/昭心.png",
-        "config/yuanShenPools/arms_4/西风长枪.png"
-      ]
+      "fiveStar": "config/yuanShenPools/arms_5/up",
+      "fourStar": "config/yuanShenPools/arms_4/up"
     },
     "fiveStarFloorsCount": 80,
     "fourStarFloorsCount": 10
