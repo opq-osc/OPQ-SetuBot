@@ -44,7 +44,8 @@ class YuanShen:
             self.userconf['certainly{}StarUp'.format(stars[0])] = False
             self.articleList.append(random.choice(self.config['upArticle']['{}Star'.format(stars[1])]))
         elif random.choices([True, False], [self.config['probability']['{}StarUp'.format(stars[1])],
-                                            100 - self.config['probability']['{}StarUp'.format(stars[1])]])[0] and self.pool != 'permanent':  # 概率抽UP
+                                            100 - self.config['probability']['{}StarUp'.format(stars[1])]])[
+            0] and self.pool != 'permanent':  # 概率抽UP
             # print('概率的抽到up')
             self.userconf['certainly{}StarUp'.format(stars[0])] = False
             self.articleList.append(random.choice(self.config['upArticle']['{}Star'.format(stars[1])]))
@@ -92,6 +93,9 @@ class YuanShen:
         return base64.b64encode(output_buffer.getvalue()).decode()
 
     def main(self):
+        if self.count > 10:
+            send.text(self.ctx, '不能>10')
+            return
         for i in range(self.count):
             self.userconf['allCount'] += 1
             self.userconf['farFiveStarFloors'] -= 1
@@ -149,4 +153,3 @@ def receive_friend_msg(ctx):
         YuanShen(ctx, int(info[1]), 'roleUp').main()
     elif info := re.match('原神武器池(\d+)抽', ctx.Content):
         YuanShen(ctx, int(info[1]), 'armsUp').main()
-
