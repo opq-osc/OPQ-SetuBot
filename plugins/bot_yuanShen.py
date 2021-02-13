@@ -103,7 +103,9 @@ class YuanShen:
             if self.userconf['farFourStarFloors'] <= 0:  # 4星保底
                 # print('4星保底')
                 self.userconf['farFourStarFloors'] = self.config['fourStarFloorsCount']
-                self.floors(('Four', 'four', '4'))
+                random.choices([lambda: self.floors(('Four', 'four', '4')), lambda: self.floors(('Four', 'four', '4'))],
+                               [self.config['fourStarFloorsProbability']['fourStar'],
+                                self.config['fourStarFloorsProbability']['fiveStar']])[0]()
                 continue
             elif self.userconf['farFiveStarFloors'] <= 0:  # 5星保底
                 # print('5星保底')
@@ -129,6 +131,7 @@ class YuanShen:
         database.Lottery.updateUserinfo(self.qq, self.pool, self.userconf)
         # print(self.userconf)
         # print(self.articleList)
+        random.shuffle(self.articleList)
         pic_base64 = self.draw()
         send.picture(self.ctx, '', '', '', False, pic_base64)
 
