@@ -60,7 +60,7 @@ class YuanShen:
                     self.config['probability']['{}StarRole'.format(stars[1])],
                     self.config['probability']['{}StarArms'.format(stars[1])]])[0], stars[2])).rglob('*.png')])
             self.articleList.append(res)
-            print('非up,下次必定up or 普通池')
+            # print('非up,下次必定up or 普通池')
             self.userconf['certainly{}StarUp'.format(stars[0])] = True
 
     def draw(self):
