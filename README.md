@@ -21,3 +21,4 @@
 
 [xiyaowong/botoy](https://github.com/xiyaowong/botoy)
 
+[H-K-Y/Genshin_Impact_bot](https://github.com/H-K-Y/Genshin_Impact_bot)
