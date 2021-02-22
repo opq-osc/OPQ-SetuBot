@@ -1,11 +1,7 @@
 import uuid
-# import datetime
 from retrying import retry
-# from module.database import tmpDB
-from module.config import pixivUsername, pixivPassword, api_pixiv
+from module.config import api_pixiv
 import hashlib
-import os
-import sys
 import requests
 import json
 import time
@@ -23,10 +19,7 @@ import threading
 
 
 class Pixiv:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.tokenapi = 'https://oauth.secure.pixiv.net/auth/token'
+    def __init__(self):
         self.tokendata = {}
 
     def headers(self):
@@ -45,37 +38,21 @@ class Pixiv:
                    'Accept-Encoding': 'gzip'}
         return headers
 
-    def get_token(self):
-        logger.info('获取Pixiv_token~')
-        data = {'client_id': 'MOBrBDS8blbauoSck0ZfDbtuzpyT',
-                'client_secret': 'lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj',
-                'grant_type': 'password',
-                'username': self.username,
-                'password': self.password,
-                'device_token': uuid.uuid4().hex,
-                'get_secure_url': 'true',
-                'include_policy': 'true'}
-        try:
-            self.tokendata = requests.post(url=self.tokenapi, data=data, headers=self.headers()).json()
-        except:
-            logger.error('获取token出错~')
-            return
-        self.tokendata['time'] = time.time()  # 记录时间
-        return
-
     @retry(stop_max_attempt_number=3, wait_random_max=2000)
-    def refresh_token(self):
+    def refresh_token(self, refresh_token, device_token):
+        url = 'https://oauth.secure.pixiv.net/auth/token'
         logger.info('刷新Pixiv_token~')
         data = {'client_id': 'MOBrBDS8blbauoSck0ZfDbtuzpyT',
                 'client_secret': 'lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj',
                 'grant_type': 'refresh_token',
-                'refresh_token': self.tokendata['refresh_token'],
-                'device_token': self.tokendata['device_token'],
+                'refresh_token': refresh_token,
+                'device_token': device_token,
                 'get_secure_url': 'true',
                 'include_policy': 'true'}
-        self.tokendata = requests.post(url=self.tokenapi, data=data, headers=self.headers()).json()
+        self.tokendata = requests.post(url, data=data, headers=self.headers()).json()
         self.tokendata['time'] = time.time()
         logger.success('刷新token成功~')
+        self.saveToken()
         return
 
     def pixivSearch(self, tag: list, r18: bool):  # p站热度榜
@@ -99,54 +76,45 @@ class Pixiv:
         else:
             if res.status_code == 200:
                 return data
-
-    def if_refresh_token(self):
-        if api_pixiv:
-            if os.path.isfile('.pixivToken.json'):  # 有文件
-                try:
-                    with open('.pixivToken.json', 'r', encoding='utf-8') as f:
-                        self.tokendata = json.loads(f.read())
-                        logger.success('pixivToken载入成功~')
-                except:
-                    logger.error('pixivToken载入失败,请删除pixivToken.json重新启动~')
-                    sys.exit()
             else:
-                logger.info('无pixivToken文件,尝试获取~')
-                self.get_token()
-                self.saveToken()
-        while api_pixiv:
+                logger.warning('Pixiv热度榜异常:{}'.format(res.status_code))
+
+    def saveToken(self):
+        with open('.PixivToken.json', 'w', encoding='utf-8') as f:
+            f.write(json.dumps(self.tokendata))
+        logger.success('PixivToken已保存到.PixivToken.json')
+        return
+
+    def refreshThread(self):
+        while True:
             if time.time() - self.tokendata['time'] >= int(self.tokendata['expires_in']):  # 刷新
                 try:
-                    self.refresh_token()
-                    self.saveToken()
+                    self.refresh_token(self.tokendata['refresh_token'], self.tokendata['device_token'])
                 except:
                     logger.warning('刷新Pixiv_token出错')
                     time.sleep(10)
             else:
                 time.sleep(int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time']))
-                logger.info('pixivtoken下次离刷新还有{}s'.format(
+                logger.info('PixivToken离下次刷新还有{}s'.format(
                     int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time'])))
-        logger.warning('未开启pixivapi或循环异常结束')
 
-    # def loadToken(self):
-    #     if os.path.isfile('.pixivToken.json'):  # 有文件
-    #         try:
-    #             with open('.pixivToken.json', 'r', encoding='utf-8') as f:
-    #                 self.tokendata = json.loads(f.read())
-    #                 logger.success('pixivToken载入成功~')
-    #         except:
-    #             logger.error('pixivToken载入失败,请删除pixivToken.json重新启动~')
-    #             sys.exit()
-    #     else:
-    #         logger.info('无pixivToken文件,尝试获取~')
-    #         self.get_token()
+    def login_and_refresh(self):
+        try:
+            with open('.PixivToken.json', 'r', encoding='utf-8') as f:
+                self.tokendata = json.loads(f.read())
+                logger.success('载入.PixivToken.json成功~')
+        except:
+            logger.error('.PixivToken.json载入失败,请检查内容并重新启动~')
+            return
+        if 'time' not in self.tokendata.keys():
+            self.refresh_token(self.tokendata['refresh_token'], uuid.uuid4().hex)
+        self.refreshThread()
 
-    def saveToken(self):
-        with open('.pixivToken.json', 'w', encoding='utf-8') as f:
-            f.write(json.dumps(self.tokendata))
-        logger.success('PixivToken已保存到.pixivToken.json')
-        return
+    def main(self):
+        if api_pixiv:
+            self.login_and_refresh()
+        logger.info('未开启Pixivapi~')
 
 
-pixiv = Pixiv(pixivUsername, pixivPassword)
-threading.Thread(target=pixiv.if_refresh_token, daemon=True).start()
+pixiv = Pixiv()
+threading.Thread(target=pixiv.main, daemon=True).start()
