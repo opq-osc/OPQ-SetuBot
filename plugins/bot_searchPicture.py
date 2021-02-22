@@ -4,6 +4,9 @@ from botoy.collection import MsgTypes
 from module.send import Send as send
 from module import config
 import json
+import io
+import base64
+from PIL import Image, ImageFilter
 from loguru import logger
 
 
@@ -17,6 +20,7 @@ class SearchPic:
             if type(v) == list:
                 v = v[0]
             msg += '{}:{}\r\n'.format(k, v)
+        msg += '预览url:{}'.format(data['header']['thumbnail'])
         return msg
 
     def saucenao(self, picurl):
@@ -33,6 +37,14 @@ class SearchPic:
             logger.warning('saucenao搜图失败~ :{}'.format(e))
             return
 
+    def pictureProcess(self, url):
+        with requests.get(url) as res:
+            pic = Image.open(io.BytesIO(res.content))
+            pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=1.8))  # 高斯模糊
+            output_buffer = io.BytesIO()
+            pic_Blur.save(output_buffer, format='JPEG')
+            return base64.b64encode(output_buffer.getvalue()).decode()
+
     def main(self):
         content = json.loads(self.ctx.Content)
         if content['Tips'] == '[群图片]':
@@ -43,7 +55,7 @@ class SearchPic:
             return
         if res := self.saucenao(picurl):
             msg = self.buildmsg(res['results'][0])
-            send.picture(self.ctx, msg, res['results'][0]['header']['thumbnail'])
+            send.picture(self.ctx, msg, '', '', False, self.pictureProcess(res['results'][0]['header']['thumbnail']))
             return
         else:
             logger.warning('saucenao无返回')
