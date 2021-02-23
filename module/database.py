@@ -324,7 +324,8 @@ class Event:
 
 
 class Getdata:
-    def defaultdata(self, data):
+    @staticmethod
+    def defaultdata(data):
         data['managers'] = []  # 所有的管理者(可以设置bot功能的)
         # -----------------------------------------------------
         data['setuLevel'] = {'group': 1, 'temp': 3}  # 默认等级 0:正常 1:性感 2:色情 3:All
@@ -361,13 +362,13 @@ class Getdata:
         data['msg_frequency'] = '本群每{time}s能调用{num}次,已经调用{num_call}次,离刷新还有{r_time}s'
         # data['msg_'] = ''
         # return data
-
-    def updateData(self, data, groupid):
+    @classmethod
+    def updateData(cls, data, groupid):
         if groupConfig.search(Q['GroupId'] == groupid):
             logger.info('群:{}已存在,更新数据~'.format(groupid))
             groupConfig.update(data, Q['GroupId'] == groupid)
         else:
-            self.defaultdata(data)
+            cls.defaultdata(data)
             logger.info('群:{}不存在,插入数据~'.format(groupid))
             groupConfig.insert(data)
 
