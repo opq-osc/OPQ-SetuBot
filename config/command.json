@@ -258,6 +258,12 @@
     ],
     "res": null
   },
+  "修改freq刷新时间": {
+    "keyList": [
+      "refreshTime"
+    ],
+    "res": null
+  },
   "修改重复发送间隔": {
     "keyList": [
       "refreshSent"
