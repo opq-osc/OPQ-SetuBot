@@ -8,9 +8,8 @@ import re
 import random
 import requests
 import time
-
 setuPattern = '来(.*?)[点丶份张幅](.*?)的?(|r18)[色瑟涩😍🐍][图圖🤮]'
-
+# session = requests.session()
 
 class Setu:
     def __init__(self, ctx):
@@ -90,7 +89,8 @@ class Setu:
         if self.config['count'] > 10:  # api限制不能大于10
             params['num'] = 10
         try:
-            res = requests.get(url, params, timeout=5)
+            with requests.session() as s:
+                res = s.get(url, params=params, timeout=5)
             setu_data = res.json()
         except Exception as e:
             logger.warning('api0 boom~ :{}'.format(e))
@@ -123,7 +123,7 @@ class Setu:
         if self.config['setuLevel'] == 1:
             r18 = 0
         elif self.config['setuLevel'] == 3:
-            r18 = random.choice([0, 1])
+            r18 = 2
         elif self.config['setuLevel'] == 2:
             r18 = 1
         else:
@@ -140,7 +140,8 @@ class Setu:
         if not config.proxy:  # 不开启反代
             params['proxy'] = 'disable'
         try:
-            res = requests.get(url, params, timeout=8)
+            with requests.session() as s:
+                res = s.get(url, params=params, timeout=8)
             setu_data = res.json()
         except Exception as e:
             logger.warning('api1 boom~ :{}'.format(e))
@@ -291,6 +292,7 @@ class Setu:
             self.group_or_temp()
 
     def send(self):
+        # logger.info('开始')
         apis = [self.localSetu, self.api_0]
         func = random.choice(apis)
         apis.remove(func)
@@ -308,6 +310,7 @@ class Setu:
                 tag=self.tags,
                 num=sum(self.getCountList)
             ), self.config['at_warning'])
+        # logger.info('结束')
 
 
 @deco.ignore_botself

@@ -68,7 +68,8 @@ class Pixiv:
         headers['Host'] = 'app-api.pixiv.net'
         headers['Authorization'] = 'Bearer {}'.format(self.tokendata['access_token'])
         try:
-            res = requests.get(url, params=params, headers=headers, timeout=10)
+            with requests.session() as s:
+                res = s.get(url, params=params, headers=headers, timeout=10)
             data = res.json()
         except Exception as e:
             logger.warning('Pixiv热度榜获取失败~ :{}'.format(e))
@@ -94,9 +95,9 @@ class Pixiv:
                     logger.warning('刷新Pixiv_token出错')
                     time.sleep(10)
             else:
-                time.sleep(int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time']))
                 logger.info('PixivToken离下次刷新还有{}s'.format(
                     int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time'])))
+                time.sleep(int(self.tokendata['expires_in']) - (time.time() - self.tokendata['time']))
 
     def login_and_refresh(self):
         try:
