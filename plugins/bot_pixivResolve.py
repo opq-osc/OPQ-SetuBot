@@ -37,7 +37,7 @@ class PixivResolve:
 
     def choosePicUrl(self, info, p):
         if info['page_count'] == '1':
-            if p != 1:
+            if p != 0:
                 return
             return info['url_big'], info['url']
         else:
