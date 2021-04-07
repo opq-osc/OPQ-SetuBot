@@ -17,7 +17,9 @@ lotteryData = TinyDB('./config/lotteryData.json')
 setuDB = TinyDB('./config/setu.json')
 
 tmpDB = TinyDB(storage=MemoryStorage)
-Q = Query()
+
+
+# Q = Query()
 
 
 # todo: 创建一个数据库的基本操作类,接下来各个模块的小类全部继承这个base类
@@ -43,30 +45,30 @@ class BasicOperation:
         return BasicOperation.change_dict(x, lista, change, ret)
 
     @staticmethod
-    def auth(qqg, qq):
+    def auth(qqg: int, qq: int):  # superadmin:1 ,群主:2 , 管理员:3
         if qq == config.superadmin:
             return 1
-        if res := groupConfig.get(Q['GroupId'] == qqg):
+        elif res := groupConfig.get(where('GroupId') == qqg):
             if qq == res['GroupOwner']:
                 return 2
             elif qq in res['admins'] or qq in res['managers']:  # 管理员
                 return 3
             else:
-                return
+                return 0
         else:
-            return
+            return 0
 
     @staticmethod
     def updateGroupData(groupid: int, data: dict):
-        groupConfig.update(data, Q['GroupId'] == groupid)
+        groupConfig.update(data, where('GroupId') == groupid)
 
     @staticmethod
     def getGroupConf(groupid: int):
-        return groupConfig.get(Q['GroupId'] == groupid)
+        return groupConfig.get(where('GroupId') == groupid)
 
     @staticmethod
     def getUserconf(userid: int):
-        if conf := friendConfig.get(Q['QQ'] == userid):
+        if conf := friendConfig.get(where('QQ') == userid):
             return conf
         else:
             return {
@@ -113,7 +115,7 @@ class LocalSetu:
     def addSetu(cls, data: dict, level: int, groupid: int):  # 改成单个插入 由上级控制 ,群独立
         typE = cls.conversionLevel(level)
         data['time'] = int(time.time())
-        if res := setuDB.get((Q['artwork'] == data['artwork']) & (Q['page'] == data['page'])):  # 数据库有数据
+        if res := setuDB.get((where('artwork') == data['artwork']) & (where('page') == data['page'])):  # 数据库有数据
             data['type'] = res['type']
             for k, v in data['type'].items():  # 遍历 'type': {'normal': [], 'sexy': [], 'porn': []}
                 if k != typE:  # 群号出现在非这次修改的等级里
@@ -122,7 +124,7 @@ class LocalSetu:
                 else:
                     data['type'][k].append(groupid)
                 data['type'][k] = list(set(data['type'][k]))  # 以防万一,去重
-            setuDB.update(data, (Q['artwork'] == data['artwork']) & (Q['page'] == data['page']))
+            setuDB.update(data, (where('artwork') == data['artwork']) & (where('page') == data['page']))
             logger.info(
                 'pid:{} page:{} group:{}-->{}'.format(data['artwork'], data['page'], res['type'], data['type']))
         else:
@@ -134,39 +136,39 @@ class LocalSetu:
     @staticmethod
     def delSetu(artworkid, groupid, page: int = None):
         if page == None:
-            if res := setuDB.search((Q['artwork'] == artworkid) &
+            if res := setuDB.search((where('artwork') == artworkid) &
                                     (
-                                            (Q['type']['normal'].any([groupid])) |
-                                            (Q['type']['sexy'].any([groupid])) |
-                                            (Q['type']['porn'].any([groupid]))
+                                            (where('type')['normal'].any([groupid])) |
+                                            (where('type')['sexy'].any([groupid])) |
+                                            (where('type')['porn'].any([groupid]))
                                     )):  # 数据库有数据
                 for data in res:
                     for k, v in data['type'].items():
                         if groupid in v:
                             data['type'][k].remove(groupid)
-                    setuDB.update(data, (Q['artwork'] == artworkid) & (Q['page'] == data['page']))
+                    setuDB.update(data, (where('artwork') == artworkid) & (where('page') == data['page']))
                 return True
             else:
                 return False
         else:
-            if res := setuDB.get((Q['artwork'] == artworkid) &
-                                 (Q['page'] == page) &
+            if res := setuDB.get((where('artwork') == artworkid) &
+                                 (where('page') == page) &
                                  (
-                                         (Q['type']['normal'].any([groupid])) |
-                                         (Q['type']['sexy'].any([groupid])) |
-                                         (Q['type']['porn'].any([groupid]))
+                                         (where('type')['normal'].any([groupid])) |
+                                         (where('type')['sexy'].any([groupid])) |
+                                         (where('type')['porn'].any([groupid]))
                                  )):  # 数据库有数据
                 for k, v in res['type'].items():
                     if groupid in v:
                         res['type'][k].remove(groupid)
-                setuDB.update(res, (Q['artwork'] == artworkid) & (Q['page'] == page))
+                setuDB.update(res, (where('artwork') == artworkid) & (where('page') == page))
                 return True
             else:
                 return False
 
     @staticmethod
     def updateSetu(artworkid, page, data):
-        setuDB.update(data, (Q['artwork'] == artworkid & Q['page'] == page))
+        setuDB.update(data, (where('artwork') == artworkid & where('page') == page))
 
     @classmethod
     def _serchtags(cls, taglist: list, expr=None):
@@ -174,9 +176,9 @@ class LocalSetu:
         if not taglist:
             return expr
         if expr:
-            expr = expr & (Q['tags'].any((Q['name'].matches(taglist[0], re.I | re.M))))
+            expr = expr & (where('tags').any((where('name').matches(taglist[0], re.I | re.M))))
         else:
-            expr = Q['tags'].any((Q['name'].matches(taglist[0], re.I | re.M)))
+            expr = where('tags').any((where('name').matches(taglist[0], re.I | re.M)))
         taglist.pop(0)
         return cls._serchtags(taglist, expr)
 
@@ -191,33 +193,33 @@ class LocalSetu:
             allTagList.remove(level)
             if tags:
                 data = setuDB.search(
-                    (~Q['type'][allTagList[0]].any([groupid])) &
-                    (~Q['type'][allTagList[1]].any([groupid])) &
-                    (Q['type'][level].any([0, groupid])) &
+                    (~where('type')[allTagList[0]].any([groupid])) &
+                    (~where('type')[allTagList[1]].any([groupid])) &
+                    (where('type')[level].any([0, groupid])) &
                     cls._serchtags(tags)
                 )
             else:
                 data = setuDB.search(
-                    (~Q['type'][allTagList[0]].any([groupid])) &
-                    (~Q['type'][allTagList[1]].any([groupid])) &
-                    (Q['type'][level].any([0, groupid]))
+                    (~where('type')[allTagList[0]].any([groupid])) &
+                    (~where('type')[allTagList[1]].any([groupid])) &
+                    (where('type')[level].any([0, groupid]))
                 )
         else:  # 从全部色图中搜索
             if tags:
                 data = setuDB.search(
                     (
-                            (Q['type']['normal'].any([0, groupid])) |
-                            (Q['type']['sexy'].any([0, groupid])) |
-                            (Q['type']['porn'].any([0, groupid]))
+                            (where('type')['normal'].any([0, groupid])) |
+                            (where('type')['sexy'].any([0, groupid])) |
+                            (where('type')['porn'].any([0, groupid]))
                     )
                     & (cls._serchtags(tags))
                 )
             else:
                 data = setuDB.search(
                     (
-                            (Q['type']['normal'].any([0, groupid])) |
-                            (Q['type']['sexy'].any([0, groupid])) |
-                            (Q['type']['porn'].any([0, groupid]))
+                            (where('type')['normal'].any([0, groupid])) |
+                            (where('type')['sexy'].any([0, groupid])) |
+                            (where('type')['porn'].any([0, groupid]))
                     )
                 )
         if len(data) <= num:
@@ -238,12 +240,13 @@ class Setu(BasicOperation):
     @staticmethod
     def ifSent(ID, url, refreshTime):
         filename = os.path.basename(url)
-        if data := tmpDB.table('sentlist').search((Q['id'] == ID) & (Q['filename'] == filename)):  # 如果有数据
+        if data := tmpDB.table('sentlist').search((where('id') == ID) & (where('filename') == filename)):  # 如果有数据
             if time.time() - data[0]['time'] <= refreshTime:  # 发送过
                 logger.info('id:{},{}发送过~'.format(ID, filename))
                 return True
             else:
-                tmpDB.table('sentlist').update({'time': time.time()}, (Q['id'] == ID) & (Q['filename'] == filename))
+                tmpDB.table('sentlist').update({'time': time.time()},
+                                               (where('id') == ID) & (where('filename') == filename))
                 return False
         else:  # 没数据
             tmpDB.table('sentlist').insert({'id': ID, 'time': time.time(), 'filename': filename})
@@ -251,15 +254,15 @@ class Setu(BasicOperation):
 
     @staticmethod
     def freq(groupid, num, refreshTime, freqCount):
-        if data_tmp := tmpDB.table('freq').get(Q['group'] == groupid):  # 如果有数据
+        if data_tmp := tmpDB.table('freq').get(where('group') == groupid):  # 如果有数据
             if refreshTime != 0 and (time.time() - data_tmp['time'] >= refreshTime):  # 刷新
-                tmpDB.table('freq').update({'time': time.time(), 'freq': 0}, Q['group'] == groupid)
+                tmpDB.table('freq').update({'time': time.time(), 'freq': 0}, where('group') == groupid)
                 return False
             elif freqCount != 0 and num + data_tmp['freq'] > freqCount:  # 大于限制且不为0
                 logger.info('群:{}大于频率限制:{}次/{}s'.format(groupid, freqCount, refreshTime))
-                return freqCount, refreshTime
+                return freqCount,  data_tmp['time']
             # 记录
-            tmpDB.table('freq').update(add('freq', num), Q['group'] == groupid)
+            tmpDB.table('freq').update(add('freq', num), where('group') == groupid)
         else:  # 没数据
             logger.info('群:{}第一次调用'.format(groupid))
             tmpDB.table('freq').insert({'group': groupid, 'time': time.time(), 'freq': num})
@@ -268,7 +271,7 @@ class Setu(BasicOperation):
     @staticmethod
     def getGroupConf(groupid: int, msgType: str):
         # data = {}
-        if res := groupConfig.get(Q['GroupId'] == groupid):
+        if res := groupConfig.get(where('GroupId') == groupid):
             for k, v in res.items():
                 # print(k, v)
                 if type(v) == dict:
@@ -318,7 +321,7 @@ class Event:
 
     @staticmethod
     def updateAdminAndManager(groupid: int, admins: list, managers: list):
-        groupConfig.update({'admins': admins, 'managers': managers}, Q['GroupId'] == groupid)
+        groupConfig.update({'admins': admins, 'managers': managers}, where('GroupId') == groupid)
     # @staticmethod
     # def
 
@@ -362,11 +365,12 @@ class Getdata:
         data['msg_frequency'] = '本群每{time}s能调用{num}次,已经调用{num_call}次,离刷新还有{r_time}s'
         # data['msg_'] = ''
         # return data
+
     @classmethod
     def updateData(cls, data, groupid):
-        if groupConfig.search(Q['GroupId'] == groupid):
+        if groupConfig.search(where('GroupId') == groupid):
             logger.info('群:{}已存在,更新数据~'.format(groupid))
-            groupConfig.update(data, Q['GroupId'] == groupid)
+            groupConfig.update(data, where('GroupId') == groupid)
         else:
             cls.defaultdata(data)
             logger.info('群:{}不存在,插入数据~'.format(groupid))
@@ -387,7 +391,7 @@ class Getdata:
         if extraGroup := list(set(allgroups_db).difference(set(allgroups_get))):  # 多余的群
             logger.info('数据库中多余群:{}'.format(extraGroup))
             for groupid_del in extraGroup:
-                groupConfig.remove(Q['GroupId'] == groupid_del)
+                groupConfig.remove(where('GroupId') == groupid_del)
                 logger.info('已删除群:{}数据'.format(groupid_del))
         logger.success('更新群信息成功~')
         return
