@@ -8,6 +8,12 @@ from loguru import logger
 
 
 class Sysinfo:
+    def __init__(self, ctx):
+        self.ctx = ctx
+        self.accessLevel = ctx.accessLevel
+        self.msgtype = ctx.type
+        self.msg = ctx.Content
+
     @staticmethod
     def get_cpu_info():
         info = cpuinfo.get_cpu_info()  # 获取CPU型号等
@@ -15,9 +21,12 @@ class Sysinfo:
         xc_count = psutil.cpu_count()  # 线程数，如双核四线程
         cpu_percent = round((psutil.cpu_percent()), 2)  # cpu使用率
         try:
-            model = info['brand_raw']  # cpu型号
+            model = info['hardware_raw']  # 树莓派能用这个获取到具体型号
         except:
-            model = 'null'
+            try:
+                model = info['brand_raw']  # cpu型号(我笔记本能用这个获取到具体型号,而且没有hardware_raw字段)
+            except:
+                model = 'null'
         try:  # 频率
             freq = info['hz_actual_friendly']
         except:
@@ -61,9 +70,9 @@ class Sysinfo:
                '已用swap:{}G\r\n' \
                '空闲swap:{}G\r\n' \
                'swap使用率:{}%'.format(swap_total,
-                                        swap_used,
-                                        swap_free,
-                                        swap_percent)
+                                    swap_used,
+                                    swap_free,
+                                    swap_percent)
 
     @staticmethod
     def uptime():
@@ -93,6 +102,18 @@ class Sysinfo:
                                  swap=cls.get_swap_info(),
                                  uptime=cls.uptime(),
                                  star='*' * 20)
+
+    def main(self):
+        funcDict = {'cpuinfo': self.get_cpu_info,
+                    'meminfo': self.get_memory_info,
+                    'swapinfo': self.get_swap_info,
+                    'uptime': self.uptime,
+                    'sysinfo': self.allInfo}
+        if self.msgtype == 'AtMsg' and self.accessLevel:
+            try:  # 待完善at消息解析
+                funcDict[self.msg]()
+            except:
+                pass
 
 
 @deco.ignore_botself
