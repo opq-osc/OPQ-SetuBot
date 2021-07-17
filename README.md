@@ -12,13 +12,8 @@
 - 系统信息
 
 
-
-
-
 ### TODO:
 ​	TAG映射 (50%)
-
- 
 
 
 
@@ -33,8 +28,9 @@
 [xiyaowong/botoy](https://github.com/xiyaowong/botoy)
 
 [H-K-Y/Genshin_Impact_bot](https://github.com/H-K-Y/Genshin_Impact_bot)
-
-
-
 特别感谢 [JetBrains](https://www.jetbrains.com/?from=OPQ-SetuBot) 为开源项目提供免费的 [pycharm](https://www.jetbrains.com/pycharm/?from=OPQ-SetuBot) 等 IDE 的授权  
-[<img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20210305185521.png" width="200"/>](https://www.jetbrains.com/?from=OPQ-SetuBot)
+[<img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20210305185521.png" width="100"/>](https://www.jetbrains.com/?from=OPQ-SetuBot)
+
+
+### 投食通道
+<img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/支付宝收款码.jpg" alt="Drawing" width="170px" /><img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/QQ收款码.png" alt="Drawing" width="170px" /><img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/微信赞赏码.png" alt="Drawing" width="170px" />
