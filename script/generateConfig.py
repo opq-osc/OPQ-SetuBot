@@ -81,7 +81,7 @@ if __name__ == '__main__':
     groupList = action.getGroupList()
     for group in groupList:
         groupid = group['GroupId']
-        filePath = curFileDir.parent / 'plugins' / 'bot_Setu' / 'database' / 'DB' / 'configs' / '{}.json'.format(
+        filePath = curFileDir.parent / 'plugins' / 'bot_Setu' / 'dataBase' / 'DB' / 'configs' / '{}.json'.format(
             groupid)
         if filePath.is_file():
             logger.info('群:{} 配置文件已存在'.format(groupid))

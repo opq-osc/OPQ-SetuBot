@@ -84,6 +84,9 @@ class PixivToken:
         except Exception as e:
             logger.error('.PixivToken.json载入失败,请检查内容并重新启动~\r\n{}'.format(e))
             sys.exit(0)
+        if 'refresh_token' not in self.tokendata.keys():
+            logger.error('PixivToken不存在')
+            sys.exit(0)
         if 'time' not in self.tokendata.keys():  # 没time字段就是第一次启动
             self.refresh_token(self.tokendata['refresh_token'], uuid.uuid4().hex)
             return
