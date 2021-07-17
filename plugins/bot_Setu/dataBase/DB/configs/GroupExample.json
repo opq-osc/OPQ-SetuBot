@@ -1,0 +1,52 @@
+{
+  "setting": {
+    "setu": {
+      "group": true,
+      "temp": true
+    },
+    "api": {
+      "lolicon": true,
+      "yuban": true,
+      "pixiv": true
+    },
+    "r18": {
+      "group": true,
+      "temp": true
+    },
+    "freq": {
+      "limitCount": 10,
+      "refreshTime": 120
+    },
+    "quality": "large",
+    "at": false,
+    "singleMaximum": {
+      "group": 5,
+      "temp": 10
+    },
+    "revokeTime": {
+      "group": 20,
+      "temp": 0
+    }
+  },
+  "setuInfoShow": {
+    "title": true,
+    "picID": false,
+    "picWebUrl": true,
+    "page": true,
+    "author": true,
+    "authorID": false,
+    "authorWebUrl": true,
+    "picOriginalUrl": true,
+    "tags": true
+  },
+  "replyMsg": {
+    "inputError": "要阿拉伯数字哦~",
+    "notFound": "你的xp好奇怪啊",
+    "tooMuch": "爪巴",
+    "tooSmall": "¿",
+    "closed": "关了,爪巴",
+    "noR18": "没有,爪巴",
+    "insufficient": "关于{tag}的图片只有{num}张",
+    "freqLimit": "本群每{time}s能发{limitCount}张色图,已发{callDone}张,离刷新还有{r_time}s"
+  }
+}

@@ -1,27 +1,22 @@
 # [OPQBOT](https://github.com/OPQBOT/OPQ)的色图姬插件
 
-#### 详细信息看[wiki](https://github.com/yuban10703/OPQ-SetuBot/wiki) (wiki正在重写,有问题直接提issue~~~~........)
+#### 详细信息看[wiki](https://github.com/yuban10703/OPQ-SetuBot/wiki)  (wiki重写ing,有问题直接提issue......)
 
 
 
 ### 功能
 
 - 发色图
-- 原神模拟抽卡
-- 搜图
+- 自动解析Pixiv链接
+- 搜图(saucenao)
 - 系统信息
 
 
 
+
+
 ### TODO:
-#### 重写：
-​	单独群配置各个api开关(100%)
-
 ​	TAG映射 (50%)
-
-​       使用httpx库(100%)
-        
-​       http代理支持(100%)
 
  
 

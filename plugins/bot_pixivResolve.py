@@ -1,13 +1,11 @@
-import requests
-import io
+import httpx
+from io import BytesIO
 import base64
 import re
 from PIL import Image, ImageFilter
-from botoy import GroupMsg, FriendMsg
+from botoy import GroupMsg, FriendMsg, S, jconfig
 from botoy import decorators as deco
-from module import config, database
 from loguru import logger
-from module.send import Send as send
 
 
 class PixivResolve:
@@ -17,6 +15,7 @@ class PixivResolve:
         self.qqg = ctx.QQG
         self.msgtype = ctx.type
         self.msg = ctx.Content
+        self.send = S.bind(ctx)
 
     def getSetuInfo(self, pid):
         url = 'https://www.pixiv.net/touch/ajax/illust/details'
@@ -29,8 +28,8 @@ class PixivResolve:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66'
         }
         try:
-            with requests.session() as s:
-                return s.get(url, params=params, headers=headers, timeout=5).json()
+            with httpx.Client(proxies=jconfig.proxies) as c:
+                return c.get(url, params=params, headers=headers, timeout=5).json()
         except:
             logger.error('Pixiv解析:获取图片信息失败')
             return
@@ -58,15 +57,25 @@ class PixivResolve:
                                          authorid=authorid,
                                          page=page,
                                          pic_url=pic_url,
-                                         revoke=20)
+                                         revoke=35)
 
     def pictureProcess(self, url):
-        with requests.get(url, headers={'Referer': 'https://www.pixiv.net'}) as res:
-            pic = Image.open(io.BytesIO(res.content))
+        with httpx.stream("GET", url, headers={'Referer': 'https://www.pixiv.net'}, proxies=jconfig.proxies) as res:
+            pic = Image.open(BytesIO(res.read()))
             pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=6.5))  # 高斯模糊
-            output_buffer = io.BytesIO()
-            pic_Blur.save(output_buffer, format='PNG')
-            return base64.b64encode(output_buffer.getvalue()).decode()
+            with BytesIO() as bf:
+                pic_Blur.save(bf, format='PNG')
+                return base64.b64encode(bf.getvalue()).decode()
+
+    def buildOriginalUrl(self, original_url: str, page: int) -> str:
+        def changePage(matched):
+            if page > 1:
+                return '-%s' % (int(matched[0][-1]) + 1)
+            else:
+                return ''
+
+        msg_changeHost = re.sub(r'//.*/', r'//pixiv.re/', original_url)
+        return re.sub(r'_p\d+', changePage, msg_changeHost)
 
     def main(self):
         logger.info('解析Pixiv:{}'.format(self.msg))
@@ -96,11 +105,12 @@ class PixivResolve:
                 msg = self.buildMsg(data['body']['illust_details']['title'],
                                     data['body']['illust_details']['author_details']['user_name'],
                                     data['body']['illust_details']['user_id'],
-                                    page, picurl[0].replace('i.pximg.net', 'i.pixiv.cat')
+                                    page,
+                                    self.buildOriginalUrl(picurl[0], int(data['body']['illust_details']['page_count']))
                                     )
-                send.picture(self.ctx, msg, '', False, False, pic_base64)
+                self.send.image(pic_base64, msg)
             else:
-                send.text(self.ctx, '{}无P{}~'.format(pid, page))
+                self.send.text('{}无P{}~'.format(pid, page))
 
 
 re_expression = r'.*pixiv.net/artworks/.*'

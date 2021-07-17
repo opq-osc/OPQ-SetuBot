@@ -1,8 +1,9 @@
-requests
-retrying
-Pillow
-tinydb
 botoy
-python-engineio==3.14.2
+httpx
+pydantic
+retrying
+tinydb
+Pillow
 py-cpuinfo
+ujson
 psutil

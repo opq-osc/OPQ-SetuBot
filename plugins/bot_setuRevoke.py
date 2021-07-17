@@ -2,10 +2,10 @@ import random
 import re
 import time
 
-from botoy import GroupMsg
+from botoy import Action, jconfig, GroupMsg
 from botoy import decorators as deco
 
-from module.send import Send as send
+action = Action(qq=jconfig.bot, host=jconfig.host, port=jconfig.port)
 
 
 @deco.from_botself
@@ -16,4 +16,4 @@ def receive_group_msg(ctx: GroupMsg):
         else:
             delay = random.randint(30, 60)
         time.sleep(delay)
-        send.revoke(ctx)
+        action.revokeGroupMsg(ctx.QQG, ctx.MsgSeq, ctx.MsgRandom)

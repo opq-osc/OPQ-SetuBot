@@ -1,10 +1,14 @@
+"""
+发送sysinfo查看系统信息
+"""
+
 import datetime
 import time
 import cpuinfo
 import psutil
 from botoy import decorators as deco
-from module.send import Send as send
 from loguru import logger
+from botoy import S
 
 
 class Sysinfo:
@@ -119,10 +123,10 @@ class Sysinfo:
 @deco.ignore_botself
 @deco.equal_content('sysinfo')
 def receive_group_msg(ctx):
-    send.text(ctx, Sysinfo.allInfo())
+    S.text(Sysinfo.allInfo())
 
 
 @deco.ignore_botself
 @deco.equal_content('sysinfo')
 def receive_friend_msg(ctx):
-    send.text(ctx, Sysinfo.allInfo())
+    S.text(Sysinfo.allInfo())
