@@ -1,8 +1,8 @@
 {
-  "host": "http://10.1.1.170",
+  "host": "http://127.0.0.1",
   "port": 8888,
-  "bot": 2650508015,
-  "superAdmin": 2846021566,
+  "bot": 123456,
+  "superAdmin": 123456,
   "proxies": {},
   "group_blacklist": [],
   "friend_blacklist": [],
