@@ -140,12 +140,12 @@ class Setu:
 
     def filter_Sent(self, setus: List[FinishSetuData]) -> List[FinishSetuData]:  # 过滤一段时间内发送过的图片
         if setus != None:
-            for setu in setus:
-                if ifSent(self.ctx.QQG if self.ctx.type in ['temp', 'group'] else self.ctx.QQ, setu.picID,
+            setus_copy = setus.copy()
+            for setu in setus_copy:
+                if ifSent(self.ctx.QQG if self.ctx.type in ['temp', 'group'] else self.ctx.QQ, int(setu.picID),
                           self.config.setting.sentRefreshTime):
-                    setus.remove(setu)
-                    continue
-            return setus
+                    setus_copy.remove(setu)
+            return setus_copy
         return []
 
     def group_or_temp(self):
