@@ -22,7 +22,7 @@ class CMD:
             logger.error('数据类型检查错误\r\n%s' % e)
             return False
         try:
-            with open(curFileDir.parent / 'bot_Setu' / 'database' / 'DB' / 'configs' / '{}.json'.format(groupid),
+            with open(curFileDir.parent / 'bot_Setu' / 'dataBase' / 'DB' / 'configs' / '{}.json'.format(groupid),
                       'w',
                       encoding='utf-8') as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
