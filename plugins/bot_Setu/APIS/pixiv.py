@@ -8,6 +8,7 @@ import json
 import time
 import uuid
 import re
+import random
 from loguru import logger
 import hashlib
 from retrying import retry
@@ -45,34 +46,43 @@ class PixivToken:
                    'Accept-Encoding': 'gzip'}
         return headers
 
-    @retry(stop_max_attempt_number=3, wait_random_max=2000)
-    def refresh_token(self, refresh_token, device_token):
+    @retry(stop_max_attempt_number=3, wait_random_max=5000)
+    def refresh_token(self):
         url = 'https://oauth.secure.pixiv.net/auth/token'
         logger.info('尝试刷新Pixiv_token')
         data = {'client_id': 'MOBrBDS8blbauoSck0ZfDbtuzpyT',
                 'client_secret': 'lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj',
                 'grant_type': 'refresh_token',
-                'refresh_token': refresh_token,
-                'device_token': device_token,
+                'refresh_token': self.tokendata['refresh_token'],
+                'device_token': self.tokendata[
+                    'device_token'] if 'device_token' in self.tokendata.keys() else uuid.uuid4().hex,
                 'get_secure_url': 'true',
                 'include_policy': 'true'}
         self.tokendata = self.Client.post(url, data=data, headers=self.headers()).json()
         self.tokendata['time'] = time.time()
         logger.success('刷新token成功~')
         self.saveToken()
-        self.addJob(int(self.tokendata['expires_in'] - (time.time() - self.tokendata['time'])))
+
+    def continue_refresh_token(self):
+        try:
+            self.refresh_token()
+        except:
+            logger.warning('刷新失败')
+            nextTime = 300
+        else:
+            nextTime = int(self.tokendata['expires_in'] - (time.time() - self.tokendata['time']))
+        self.addJob(nextTime)
         return
 
     def saveToken(self):
         with open(self.tokenPath, 'w', encoding='utf-8') as f:
-            json.dump(self.tokendata, f)
+            json.dump(self.tokendata, f, indent=4, ensure_ascii=False)
         logger.success('PixivToken已保存到.PixivToken.json')
         return
 
     def addJob(self, next_time: int):
         logger.info('离下次刷新还有:{}s'.format(next_time))
-        scheduler.add_job(self.refresh_token,
-                          args=(self.tokendata['refresh_token'], self.tokendata['device_token'],),
+        scheduler.add_job(self.continue_refresh_token,
                           next_run_time=datetime.now() + timedelta(seconds=next_time - 1),
                           misfire_grace_time=30)
 
@@ -88,10 +98,10 @@ class PixivToken:
             logger.error('PixivToken不存在')
             sys.exit(0)
         if 'time' not in self.tokendata.keys():  # 没time字段就是第一次启动
-            self.refresh_token(self.tokendata['refresh_token'], uuid.uuid4().hex)
+            self.continue_refresh_token()
             return
         if time.time() - self.tokendata['time'] >= int(self.tokendata['expires_in']):  # 停止程序后再次启动时间后的间隔时间超过刷新间隔
-            self.refresh_token(self.tokendata['refresh_token'], self.tokendata['device_token'])
+            self.continue_refresh_token()
             return
         self.addJob(int(self.tokendata['expires_in'] - (time.time() - self.tokendata['time'])))
 
@@ -127,9 +137,14 @@ class Pixiv:
             return []
         else:
             if res.status_code == 200:
-                return self.process_data(data)[:self.config.toGetNum - self.config.doneNum]
+                data_finally = self.process_data(data)
+                if len(data_finally) <= self.config.toGetNum - self.config.doneNum:
+                    return data_finally
+                else:
+                    return random.sample(self.process_data(data), self.config.toGetNum - self.config.doneNum)
             else:
-                logger.warning('Pixiv热度榜异常:{}'.format(res.status_code))
+                logger.warning('Pixiv热度榜异常:{}\r\n{}'.format(res.status_code, data))
+                return []
 
     def buildOriginalUrl(self, original_url: str, page: int) -> str:
         def changePage(matched):
