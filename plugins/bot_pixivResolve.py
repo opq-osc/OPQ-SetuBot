@@ -7,6 +7,7 @@ from botoy import GroupMsg, FriendMsg, S, jconfig
 from botoy import decorators as deco
 from loguru import logger
 
+__doc__ = """解析Pixiv链接,发送Pixiv的链接就行,如果要查看第一页 就在链接加上空格再接p1"""
 
 class PixivResolve:
     def __init__(self, ctx):

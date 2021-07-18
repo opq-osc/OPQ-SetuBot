@@ -1,13 +1,8 @@
-"""
-CMD:
-?????????
-"""
 from botoy import FriendMsg, GroupMsg
 from botoy import decorators as deco
 from .command import CMD
 
-
-
+__doc__ = """使用命令方便的修改色图插件的配置文件"""
 
 
 @deco.ignore_botself

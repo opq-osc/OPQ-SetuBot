@@ -1,11 +1,7 @@
-"""
-CMD:
-?????????
-"""
 from botoy import MsgTypes
 from botoy import decorators as deco
 from .searchPicture import SearchPic
-
+__doc__ = """把文字:"搜图"和图片放在一条消息中即可"""
 
 @deco.ignore_botself
 @deco.in_content('.*搜图')
