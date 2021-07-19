@@ -117,8 +117,11 @@ class Pixiv:
 
     def get(self):  # p站热度榜
         tags = self.config.tags.copy()
-        if self.config.level > 0:
+        if self.config.level == 1:  # R18 only
             tags.append('R-18')
+        elif self.config.level == 2:  # all
+            if random.choice([True, False]):
+                tags.append('R-18')
         url = 'https://app-api.pixiv.net/v1/search/popular-preview/illust'
         params = {'filter': 'for_android',
                   'include_translated_tag_results': 'true',

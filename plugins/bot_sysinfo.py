@@ -119,14 +119,12 @@ class Sysinfo:
             except:
                 pass
 
-
-@deco.ignore_botself
 @deco.equal_content('sysinfo')
+@deco.ignore_botself
 def receive_group_msg(ctx):
     S.text(Sysinfo.allInfo())
 
-
-@deco.ignore_botself
 @deco.equal_content('sysinfo')
+@deco.ignore_botself
 def receive_friend_msg(ctx):
     S.text(Sysinfo.allInfo())

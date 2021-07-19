@@ -116,14 +116,12 @@ class PixivResolve:
 
 re_expression = r'.*pixiv.net/artworks/.*'
 
-
-@deco.ignore_botself
 @deco.with_pattern(re_expression)
+@deco.ignore_botself
 def receive_group_msg(ctx: GroupMsg):
     PixivResolve(ctx).main()
 
-
-@deco.ignore_botself
 @deco.with_pattern(re_expression)
+@deco.ignore_botself
 def receive_friend_msg(ctx: FriendMsg):
     PixivResolve(ctx).main()

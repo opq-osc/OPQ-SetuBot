@@ -119,9 +119,8 @@ UUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRR
 RQFFFFAUUUUH/9k=
 """
 
-
-@deco.ignore_botself
 @deco.these_msgtypes("XmlMsg")
+@deco.ignore_botself
 def receive_group_msg(ctx: GroupMsg):
     if len(ctx.Content) > 200:
         if info := re.findall(r'(https://b23\.tv/.*?)\?', ctx.Content):

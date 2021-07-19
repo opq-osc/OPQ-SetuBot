@@ -5,7 +5,7 @@ from .setu import Setu
 from .model import GetSetuConfig
 import re
 
-setuPattern = '来(.*?)[点丶、个份张幅](.*?)的?(|r18)[色瑟涩😍🐍][图圖🤮]'
+setuPattern = '来(.*?)[点丶、个份张幅](.*?)的?(|[rR]18)[色瑟涩䔼😍🐍][图圖🤮]'
 __doc__ = """色图姬"""
 
 
@@ -33,15 +33,17 @@ def check_and_processing(ctx: [GroupMsg, FriendMsg]) -> GetSetuConfig:
     return config
 
 
-@deco.ignore_botself
 @deco.on_regexp(setuPattern)
+@deco.ignore_botself
+@deco.queued_up
 def receive_group_msg(ctx: GroupMsg):
     if config := check_and_processing(ctx):
         Setu(ctx, config).main()
 
 
-@deco.ignore_botself
 @deco.on_regexp(setuPattern)
+@deco.ignore_botself
+@deco.queued_up
 def receive_friend_msg(ctx: FriendMsg):
     if config := check_and_processing(ctx):
         Setu(ctx, config).main()
