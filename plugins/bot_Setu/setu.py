@@ -4,17 +4,40 @@
 
 
 import time
+import json
+import httpx
+import threading
+import base64
 from loguru import logger
+from io import BytesIO
 from .dataBase import getGroupConfig, getFriendConfig
 from .model import GetSetuConfig, GroupConfig, FriendConfig, FinishSetuData
 from .dataBase import ifSent, freqLimit
 from typing import Union, List
-from botoy import S
 from .APIS import Lolicon, Yuban, Pixiv
-from botoy import GroupMsg, FriendMsg
+from .APIS._proxies import proxies, transport
+from botoy import GroupMsg, FriendMsg, S
+from pathlib import Path
+
+curFileDir = Path(__file__).absolute().parent  # 当前文件路径
+
+try:
+    with open(curFileDir / 'config.json', 'r', encoding='utf-8') as f:
+        global_conf = json.load(f)
+except:
+    logger.error('载入setu配置文件出错')
+    import sys
+
+    sys.exit(0)
 
 
 class Setu:
+    conversion_for_send_dict = {
+        'original': 'picOriginalUrl',
+        'large': 'picLargeUrl',
+        'medium': 'picMediumUrl'
+    }
+
     def __init__(self, ctx: Union[GroupMsg, FriendMsg], getSetuConfig: GetSetuConfig):
         """
         用正则提取要获取的色图数量,标签,是否R18等信息
@@ -86,7 +109,10 @@ class Setu:
                         len(setu_filtered))
                 )
                 self.getSetuConfig.doneNum += len(setu_filtered)  # 记录获取到的数量
-                self.sendsetu(setu_filtered)
+                if global_conf['use_base64_send']:
+                    self.sendsetu_forBase64(setu_filtered)
+                else:
+                    self.sendsetu_forUrl(setu_filtered)
 
         if self.getSetuConfig.doneNum == 0:  # 遍历完API一张都没获取到
             self.send.text(self.config.replyMsg.notFound)
@@ -96,18 +122,42 @@ class Setu:
                 self.config.replyMsg.insufficient.format(tag=self.getSetuConfig.tags, num=self.getSetuConfig.doneNum))
             return
 
-    def sendsetu(self, setus: List[FinishSetuData]):
-        """发送setu"""
-        conversion_dict = {
-            'original': 'picOriginalUrl',
-            'large': 'picLargeUrl',
-            'medium': 'picMediumUrl'
-        }
+    def sendsetu_forUrl(self, setus: List[FinishSetuData]):
+        """发送setu,直接传url到OPQ"""
+
         for setu in setus:
-            # print(self.buildMsg(setu))
-            self.send.image(setu.dict()[conversion_dict[self.config.setting.quality]],
+            self.send.image(setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
                             self.buildMsg(setu),
                             self.config.setting.at)
+
+    def sendsetu_forBase64(self, setus: List[FinishSetuData]):
+        """发送setu,下载后用Base64发给OPQ"""
+        outter_class = self
+        session = httpx.Client(proxies=proxies, transport=transport,
+                               headers={'Referer': 'https://www.pixiv.net'})
+        class Download_to_Base64_for_Send(threading.Thread):
+            def __init__(self, url: str, msg: str, at: bool):
+                # 使用super函数调用父类的构造方法，并传入相应的参数值。
+                super().__init__()
+                self._daemonic = True
+                self.url = url
+                self.msg = msg
+                self.at = at
+                self.outter = outter_class
+
+            def download_to_Base64(self, url):
+                # with httpx.Client(proxies=proxies, transport=transport,
+                #                   headers={'Referer': 'https://www.pixiv.net'}) as client:
+                res = session.get(url)
+                return base64.b64encode(BytesIO(res.content).getvalue()).decode()
+
+            def run(self):
+                self.outter.send.image(self.download_to_Base64(self.url), self.msg, self.at)
+
+        for setu in setus:
+            Download_to_Base64_for_Send(setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
+                                        self.buildMsg(setu),
+                                        self.config.setting.at).start()
 
     def auth(self) -> bool:
         """
@@ -134,7 +184,8 @@ class Setu:
         if self.getSetuConfig.toGetNum <= 0:
             self.send.text(self.config.replyMsg.tooSmall)
             return False
-        if self.config.setting.r18.dict()[self.ctx.type] and self.getSetuConfig.level != 1:  # 群开启了R18,则在非指定r18时返回混合内容
+        if self.config.setting.r18.dict()[
+            self.ctx.type] and self.getSetuConfig.level != 1:  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         return True
 

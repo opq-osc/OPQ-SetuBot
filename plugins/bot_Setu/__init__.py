@@ -11,7 +11,6 @@ __doc__ = """色图姬"""
 setuPattern = '来(.*?)[点丶、个份张幅](.*?)的?([rR]18)?[色瑟涩䔼😍🐍][图圖🤮]'
 digitalConversionDict = {'一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,
                          '十': 10}
-# gc.set_debug(gc.DEBUG_LEAK)
 
 
 def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig, None]:
@@ -35,6 +34,7 @@ def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig
         config.level = 1
     return config
 
+
 @deco.on_regexp(setuPattern)
 @deco.ignore_botself
 @deco.queued_up
@@ -44,6 +44,7 @@ def receive_group_msg(ctx: GroupMsg):
         setu.main()
         del setu
         gc.collect()
+
 
 @deco.on_regexp(setuPattern)
 @deco.ignore_botself
