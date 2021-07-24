@@ -1,5 +1,6 @@
 botoy
 httpx
+httpx_socks
 pydantic
 retrying
 tinydb

@@ -12,12 +12,6 @@ from botoy import S
 
 
 class Sysinfo:
-    def __init__(self, ctx):
-        self.ctx = ctx
-        self.accessLevel = ctx.accessLevel
-        self.msgtype = ctx.type
-        self.msg = ctx.Content
-
     @staticmethod
     def get_cpu_info():
         info = cpuinfo.get_cpu_info()  # 获取CPU型号等
@@ -107,24 +101,18 @@ class Sysinfo:
                                  uptime=cls.uptime(),
                                  star='*' * 20)
 
-    def main(self):
-        funcDict = {'cpuinfo': self.get_cpu_info,
-                    'meminfo': self.get_memory_info,
-                    'swapinfo': self.get_swap_info,
-                    'uptime': self.uptime,
-                    'sysinfo': self.allInfo}
-        if self.msgtype == 'AtMsg' and self.accessLevel:
-            try:  # 待完善at消息解析
-                funcDict[self.msg]()
-            except:
-                pass
 
 @deco.equal_content('sysinfo')
 @deco.ignore_botself
 def receive_group_msg(ctx):
-    S.text(Sysinfo.allInfo())
+    msg = Sysinfo.allInfo()
+    S.text(msg)
+    del msg
 
 @deco.equal_content('sysinfo')
 @deco.ignore_botself
 def receive_friend_msg(ctx):
-    S.text(Sysinfo.allInfo())
+    msg = Sysinfo.allInfo()
+    S.text(msg)
+    del msg
+
