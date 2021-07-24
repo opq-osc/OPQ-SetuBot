@@ -6,6 +6,7 @@ from PIL import Image, ImageFilter
 from botoy import GroupMsg, FriendMsg, S, jconfig
 from botoy import decorators as deco
 from loguru import logger
+from typing import Union
 from httpx_socks import SyncProxyTransport
 
 if proxies_socks := jconfig.proxies_socks:
@@ -19,7 +20,7 @@ __doc__ = """解析Pixiv链接,发送Pixiv的链接就行,如果要查看第一�
 
 
 class PixivResolve:
-    def __init__(self, ctx):
+    def __init__(self, ctx: Union[GroupMsg, FriendMsg]):
         self.ctx = ctx
         self.qq = ctx.QQ
         self.qqg = ctx.QQG
@@ -72,7 +73,7 @@ class PixivResolve:
     def pictureProcess(self, url):
         with httpx.Client(headers={'Referer': 'https://www.pixiv.net'}, proxies=proxies, transport=transport) as client:
             res = client.get(url)
-        pic = Image.open(BytesIO(res.read()))
+        pic = Image.open(BytesIO(res.content))
         pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=6.5))  # 高斯模糊
         with BytesIO() as bf:
             pic_Blur.save(bf, format='PNG')
@@ -130,10 +131,12 @@ re_expression = r'.*pixiv.net/artworks/.*'
 @deco.with_pattern(re_expression)
 @deco.ignore_botself
 def receive_group_msg(ctx: GroupMsg):
-    PixivResolve(ctx).main()
+    pixivResolve = PixivResolve(ctx)
+    pixivResolve.main()
 
 
 @deco.with_pattern(re_expression)
 @deco.ignore_botself
 def receive_friend_msg(ctx: FriendMsg):
-    PixivResolve(ctx).main()
+    pixivResolve = PixivResolve(ctx)
+    pixivResolve.main()
