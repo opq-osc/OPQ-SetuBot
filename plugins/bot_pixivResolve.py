@@ -91,7 +91,7 @@ class PixivResolve:
 
     def main(self):
         logger.info('解析Pixiv:{}'.format(self.msg))
-        raw_info = re.match(r'.*pixiv.net/artworks/(.*)', self.msg)
+        raw_info = re.match(r'.*pixiv.net/artworks/(\d+)', self.msg)
         info_list = raw_info[1].split()
         if len(info_list) > 2:
             pass
@@ -125,7 +125,7 @@ class PixivResolve:
                 self.send.text('{}无P{}~'.format(pid, page))
 
 
-re_expression = r'.*pixiv.net/artworks/.*'
+re_expression = r'.*pixiv.net/artworks/(\d+)'
 
 
 @deco.with_pattern(re_expression)
