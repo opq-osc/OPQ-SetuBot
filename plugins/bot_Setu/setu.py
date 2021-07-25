@@ -10,6 +10,7 @@ import threading
 import base64
 from loguru import logger
 from io import BytesIO
+from retrying import retry
 from .dataBase import getGroupConfig, getFriendConfig
 from .model import GetSetuConfig, GroupConfig, FriendConfig, FinishSetuData
 from .dataBase import ifSent, freqLimit
@@ -133,8 +134,13 @@ class Setu:
     def sendsetu_forBase64(self, setus: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
         outter_class = self
-        session = httpx.Client(proxies=proxies, transport=transport,
-                               headers={'Referer': 'https://www.pixiv.net'})
+        limits = httpx.Limits(max_keepalive_connections=8, max_connections=10, keepalive_expiry=8)
+        session = httpx.Client(limits=limits,
+                               proxies=proxies,
+                               transport=transport,
+                               headers={'Referer': 'https://www.pixiv.net'},
+                               timeout=10)
+
         class Download_to_Base64_for_Send(threading.Thread):
             def __init__(self, url: str, msg: str, at: bool):
                 # 使用super函数调用父类的构造方法，并传入相应的参数值。
@@ -145,6 +151,7 @@ class Setu:
                 self.at = at
                 self.outter = outter_class
 
+            @retry(stop_max_attempt_number=3, wait_random_max=1000)
             def download_to_Base64(self, url):
                 # with httpx.Client(proxies=proxies, transport=transport,
                 #                   headers={'Referer': 'https://www.pixiv.net'}) as client:
