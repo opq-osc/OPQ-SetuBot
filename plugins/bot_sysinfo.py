@@ -9,7 +9,7 @@ import cpuinfo
 import psutil
 from botoy import S
 from botoy import decorators as deco
-from loguru import logger
+from botoy import logger
 
 
 class Sysinfo:
@@ -18,7 +18,10 @@ class Sysinfo:
         info = cpuinfo.get_cpu_info()  # 获取CPU型号等
         cpu_count = psutil.cpu_count(logical=False)  # 1代表单核CPU，2代表双核CPU
         xc_count = psutil.cpu_count()  # 线程数，如双核四线程
-        cpu_percent = round((psutil.cpu_percent()), 2)  # cpu使用率
+        cpu_percent = round(  # cpu使用率
+            psutil.cpu_percent(),  # type:ignore
+            2,
+        )
         try:
             model = info["hardware_raw"]  # 树莓派能用这个获取到具体型号
         except:
@@ -100,17 +103,13 @@ class Sysinfo:
         )
 
 
-@deco.equal_content("sysinfo")
 @deco.ignore_botself
-def receive_group_msg(ctx):
-    msg = Sysinfo.allInfo()
-    S.text(msg)
-    del msg
+@deco.equal_content("sysinfo")
+def receive_group_msg(_):
+    S.text(Sysinfo.allInfo())
 
 
-@deco.equal_content("sysinfo")
 @deco.ignore_botself
-def receive_friend_msg(ctx):
-    msg = Sysinfo.allInfo()
-    S.text(msg)
-    del msg
+@deco.equal_content("sysinfo")
+def receive_friend_msg(_):
+    S.text(Sysinfo.allInfo())
