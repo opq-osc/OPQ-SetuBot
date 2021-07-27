@@ -1,7 +1,5 @@
 import base64
-import json
 from io import BytesIO
-from pathlib import Path
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S, jconfig
@@ -11,10 +9,9 @@ from httpx_socks import SyncProxyTransport
 from loguru import logger
 from PIL import Image, ImageFilter
 
-curFileDir = Path(__file__).absolute().parent  # 当前文件路径
-
-with open(curFileDir / "config.json", "r", encoding="utf-8") as f:
-    conf = json.load(f)
+api_key = jconfig.saucenaoAPIKEY or ""
+if not api_key:
+    logger.error("[searchPicture]: 请配置API KEY: saucenaoAPIKEY")
 
 
 if proxies_socks := jconfig.proxies_socks:
@@ -44,7 +41,7 @@ class SearchPic:
     def saucenao(self, picurl):
         url = "https://saucenao.com/search.php"
         params = {
-            "api_key": conf["saucenaoAPIKEY"],
+            "api_key": api_key,
             "db": 999,
             "output_type": 2,
             "testmode": 1,
