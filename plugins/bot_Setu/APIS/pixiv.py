@@ -14,15 +14,12 @@ from pathlib import Path
 from typing import List
 
 import httpx
-from apscheduler.schedulers.background import BackgroundScheduler
+from botoy.schedule import scheduler
 from loguru import logger
 from retrying import retry
 
 from ..model import FinishSetuData, GetSetuConfig
 from ._proxies import proxies, transport
-
-scheduler = BackgroundScheduler()
-scheduler.start()  # 启动调度器
 
 
 class PixivToken:

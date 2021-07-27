@@ -2,6 +2,7 @@
 # @Time    : 2021/6/20 20:59
 # @Author  : yuban10703
 
+# type:ignore
 
 import base64
 import json
@@ -13,6 +14,7 @@ from typing import List, Union
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S
+from botoy.pool import WorkerPool
 from loguru import logger
 from retrying import retry
 
@@ -28,9 +30,23 @@ try:
         global_conf = json.load(f)
 except:
     logger.error("载入setu配置文件出错")
-    import sys
+    exit(0)
 
-    sys.exit(0)
+
+@retry(stop_max_attempt_number=3, wait_random_max=1000)
+def download_to_Base64(url):
+    limits = httpx.Limits(
+        max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
+    )
+    with httpx.Client(
+        limits=limits,
+        proxies=proxies,
+        transport=transport,
+        headers={"Referer": "https://www.pixiv.net"},
+        timeout=10,
+    ) as client:
+        resp = client.get(url)
+        return base64.b64encode(BytesIO(resp.content).getvalue()).decode()
 
 
 class Setu:
@@ -49,13 +65,14 @@ class Setu:
         self.send = S.bind(self.ctx)
         self.getSetuConfig = getSetuConfig
         # 要获取色图的信息(数量,tag......)
-        if self.ctx.type in ["temp", "group"]:  # 群聊或者群临时会话就加载该群的配置文件
+        if getattr(self.ctx, "type") in ["temp", "group"]:  # 群聊或者群临时会话就加载该群的配置文件
             # getSetuConfig.flagID = self.ctx.QQG
-            self.config: GroupConfig = getGroupConfig(self.ctx.QQG)
+            self.config = getGroupConfig(getattr(self.ctx, "QQG"))
         else:
             # getSetuConfig.flagID = self.ctx.QQ
-            self.config: FriendConfig = getFriendConfig()
-            # self.config = None
+            self.config = getFriendConfig()
+        # self.config = None
+        self.pool = WorkerPool(5)
 
     def buildMsg(self, setudata: FinishSetuData):
         msgDict = {
@@ -72,19 +89,19 @@ class Setu:
         msg = ""
         # if self.config:  # 群聊和临时
 
-        if self.ctx.type == "friend":  # 好友会话
+        if getattr(self.ctx, "type") == "friend":  # 好友会话
             for v in msgDict.values():
                 msg += ("" if msg == "" else "\r\n") + v
             return msg
         else:
-            for k, v in self.config.setuInfoShow.dict().items():
+            for k, v in self.config.setuInfoShow.dict().items():  # type:ignore
                 if v:
                     msg += ("" if msg == "" else "\r\n") + msgDict[k]
-            if self.config.setting.revokeTime.dict()[self.ctx.type] != 0:
+            if self.config.setting.revokeTime.dict()[self.ctx.type] != 0:  # type: ignore
                 msg += "\r\nREVOKE[{}]".format(
-                    self.config.setting.revokeTime.dict()[self.ctx.type]
+                    self.config.setting.revokeTime.dict()[self.ctx.type]  # type:ignore
                 )
-            if self.config.setting.at:
+            if self.config.setting.at:  # type:ignore
                 return "\r\n" + msg
             return msg
 
@@ -96,7 +113,7 @@ class Setu:
         conversion_dict = {"Lolicon": "lolicon", "Yuban": "yuban", "Pixiv": "pixiv"}
 
         for API in [Lolicon, Yuban, Pixiv]:
-            if self.config.setting.api.dict()[
+            if self.config.setting.api.dict()[  # type:ignore
                 conversion_dict[API.__name__]
             ]:  # 遍历API的开启状态
                 setu_all = API(self.getSetuConfig).main()
@@ -108,7 +125,7 @@ class Setu:
                         API.__name__,
                         self.getSetuConfig.tags,
                         len(setu_all),
-                        self.config.setting.sentRefreshTime,
+                        self.config.setting.sentRefreshTime,  # type:ignore
                         len(setu_filtered),
                     )
                 )
@@ -137,50 +154,19 @@ class Setu:
                 setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
                 self.buildMsg(setu),
                 self.config.setting.at,
+                type=self.send.TYPE_URL,
             )
 
     def sendsetu_forBase64(self, setus: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
-        outter_class = self
-        limits = httpx.Limits(
-            max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
-        )
-        session = httpx.Client(
-            limits=limits,
-            proxies=proxies,
-            transport=transport,
-            headers={"Referer": "https://www.pixiv.net"},
-            timeout=10,
-        )
-
-        class Download_to_Base64_for_Send(threading.Thread):
-            def __init__(self, url: str, msg: str, at: bool):
-                # 使用super函数调用父类的构造方法，并传入相应的参数值。
-                super().__init__()
-                self._daemonic = True
-                self.url = url
-                self.msg = msg
-                self.at = at
-                self.outter = outter_class
-
-            @retry(stop_max_attempt_number=3, wait_random_max=1000)
-            def download_to_Base64(self, url):
-                # with httpx.Client(proxies=proxies, transport=transport,
-                #                   headers={'Referer': 'https://www.pixiv.net'}) as client:
-                res = session.get(url)
-                return base64.b64encode(BytesIO(res.content).getvalue()).decode()
-
-            def run(self):
-                self.outter.send.image(
-                    self.download_to_Base64(self.url), self.msg, self.at
-                )
 
         for setu in setus:
-            Download_to_Base64_for_Send(
-                setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
+            self.pool.submit(
+                lambda send, url, msg, at: send.image(download_to_Base64(url), msg, at),
+                self.send,
                 self.buildMsg(setu),
                 self.config.setting.at,
-            ).start()
+            )
 
     def auth(self) -> bool:
         """

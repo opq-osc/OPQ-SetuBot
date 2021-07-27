@@ -1,4 +1,3 @@
-import gc
 import re
 from typing import Union
 
@@ -28,7 +27,7 @@ digitalConversionDict = {
 
 def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig, None]:
     send = S.bind(ctx)
-    info = ctx._match
+    info = getattr(ctx, "_match")
     config = GetSetuConfig()
     if info[1] != "":
         if info[1] in digitalConversionDict.keys():
@@ -42,29 +41,23 @@ def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig
                 return None
     else:  # 未指定数量,默认1
         config.toGetNum = 1
-    config.tags = [i for i in list(set(re.split(r"[,， ]", info[2]))) if i != ""]
+    config.tags = [i for i in set(re.split(r"[,， ]", info[2])) if i != ""]
     if info[3]:  # r18关键字
         config.level = 1
     return config
 
 
-@deco.on_regexp(setuPattern)
 @deco.ignore_botself
+@deco.on_regexp(setuPattern)
 @deco.queued_up
-def receive_group_msg(ctx: GroupMsg):
+def main(ctx):
     if config := check_and_processing(ctx):
-        setu = Setu(ctx, config)
-        setu.main()
-        del setu
-        gc.collect()
+        Setu(ctx, config).main()
 
 
-@deco.on_regexp(setuPattern)
-@deco.ignore_botself
-@deco.queued_up
-def receive_friend_msg(ctx: FriendMsg):
-    if config := check_and_processing(ctx):
-        setu = Setu(ctx, config)
-        setu.main()
-        del setu
-        gc.collect()
+def receive_group_msg(ctx):
+    main(ctx)
+
+
+def receive_friend_msg(ctx):
+    main(ctx)
