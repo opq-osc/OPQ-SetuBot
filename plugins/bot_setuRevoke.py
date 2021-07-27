@@ -3,18 +3,23 @@ import re
 import time
 
 from botoy import Action, GroupMsg
-from botoy import decorators as deco
-from botoy import jconfig
-
-action = Action(qq=jconfig.bot, host=jconfig.host, port=jconfig.port)
+from botoy.decorators import from_botself
 
 
-@deco.from_botself
+@from_botself
 def receive_group_msg(ctx: GroupMsg):
-    if delay := re.findall(r"REVOKE\[(\d+)]", ctx.Content):
-        if delay:
-            delay = min(int(delay[0]), 90)
-        else:
-            delay = random.randint(30, 60)
-        time.sleep(delay)
-        action.revokeGroupMsg(ctx.QQG, ctx.MsgSeq, ctx.MsgRandom)
+    if not 'REVOKE' in ctx.Content:
+        return
+
+    if delay := re.findall(r"REVOKE\[(\d+)\]", ctx.Content):
+        delay = min(int(delay[0]), 90)
+    else:
+        delay = random.randint(30, 60)
+
+    time.sleep(delay)
+
+    Action(
+        ctx.CurrentQQ,
+        host=getattr(ctx, '_host', None),
+        port=getattr(ctx, '_port', None),
+    ).revokeGroupMsg(ctx.FromGroupId, ctx.MsgSeq, ctx.MsgRandom)
