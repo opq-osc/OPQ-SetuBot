@@ -18,30 +18,38 @@ else:
     transport = None
     proxies = jconfig.proxies_http
 
+client_options = dict(proxies=proxies, transport=transport, timeout=10)
+
 __doc__ = """解析Pixiv链接,发送Pixiv的链接就行,如果要查看第一页 就在链接加上空格再接p1"""
 
 
 class PixivResolve:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66"
+    }
+
     def __init__(self, ctx: Union[GroupMsg, FriendMsg]):
         self.ctx = ctx
-        self.qq = ctx.QQ
-        self.qqg = ctx.QQG
-        self.msgtype = ctx.type
+        self.qq = ctx.QQ  # type:ignore
+        self.qqg = ctx.QQG  # type:ignore
+        self.msgtype = ctx.MsgType
         self.msg = ctx.Content
         self.send = S.bind(ctx)
 
     def getSetuInfo(self, pid):
-        url = "https://www.pixiv.net/touch/ajax/illust/details"
-        params = {"illust_id": pid, "ref": "https://www.pixiv.net/", "lang": "zh"}
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66"
-        }
         try:
-            with httpx.Client(proxies=proxies, transport=transport) as c:
-                return c.get(url, params=params, headers=headers, timeout=5).json()
+            with httpx.Client(**client_options) as c:
+                return c.get(
+                    "https://www.pixiv.net/touch/ajax/illust/details",
+                    params={
+                        "illust_id": pid,
+                        "ref": "https://www.pixiv.net/",
+                        "lang": "zh",
+                    },
+                    headers=self.headers,
+                ).json()
         except:
             logger.error("Pixiv解析:获取图片信息失败")
-            return
 
     def choosePicUrl(self, info, p):
         if info["page_count"] == "1":
@@ -55,7 +63,6 @@ class PixivResolve:
                 return
 
     def buildMsg(self, title, author, authorid, page, pic_url):
-
         return (
             "标题:{title}\r\n"
             "作者:{author}\r\n"
@@ -72,54 +79,48 @@ class PixivResolve:
             )
         )
 
-    def pictureProcess(self, url):
+    def url2base64(self, url):
         with httpx.Client(
-            headers={"Referer": "https://www.pixiv.net"},
-            proxies=proxies,
-            transport=transport,
+            headers={"Referer": "https://www.pixiv.net"}, **client_options
         ) as client:
             res = client.get(url)
-        pic = Image.open(BytesIO(res.content))
-        pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=6.5))  # 高斯模糊
-        with BytesIO() as bf:
-            pic_Blur.save(bf, format="PNG")
-            return base64.b64encode(bf.getvalue()).decode()
+        with Image.open(BytesIO(res.content)) as pic:
+            pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=6.5))  # 高斯模糊
+            with BytesIO() as bf:
+                pic_Blur.save(bf, format="PNG")
+                return base64.b64encode(bf.getvalue()).decode()
 
     def buildOriginalUrl(self, original_url: str, page: int) -> str:
-        def changePage(matched):
-            if page > 1:
-                return "-%s" % (int(matched[0][-1]) + 1)
-            else:
-                return ""
-
-        msg_changeHost = re.sub(r"//.*/", r"//pixiv.re/", original_url)
-        return re.sub(r"_p\d+", changePage, msg_changeHost)
+        return re.sub(
+            r"_p\d+",
+            lambda m: "-%d" % (int(m[0][-1]) + 1) if page > 1 else "",
+            re.sub(r"//.*/", r"//pixiv.re/", original_url),
+        )
 
     def main(self):
         logger.info("解析Pixiv:{}".format(self.msg))
+
         raw_info = re.match(r".*pixiv.net/artworks/(\d+)", self.msg)
-        info_list = raw_info[1].split()
-        if len(info_list) > 2:
-            pass
+        if not raw_info:
             return
-        elif len(info_list) == 1:
-            try:
-                pid = int(info_list[0])
-                page = 0
-            except:
-                return
+
+        info_list = raw_info[1].split()
+
+        page = 0
+        if len(info_list) == 1:
+            pid = int(info_list[0])
         elif len(info_list) == 2:
+            pid = int(info_list[0])
             try:
-                pid = int(info_list[0])
-                page = int(re.match("p(\d+)", info_list[1])[1])
+                page = int(re.findall(r"p(\d+)", info_list[1])[1])
             except:
-                return
+                pass
         else:
             return
+
         if data := self.getSetuInfo(pid):
-            # print(self.buildMsg(data, page))
             if picurl := self.choosePicUrl(data["body"]["illust_details"], page):
-                pic_base64 = self.pictureProcess(picurl[1])
+                pic_base64 = self.url2base64(picurl[1])
                 msg = self.buildMsg(
                     data["body"]["illust_details"]["title"],
                     data["body"]["illust_details"]["author_details"]["user_name"],
@@ -134,18 +135,15 @@ class PixivResolve:
                 self.send.text("{}无P{}~".format(pid, page))
 
 
-re_expression = r".*pixiv.net/artworks/(\d+)"
-
-
-@deco.with_pattern(re_expression)
 @deco.ignore_botself
-def receive_group_msg(ctx: GroupMsg):
-    pixivResolve = PixivResolve(ctx)
-    pixivResolve.main()
+@deco.with_pattern(r".*pixiv.net/artworks/(\d+)")
+def main(ctx):
+    PixivResolve(ctx).main()
 
 
-@deco.with_pattern(re_expression)
-@deco.ignore_botself
-def receive_friend_msg(ctx: FriendMsg):
-    pixivResolve = PixivResolve(ctx)
-    pixivResolve.main()
+def receive_group_msg(ctx):
+    main(ctx)
+
+
+def receive_friend_msg(ctx):
+    main(ctx)
