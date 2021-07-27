@@ -8,7 +8,7 @@ from botoy.decorators import from_botself
 
 @from_botself
 def receive_group_msg(ctx: GroupMsg):
-    if not 'REVOKE' in ctx.Content:
+    if not "REVOKE" in ctx.Content:
         return
 
     if delay := re.findall(r"REVOKE\[(\d+)\]", ctx.Content):
@@ -20,6 +20,6 @@ def receive_group_msg(ctx: GroupMsg):
 
     Action(
         ctx.CurrentQQ,
-        host=getattr(ctx, '_host', None),
-        port=getattr(ctx, '_port', None),
+        host=getattr(ctx, "_host", None),
+        port=getattr(ctx, "_port", None),
     ).revokeGroupMsg(ctx.FromGroupId, ctx.MsgSeq, ctx.MsgRandom)

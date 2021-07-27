@@ -66,7 +66,7 @@ class SearchPic:
                     pic_Blur.save(bf, format="JPEG")
                     return base64.b64encode(bf.getvalue()).decode()
         except Exception as e:
-            logger.warning('saucenao处理图片失败: %s' % e)
+            logger.warning("saucenao处理图片失败: %s" % e)
 
     def main(self):
         picurl = None
@@ -90,5 +90,5 @@ class SearchPic:
                 else:
                     self.send.text(msg)
             else:
-                self.send.text('没搜到')
+                self.send.text("没搜到")
                 logger.warning("saucenao无返回")
