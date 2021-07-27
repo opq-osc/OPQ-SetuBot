@@ -2,15 +2,16 @@ import random
 import re
 import time
 
-from botoy import Action, jconfig, GroupMsg
+from botoy import Action, GroupMsg
 from botoy import decorators as deco
+from botoy import jconfig
 
 action = Action(qq=jconfig.bot, host=jconfig.host, port=jconfig.port)
 
 
 @deco.from_botself
 def receive_group_msg(ctx: GroupMsg):
-    if delay := re.findall(r'REVOKE\[(\d+)]', ctx.Content):
+    if delay := re.findall(r"REVOKE\[(\d+)]", ctx.Content):
         if delay:
             delay = min(int(delay[0]), 90)
         else:

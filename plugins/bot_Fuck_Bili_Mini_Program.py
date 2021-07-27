@@ -1,7 +1,8 @@
 import re
+
 from botoy import GroupMsg
-from botoy.sugar import Text, Picture
 from botoy import decorators as deco
+from botoy.sugar import Picture, Text
 
 __doc__ = """把B站小程序转成链接"""
 
@@ -119,11 +120,12 @@ UUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRRRQFFFFAUUUUBRR
 RQFFFFAUUUUH/9k=
 """
 
+
 @deco.these_msgtypes("XmlMsg")
 @deco.ignore_botself
 def receive_group_msg(ctx: GroupMsg):
     if len(ctx.Content) > 200:
-        if info := re.findall(r'(https://b23\.tv/.*?)\?', ctx.Content):
+        if info := re.findall(r"(https://b23\.tv/.*?)\?", ctx.Content):
             # S.image(Dont_Send_miniProgram_Base64PIC)
             Text(info[0])
             Picture(pic_base64=dont_Send_miniProgram_Base64PIC)

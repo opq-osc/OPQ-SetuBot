@@ -1,39 +1,41 @@
-from botoy import Botoy, GroupMsg, FriendMsg
-from botoy import jconfig
-from botoy.decorators import equal_content, ignore_botself
 import json
+
+from botoy import Botoy, FriendMsg, GroupMsg, jconfig
+from botoy.decorators import equal_content, ignore_botself
 from botoy.sugar import Text
 
-bot = Botoy(qq=jconfig.bot,
-            host=jconfig.host,
-            port=jconfig.port,
-            log=True,
-            # log=False,
-            log_file=True,
-            use_plugins=True)
+bot = Botoy(
+    qq=jconfig.bot,
+    host=jconfig.host,
+    port=jconfig.port,
+    log=True,
+    # log=False,
+    log_file=True,
+    use_plugins=True,
+)
 
 
 @bot.group_context_use
 def group_ctx_middleware(ctx: GroupMsg):
-    ctx.type = 'group'  # 群聊
+    ctx.type = "group"  # 群聊
     ctx.QQ = ctx.FromUserId  # 这条消息的发送者
     ctx.QQG = ctx.FromGroupId  # 这条消息的QQ群
-    if ctx.MsgType == 'AtMsg':  # @消息
+    if ctx.MsgType == "AtMsg":  # @消息
         ctx.AtContentDict = json.loads(ctx.Content)
-        ctx.AtUserID = ctx.AtContentDict['UserID']
-        ctx.AtTips = ctx.AtContentDict.get('Tips')  # 回复消息时才有
-        ctx.Content = ctx.AtContentDict['Content']
+        ctx.AtUserID = ctx.AtContentDict["UserID"]
+        ctx.AtTips = ctx.AtContentDict.get("Tips")  # 回复消息时才有
+        ctx.Content = ctx.AtContentDict["Content"]
     return ctx
 
 
 @bot.friend_context_use
 def friend_ctx_middleware(ctx: FriendMsg):
     ctx.QQ = ctx.FromUin  # 这条消息的发送者
-    if ctx.MsgType == 'TempSessionMsg':  # 临时会话
-        ctx.type = 'temp'
+    if ctx.MsgType == "TempSessionMsg":  # 临时会话
+        ctx.type = "temp"
         ctx.QQG = ctx.TempUin
     else:
-        ctx.type = 'friend'  # 好友会话
+        ctx.type = "friend"  # 好友会话
         ctx.QQG = 0
     return ctx
 

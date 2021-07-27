@@ -1,6 +1,7 @@
+from typing import List, Literal, Union
+
+from botoy import FriendMsg, GroupMsg
 from pydantic import BaseModel, Field
-from typing import List, Union, Literal
-from botoy import GroupMsg, FriendMsg
 
 
 class GetSetuConfig(BaseModel):

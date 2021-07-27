@@ -4,11 +4,12 @@
 
 import datetime
 import time
+
 import cpuinfo
 import psutil
+from botoy import S
 from botoy import decorators as deco
 from loguru import logger
-from botoy import S
 
 
 class Sysinfo:
@@ -19,27 +20,24 @@ class Sysinfo:
         xc_count = psutil.cpu_count()  # 线程数，如双核四线程
         cpu_percent = round((psutil.cpu_percent()), 2)  # cpu使用率
         try:
-            model = info['hardware_raw']  # 树莓派能用这个获取到具体型号
+            model = info["hardware_raw"]  # 树莓派能用这个获取到具体型号
         except:
             try:
-                model = info['brand_raw']  # cpu型号(我笔记本能用这个获取到具体型号,而且没有hardware_raw字段)
+                model = info["brand_raw"]  # cpu型号(我笔记本能用这个获取到具体型号,而且没有hardware_raw字段)
             except:
-                model = 'null'
+                model = "null"
         try:  # 频率
-            freq = info['hz_actual_friendly']
+            freq = info["hz_actual_friendly"]
         except:
-            freq = 'null'
-        return 'CPU型号:{}\r\n' \
-               '频率:{}\r\n' \
-               '架构:{}\r\n' \
-               '核心数:{}\r\n' \
-               '线程数:{}\r\n' \
-               '负载:{}%'.format(model,
-                               freq,
-                               info['arch'],
-                               cpu_count,
-                               xc_count,
-                               cpu_percent)
+            freq = "null"
+        return (
+            "CPU型号:{}\r\n"
+            "频率:{}\r\n"
+            "架构:{}\r\n"
+            "核心数:{}\r\n"
+            "线程数:{}\r\n"
+            "负载:{}%".format(model, freq, info["arch"], cpu_count, xc_count, cpu_percent)
+        )
 
     @staticmethod
     def get_memory_info():
@@ -49,13 +47,12 @@ class Sysinfo:
         available_nc = round((float(memory.available) / 1024 / 1024 / 1024), 3)  # 空闲内存
         percent_nc = memory.percent  # 内存使用率
 
-        return '总内存:{}G\r\n' \
-               '已用内存:{}G\r\n' \
-               '空闲内存:{}G\r\n' \
-               '内存使用率:{}%'.format(total_nc,
-                                  used_nc,
-                                  available_nc,
-                                  percent_nc)
+        return (
+            "总内存:{}G\r\n"
+            "已用内存:{}G\r\n"
+            "空闲内存:{}G\r\n"
+            "内存使用率:{}%".format(total_nc, used_nc, available_nc, percent_nc)
+        )
 
     @staticmethod
     def get_swap_info():
@@ -64,13 +61,12 @@ class Sysinfo:
         swap_used = round((float(swap.used) / 1024 / 1024 / 1024), 3)  # 已用swap
         swap_free = round((float(swap.free) / 1024 / 1024 / 1024), 3)  # 空闲swap
         swap_percent = swap.percent  # swap使用率
-        return 'swap:{}G\r\n' \
-               '已用swap:{}G\r\n' \
-               '空闲swap:{}G\r\n' \
-               'swap使用率:{}%'.format(swap_total,
-                                    swap_used,
-                                    swap_free,
-                                    swap_percent)
+        return (
+            "swap:{}G\r\n"
+            "已用swap:{}G\r\n"
+            "空闲swap:{}G\r\n"
+            "swap使用率:{}%".format(swap_total, swap_used, swap_free, swap_percent)
+        )
 
     @staticmethod
     def uptime():
@@ -82,37 +78,39 @@ class Sysinfo:
             datetime.datetime.utcfromtimestamp(now).replace(microsecond=0)
             - datetime.datetime.utcfromtimestamp(boot).replace(microsecond=0)
         )
-        return '开机时间:{}\r\n' \
-               '当前时间:{}\r\n' \
-               '已运行时间:{}'.format(boottime, nowtime, up_time)
+        return "开机时间:{}\r\n" "当前时间:{}\r\n" "已运行时间:{}".format(boottime, nowtime, up_time)
 
     @classmethod
     def allInfo(cls):
-        logger.info('sysinfo')
-        return '{cpu}\r\n' \
-               '{star}\r\n' \
-               '{mem}\r\n' \
-               '{star}\r\n' \
-               '{swap}\r\n' \
-               '{star}\r\n' \
-               '{uptime}'.format(cpu=cls.get_cpu_info(),
-                                 mem=cls.get_memory_info(),
-                                 swap=cls.get_swap_info(),
-                                 uptime=cls.uptime(),
-                                 star='*' * 20)
+        logger.info("sysinfo")
+        return (
+            "{cpu}\r\n"
+            "{star}\r\n"
+            "{mem}\r\n"
+            "{star}\r\n"
+            "{swap}\r\n"
+            "{star}\r\n"
+            "{uptime}".format(
+                cpu=cls.get_cpu_info(),
+                mem=cls.get_memory_info(),
+                swap=cls.get_swap_info(),
+                uptime=cls.uptime(),
+                star="*" * 20,
+            )
+        )
 
 
-@deco.equal_content('sysinfo')
+@deco.equal_content("sysinfo")
 @deco.ignore_botself
 def receive_group_msg(ctx):
     msg = Sysinfo.allInfo()
     S.text(msg)
     del msg
 
-@deco.equal_content('sysinfo')
+
+@deco.equal_content("sysinfo")
 @deco.ignore_botself
 def receive_friend_msg(ctx):
     msg = Sysinfo.allInfo()
     S.text(msg)
     del msg
-
