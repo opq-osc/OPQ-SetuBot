@@ -4,7 +4,10 @@ from io import BytesIO
 from pathlib import Path
 
 import httpx
-from botoy import S, jconfig
+from botoy import FriendMsg, GroupMsg, S, jconfig
+from botoy.parser import friend as fp
+from botoy.parser import group as gp
+from httpx_socks import SyncProxyTransport
 from loguru import logger
 from PIL import Image, ImageFilter
 
@@ -13,7 +16,6 @@ curFileDir = Path(__file__).absolute().parent  # 当前文件路径
 with open(curFileDir / "config.json", "r", encoding="utf-8") as f:
     conf = json.load(f)
 
-from httpx_socks import SyncProxyTransport
 
 if proxies_socks := jconfig.proxies_socks:
     transport = SyncProxyTransport.from_url(proxies_socks)
@@ -21,6 +23,8 @@ if proxies_socks := jconfig.proxies_socks:
 else:
     transport = None
     proxies = jconfig.proxies_http
+
+client_options = dict(proxies=proxies, transport=transport, timeout=20)
 
 
 class SearchPic:
@@ -48,34 +52,46 @@ class SearchPic:
             "url": picurl,
         }
         try:
-            with httpx.Client(proxies=proxies, transport=transport) as client:
+
+            with httpx.Client(**client_options) as client:
                 return client.get(url, params=params).json()
         except Exception as e:
             logger.warning("saucenao搜图失败~ :{}".format(e))
-            return
+        return None
 
     def pictureProcess(self, url):
-        with httpx.Client(proxies=proxies, transport=transport) as client:
-            res = client.get(url)
-        pic = Image.open(BytesIO(res.content))
-        pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=1.8))  # 高斯模糊
-        with BytesIO() as bf:
-            pic_Blur.save(bf, format="JPEG")
-            return base64.b64encode(bf.getvalue()).decode()
+        try:
+            with httpx.Client(**client_options) as client:
+                content = client.get(url).content
+            with Image.open(BytesIO(content)) as pic:
+                pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=1.8))  # 高斯模糊
+                with BytesIO() as bf:
+                    pic_Blur.save(bf, format="JPEG")
+                    return base64.b64encode(bf.getvalue()).decode()
+        except Exception as e:
+            logger.warning('saucenao处理图片失败: %s' % e)
 
     def main(self):
-        content = json.loads(self.ctx.Content)
-        if content["Tips"] == "[群图片]":
-            picurl = content["GroupPic"][0]["Url"]
-        # elif content['Tips'] == '[好友图片]':
-        #     picurl = content['FriendPic'][0]['Url']
-        else:
-            return
-        if res := self.saucenao(picurl):
-            msg = self.buildmsg(res["results"][0])
-            self.send.image(
-                self.pictureProcess(res["results"][0]["header"]["thumbnail"]), msg
-            )
-            return
-        else:
-            logger.warning("saucenao无返回")
+        picurl = None
+
+        if isinstance(self.ctx, GroupMsg):
+            group_pic = gp.pic(self.ctx)
+            if group_pic:
+                picurl = group_pic.GroupPic[0].Url
+        elif isinstance(self.ctx, FriendMsg):
+            friend_pic = fp.pic(self.ctx)
+            if friend_pic:
+                picurl = friend_pic.FriendPic[0].Url
+
+        if picurl:
+
+            if res := self.saucenao(picurl):
+                msg = self.buildmsg(res["results"][0])
+                pic = self.pictureProcess(res["results"][0]["header"]["thumbnail"])
+                if pic:
+                    self.send.image(pic, msg, type=self.send.TYPE_BASE64)
+                else:
+                    self.send.text(msg)
+            else:
+                self.send.text('没搜到')
+                logger.warning("saucenao无返回")
