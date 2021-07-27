@@ -164,6 +164,7 @@ class Setu:
             self.pool.submit(
                 lambda send, url, msg, at: send.image(download_to_Base64(url), msg, at),
                 self.send,
+                setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
                 self.buildMsg(setu),
                 self.config.setting.at,
             )
