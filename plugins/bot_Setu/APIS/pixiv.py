@@ -24,7 +24,7 @@ from ._proxies import proxies, transport
 
 class PixivToken:
     def __init__(self):
-        self.tokenPath = Path(__file__).absolute().parent / ".PixivToken.json"
+        self.tokenPath = Path(__file__).absolute().parent.parent / ".PixivToken.json"
         self.tokendata = {}
         self.Client = httpx.Client(proxies=proxies, transport=transport)
 
