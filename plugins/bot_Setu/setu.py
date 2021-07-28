@@ -6,7 +6,6 @@
 
 import base64
 import json
-import threading
 import time
 from io import BytesIO
 from pathlib import Path
@@ -21,7 +20,7 @@ from retrying import retry
 from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import proxies, transport
 from .dataBase import freqLimit, getFriendConfig, getGroupConfig, ifSent
-from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
+from .model import FinishSetuData, GetSetuConfig, GroupConfig, FriendConfig
 
 curFileDir = Path(__file__).absolute().parent  # 当前文件路径
 
@@ -39,11 +38,11 @@ def download_to_Base64(url):
         max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
     )
     with httpx.Client(
-        limits=limits,
-        proxies=proxies,
-        transport=transport,
-        headers={"Referer": "https://www.pixiv.net"},
-        timeout=10,
+            limits=limits,
+            proxies=proxies,
+            transport=transport,
+            headers={"Referer": "https://www.pixiv.net"},
+            timeout=10,
     ) as client:
         resp = client.get(url)
         return base64.b64encode(BytesIO(resp.content).getvalue()).decode()
@@ -67,10 +66,10 @@ class Setu:
         # 要获取色图的信息(数量,tag......)
         if getattr(self.ctx, "type") in ["temp", "group"]:  # 群聊或者群临时会话就加载该群的配置文件
             # getSetuConfig.flagID = self.ctx.QQG
-            self.config = getGroupConfig(getattr(self.ctx, "QQG"))
+            self.config: GroupConfig = getGroupConfig(getattr(self.ctx, "QQG"))
         else:
             # getSetuConfig.flagID = self.ctx.QQ
-            self.config = getFriendConfig()
+            self.config: FriendConfig = getFriendConfig()
         # self.config = None
         self.pool = WorkerPool(5)
 
@@ -178,8 +177,8 @@ class Setu:
             self.send.text(self.config.replyMsg.closed)
             return False
         if (
-            not self.config.setting.r18.dict()[self.ctx.type]
-            and self.getSetuConfig.level > 0
+                not self.config.setting.r18.dict()[self.ctx.type]
+                and self.getSetuConfig.level > 0
         ):
             self.send.text(self.config.replyMsg.noR18)
             return False
@@ -192,8 +191,8 @@ class Setu:
         :return:
         """
         if (
-            self.getSetuConfig.toGetNum
-            > self.config.setting.singleMaximum.dict()[self.ctx.type]
+                self.getSetuConfig.toGetNum
+                > self.config.setting.singleMaximum.dict()[self.ctx.type]
         ):
             self.send.text(self.config.replyMsg.tooMuch)
             return False
@@ -201,22 +200,22 @@ class Setu:
             self.send.text(self.config.replyMsg.tooSmall)
             return False
         if (
-            self.config.setting.r18.dict()[self.ctx.type]
-            and self.getSetuConfig.level != 1
+                self.config.setting.r18.dict()[self.ctx.type]
+                and self.getSetuConfig.level != 1
         ):  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         return True
 
     def filter_Sent(
-        self, setus: List[FinishSetuData]
+            self, setus: List[FinishSetuData]
     ) -> List[FinishSetuData]:  # 过滤一段时间内发送过的图片
         if setus != None:
             setus_copy = setus.copy()
             for setu in setus_copy:
                 if ifSent(
-                    self.ctx.QQG if self.ctx.type in ["temp", "group"] else self.ctx.QQ,
-                    int(setu.picID),
-                    self.config.setting.sentRefreshTime,
+                        self.ctx.QQG if self.ctx.type in ["temp", "group"] else self.ctx.QQ,
+                        int(setu.picID),
+                        self.config.setting.sentRefreshTime,
                 ):
                     setus_copy.remove(setu)
             return setus_copy
@@ -265,7 +264,7 @@ class Setu:
             self.send.text(self.config.replyMsg.tooSmall)
             return
         if (
-            self.config.setting.r18 and self.getSetuConfig.level != 1
+                self.config.setting.r18 and self.getSetuConfig.level != 1
         ):  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         self.get()
@@ -274,13 +273,17 @@ class Setu:
         """群聊和临时会话一起处理
         好友私聊单独处理"""
         if self.ctx.type == "friend":  # 好友会话
-            self.friend()
+            if self.config:  # 如果有好友配置文件(0.json)
+                self.friend()
+                return
+            else:
+                logger.warning("无好友的配置文件(0.json)")
         else:  # 群聊or临时会话
             if self.config:  # 如果有群配置文件
                 self.group_or_temp()
+                return
             else:
                 logger.warning("无群:{}的配置文件".format(self.ctx.QQG))
-                self.send.text(
-                    "如果要使用Setu插件,请参考https://github.com/opq-osc/OPQ-SetuBot/wiki对本群的配置文件初始化"
-                )
-                return
+        self.send.text(
+            "如果要使用Setu插件,请参考https://github.com/opq-osc/OPQ-SetuBot/wiki对本群的配置文件初始化"
+        )
