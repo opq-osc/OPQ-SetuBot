@@ -11,7 +11,7 @@ from .database import getUserConfig, updateUserConfig, getPoolItemConfig, getPoo
 from .model import UserInfo, CardPoolProbability, CardPoolItem
 
 curFileDir = Path(__file__).absolute().parent
-fnt = ImageFont.truetype(str(curFileDir / 'config' / '兰米宋体加粗.ttf'), 35)
+fnt = ImageFont.truetype(str(curFileDir / 'config' / '漆书.TTF'), 35)
 
 
 class GenshenGacha:
