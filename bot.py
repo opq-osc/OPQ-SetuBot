@@ -1,4 +1,4 @@
-import json
+import ujson as json
 
 from botoy import Botoy, FriendMsg, GroupMsg, jconfig
 from botoy.decorators import equal_content, ignore_botself
