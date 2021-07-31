@@ -96,8 +96,8 @@ class GenshenGacha:
                 random.choice(self.cardPoolItem.dict()[self.conversion_dict[item['starLevel']]]['up'] or ['占位'])
             ],
             [
-                self.cardPoolProbability.dict()[item['item']][self.conversion_dict[item['starLevel']]][
-                    'BaseProbability'],
+                100 - self.cardPoolProbability.dict()[item['item']][self.conversion_dict[item['starLevel']]][
+                    'UpProbability'],
                 self.cardPoolProbability.dict()[item['item']][self.conversion_dict[item['starLevel']]]['UpProbability']
             ]
         )[0]
@@ -140,7 +140,7 @@ class GenshenGacha:
                 x1 += (img_x + interval_x)
         if self.ctx.type == "group":
             d = ImageDraw.Draw(background)
-            d.text((10, 427), str(self.ctx.FromNickName), font=fnt, fill=(255, 255, 255, 128))
+            d.text((10, 427), str(self.ctx.FromNickName), font=fnt, fill=(51, 102, 172, 255))
             # background.show()
         with BytesIO() as output_buffer:
             background.save(output_buffer, format='JPEG')
