@@ -1,3 +1,5 @@
 logs
 __pycache__
 REMOVED_PLUGINS
+/.idea/
+/venv/

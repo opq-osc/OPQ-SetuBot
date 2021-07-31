@@ -4,13 +4,14 @@ from io import BytesIO
 from pathlib import Path
 from typing import List, Union
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from botoy import FriendMsg, GroupMsg, S
 
 from .database import getUserConfig, updateUserConfig, getPoolItemConfig, getPoolProbabilityConfig
 from .model import UserInfo, CardPoolProbability, CardPoolItem
 
 curFileDir = Path(__file__).absolute().parent
+fnt = ImageFont.truetype(str(curFileDir / 'config' / '兰米宋体加粗.ttf'), 35)
 
 
 class GenshenGacha:
@@ -137,8 +138,10 @@ class GenshenGacha:
                 background.paste(Image.open(next(pic)).resize((img_x, img_y), Image.ANTIALIAS),
                                  (x1, img_y + 2 * interval_y))
                 x1 += (img_x + interval_x)
-        # background.show()
-        # output_buffer = BytesIO()
+        if self.ctx.type == "group":
+            d = ImageDraw.Draw(background)
+            d.text((10, 427), str(self.ctx.FromNickName), font=fnt, fill=(255, 255, 255, 128))
+            # background.show()
         with BytesIO() as output_buffer:
             background.save(output_buffer, format='JPEG')
             return base64.b64encode(output_buffer.getvalue()).decode()
