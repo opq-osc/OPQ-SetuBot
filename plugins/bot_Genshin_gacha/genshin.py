@@ -5,13 +5,13 @@ from pathlib import Path
 from typing import List, Union
 
 from PIL import Image, ImageDraw, ImageFont
-from botoy import FriendMsg, GroupMsg, S
+from botoy import FriendMsg, GroupMsg, S, logger
 
 from .database import getUserConfig, updateUserConfig, getPoolItemConfig, getPoolProbabilityConfig
 from .model import UserInfo, CardPoolProbability, CardPoolItem
 
 curFileDir = Path(__file__).absolute().parent
-fnt = ImageFont.truetype(str(curFileDir / 'config' / '漆书.TTF'), 35)
+fnt = ImageFont.truetype(str(curFileDir / 'config' / '惊鸿手书.ttf'), 35)
 
 
 class GenshenGacha:
@@ -140,7 +140,7 @@ class GenshenGacha:
                 x1 += (img_x + interval_x)
         if self.ctx.type == "group":
             d = ImageDraw.Draw(background)
-            d.text((10, 427), str(self.ctx.FromNickName), font=fnt, fill=(51, 102, 172, 255))
+            d.text((10, 427), str(self.ctx.FromNickName), font=fnt, fill=(255, 255, 255))
             # background.show()
         with BytesIO() as output_buffer:
             background.save(output_buffer, format='JPEG')
@@ -161,6 +161,7 @@ class GenshenGacha:
         # print(items)
         specific_item = [self.extraction_specific_items(item) for item in items]
         # print(specific_item)
+        logger.success("原神抽卡 QQ:{} --> {}".format(self.ctx.QQ, specific_item))
         self.draw(specific_item)
         self.send.image(self.draw(specific_item))
         updateUserConfig(self.ctx.QQ, cardPool=self.cardPool, config=self.userConf)
