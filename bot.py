@@ -32,6 +32,7 @@ def group_ctx_middleware(ctx: GroupMsg):
 def friend_ctx_middleware(ctx: FriendMsg):
     ctx.QQ = ctx.FromUin  # 这条消息的发送者
     if ctx.MsgType == "TempSessionMsg":  # 临时会话
+        ctx.Content = json.loads(ctx.Content)["Content"]
         ctx.type = "temp"
         ctx.QQG = ctx.TempUin
     else:
