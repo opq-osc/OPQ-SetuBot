@@ -230,20 +230,21 @@ class Setu:
             return
         if not self.check_parameters():  # 检查数量
             return
-        if data := freqLimit(self.ctx.QQG, self.config, self.getSetuConfig):  # 触发频率限制
-            freqConfig = data[0]
-            data_tmp = data[1]
-            self.send.text(
-                self.config.replyMsg.freqLimit.format(
-                    time=freqConfig.refreshTime,
-                    limitCount=freqConfig.limitCount,
-                    callDone=data_tmp["callDone"],
-                    r_time=int(
-                        freqConfig.refreshTime - (time.time() - data_tmp["time"])
-                    ),
+        if self.ctx.type == "group":  # 群聊
+            if data := freqLimit(self.ctx.QQG, self.config, self.getSetuConfig):  # 触发频率限制
+                freqConfig = data[0]
+                data_tmp = data[1]
+                self.send.text(
+                    self.config.replyMsg.freqLimit.format(
+                        time=freqConfig.refreshTime,
+                        limitCount=freqConfig.limitCount,
+                        callDone=data_tmp["callDone"],
+                        r_time=int(
+                            freqConfig.refreshTime - (time.time() - data_tmp["time"])
+                        ),
+                    )
                 )
-            )
-            return
+                return
         self.get()
 
     def friend(self):
