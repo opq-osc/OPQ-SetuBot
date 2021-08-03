@@ -206,14 +206,12 @@ class Setu:
             self.getSetuConfig.level = 2
         return True
 
-    def filter_Sent(
-            self, setus: List[FinishSetuData]
-    ) -> List[FinishSetuData]:  # 过滤一段时间内发送过的图片
+    def filter_Sent(self, setus: List[FinishSetuData]) -> List[FinishSetuData]:  # 过滤一段时间内发送过的图片
         if setus != None:
             setus_copy = setus.copy()
-            for setu in setus_copy:
+            for setu in setus:
                 if ifSent(
-                        self.ctx.QQG if self.ctx.type in ["temp", "group"] else self.ctx.QQ,
+                        self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
                         int(setu.picID),
                         self.config.setting.sentRefreshTime,
                 ):
