@@ -1,7 +1,3 @@
-"""
-发送sysinfo查看系统信息
-"""
-
 import datetime
 import time
 
@@ -10,6 +6,8 @@ import psutil
 from botoy import S
 from botoy import decorators as deco
 from botoy import logger
+
+__doc__ = "发送sysinfo查看系统信息"
 
 
 class Sysinfo:

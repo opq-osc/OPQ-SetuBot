@@ -15,11 +15,11 @@ from typing import List
 
 import httpx
 from botoy.schedule import scheduler
-from loguru import logger
+from botoy import logger
 from retrying import retry
 
-from ..model import FinishSetuData, GetSetuConfig
 from ._proxies import proxies, transport
+from ..model import FinishSetuData, GetSetuConfig
 
 
 class PixivToken:

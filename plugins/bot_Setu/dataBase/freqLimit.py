@@ -1,6 +1,6 @@
 import time
 
-from loguru import logger
+from botoy import logger
 from tinydb import where
 from tinydb.operations import add
 

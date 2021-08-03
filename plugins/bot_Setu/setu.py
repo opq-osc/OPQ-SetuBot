@@ -12,9 +12,8 @@ from pathlib import Path
 from typing import List, Union
 
 import httpx
-from botoy import FriendMsg, GroupMsg, S
+from botoy import FriendMsg, GroupMsg, S, logger
 from botoy.pool import WorkerPool
-from loguru import logger
 from retrying import retry
 
 from .APIS import Lolicon, Pixiv, Yuban

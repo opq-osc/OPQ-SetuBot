@@ -4,12 +4,11 @@ from io import BytesIO
 from pathlib import Path
 
 import httpx
-from botoy import FriendMsg, GroupMsg, S, jconfig
+from PIL import Image, ImageFilter
+from botoy import FriendMsg, GroupMsg, S, jconfig, logger
 from botoy.parser import friend as fp
 from botoy.parser import group as gp
 from httpx_socks import SyncProxyTransport
-from loguru import logger
-from PIL import Image, ImageFilter
 
 curFileDir = Path(__file__).absolute().parent  # 当前文件路径
 

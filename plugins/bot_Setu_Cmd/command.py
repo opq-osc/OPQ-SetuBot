@@ -2,8 +2,7 @@ import json
 import re
 from pathlib import Path
 
-from botoy import GroupMsg, S, jconfig
-from loguru import logger
+from botoy import GroupMsg, S, jconfig, logger
 
 from ..bot_Setu.dataBase import getGroupConfig
 from ..bot_Setu.model import GroupConfig
@@ -25,14 +24,14 @@ class CMD:
             return False
         try:
             with open(
-                curFileDir.parent
-                / "bot_Setu"
-                / "dataBase"
-                / "DB"
-                / "configs"
-                / "{}.json".format(groupid),
-                "w",
-                encoding="utf-8",
+                    curFileDir.parent
+                    / "bot_Setu"
+                    / "dataBase"
+                    / "DB"
+                    / "configs"
+                    / "{}.json".format(groupid),
+                    "w",
+                    encoding="utf-8",
             ) as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
             logger.info("写入{}.json成功".format(groupid))
@@ -146,7 +145,7 @@ class CMD:
         if auth := self.auth():
             if auth == 1:
                 if res := re.match(
-                    r"_cmd [G,g] (\d+) (.*) (.*):(.*)", self.ctx.Content
+                        r"_cmd [G,g] (\d+) (.*) (.*):(.*)", self.ctx.Content
                 ):  # 万能修改
                     self.config = getGroupConfig(int(res[1])).dict()  # 获取群的数据
                     self.advanced_command(int(res[1]), res[2].split(), res[3], res[4])

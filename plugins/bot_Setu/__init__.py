@@ -7,7 +7,7 @@ from botoy import decorators as deco
 from .model import GetSetuConfig
 from .setu import Setu
 
-__doc__ = """色图姬"""
+__doc__ = "色图姬"
 
 setuPattern = "来(.*?)[点丶、个份张幅](.*?)的?([rR]18)?[色瑟涩䔼😍🐍][图圖🤮]"
 digitalConversionDict = {

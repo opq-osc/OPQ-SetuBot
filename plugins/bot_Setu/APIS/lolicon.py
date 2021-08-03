@@ -5,10 +5,10 @@
 from typing import List
 
 import httpx
-from loguru import logger
+from botoy import logger
 
-from ..model import FinishSetuData, GetSetuConfig
 from ._proxies import proxies, transport
+from ..model import FinishSetuData, GetSetuConfig
 
 
 class Lolicon:
