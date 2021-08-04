@@ -4,11 +4,10 @@ from io import BytesIO
 from typing import Union
 
 import httpx
-from PIL import Image, ImageFilter
-from botoy import FriendMsg, GroupMsg, S, logger
+from botoy import FriendMsg, GroupMsg, S, logger, jconfig
 from botoy import decorators as deco
-from botoy import jconfig
 from httpx_socks import SyncProxyTransport
+from PIL import Image, ImageFilter
 
 if proxies_socks := jconfig.proxies_socks:
     transport = SyncProxyTransport.from_url(proxies_socks)
@@ -80,7 +79,7 @@ class PixivResolve:
 
     def url2base64(self, url):
         with httpx.Client(
-            headers={"Referer": "https://www.pixiv.net"}, **client_options
+                headers={"Referer": "https://www.pixiv.net"}, **client_options
         ) as client:
             res = client.get(url)
         with Image.open(BytesIO(res.content)) as pic:
@@ -92,31 +91,19 @@ class PixivResolve:
     def buildOriginalUrl(self, original_url: str, page: int) -> str:
         return re.sub(
             r"_p\d+",
-            lambda m: "-%d" % (int(m[0][-1]) + 1) if page > 1 else "",
+            lambda m: "-%d" % (int(m[0][2:]) + 1) if page > 1 else "",
             re.sub(r"//.*/", r"//pixiv.re/", original_url),
         )
 
     def main(self):
-        logger.info("解析Pixiv:{}".format(self.msg))
-
-        raw_info = re.match(r".*pixiv.net/artworks/(\d+)", self.msg)
-        if not raw_info:
+        raw_info = getattr(self.ctx, "_match")
+        logger.info("解析Pixiv:{}".format(raw_info[0]))
+        try:
+            page = 0 if raw_info[2] is None else int(raw_info[2])
+            pid = int(raw_info[1])
+        except Exception as e:
+            logger.error('Pixiv解析:处理数据出错\r\n{}'.format(e))
             return
-
-        info_list = raw_info[1].split()
-
-        page = 0
-        if len(info_list) == 1:
-            pid = int(info_list[0])
-        elif len(info_list) == 2:
-            pid = int(info_list[0])
-            try:
-                page = int(re.findall(r"p(\d+)", info_list[1])[1])
-            except:
-                pass
-        else:
-            return
-
         if data := self.getSetuInfo(pid):
             if picurl := self.choosePicUrl(data["body"]["illust_details"], page):
                 pic_base64 = self.url2base64(picurl[1])
@@ -135,7 +122,7 @@ class PixivResolve:
 
 
 @deco.ignore_botself
-@deco.with_pattern(r".*pixiv.net/artworks/(\d+)")
+@deco.on_regexp(r".*pixiv.net/artworks/(\d+) ?p?(\d+)?")
 def main(ctx):
     PixivResolve(ctx).main()
 
