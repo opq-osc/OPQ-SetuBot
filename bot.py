@@ -24,7 +24,7 @@ def group_ctx_middleware(ctx: GroupMsg):
         ctx.AtContentDict = json.loads(ctx.Content)
         ctx.AtUserID = ctx.AtContentDict["UserID"]
         ctx.AtTips = ctx.AtContentDict.get("Tips")  # 回复消息时才有
-        ctx.Content = ctx.AtContentDict["Content"]
+        ctx.AtContent = ctx.AtContentDict["Content"]
     return ctx
 
 
