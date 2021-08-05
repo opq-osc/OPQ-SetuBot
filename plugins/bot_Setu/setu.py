@@ -18,7 +18,7 @@ from retrying import retry
 
 from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import proxies, transport
-from .dataBase import freqLimit, getFriendConfig, getGroupConfig, ifSent
+from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
 from .model import FinishSetuData, GetSetuConfig, GroupConfig, FriendConfig
 
 curFileDir = Path(__file__).absolute().parent  # 当前文件路径

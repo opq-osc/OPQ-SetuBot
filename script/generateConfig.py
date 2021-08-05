@@ -86,7 +86,7 @@ if __name__ == "__main__":
             curFileDir.parent
             / "plugins"
             / "bot_Setu"
-            / "dataBase"
+            / "database"
             / "DB"
             / "configs"
             / "{}.json".format(groupid)

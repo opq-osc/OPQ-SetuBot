@@ -4,7 +4,7 @@ from pathlib import Path
 
 from botoy import GroupMsg, S, jconfig, logger
 
-from ..bot_Setu.dataBase import getGroupConfig
+from ..bot_Setu.database import getGroupConfig
 from ..bot_Setu.model import GroupConfig
 
 curFileDir = Path(__file__).absolute().parent  # 当前文件路径
@@ -26,7 +26,7 @@ class CMD:
             with open(
                     curFileDir.parent
                     / "bot_Setu"
-                    / "dataBase"
+                    / "database"
                     / "DB"
                     / "configs"
                     / "{}.json".format(groupid),
