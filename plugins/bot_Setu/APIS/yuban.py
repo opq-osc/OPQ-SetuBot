@@ -26,7 +26,7 @@ class Yuban:
         except Exception as e:
             logger.warning("YubanAPI:\r\n{}".format(e))
             return []
-        if res.status_code:
+        if res.status_code == 200:
             dataList = []
             datas = res.json()["data"]
             for d in datas:
