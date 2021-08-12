@@ -4,10 +4,10 @@ from io import BytesIO
 from typing import Union
 
 import httpx
+from PIL import Image, ImageFilter
 from botoy import FriendMsg, GroupMsg, S, logger, jconfig
 from botoy import decorators as deco
 from httpx_socks import SyncProxyTransport
-from PIL import Image, ImageFilter
 
 if proxies_socks := jconfig.proxies_socks:
     transport = SyncProxyTransport.from_url(proxies_socks)

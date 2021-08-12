@@ -110,7 +110,7 @@ class Setu:
         """
         conversion_dict = {"Lolicon": "lolicon", "Yuban": "yuban", "Pixiv": "pixiv"}
 
-        for API in [Lolicon, Yuban, Pixiv]:
+        for API in [Yuban, Lolicon, Pixiv]:
             if self.config.setting.api.dict()[  # type:ignore
                 conversion_dict[API.__name__]
             ]:  # 遍历API的开启状态

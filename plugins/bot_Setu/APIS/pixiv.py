@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import List
 
 import httpx
-from botoy.schedule import scheduler
 from botoy import logger
+from botoy.schedule import scheduler
 from retrying import retry
 
 from ._proxies import proxies, transport

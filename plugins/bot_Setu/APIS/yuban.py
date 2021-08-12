@@ -15,34 +15,34 @@ class Yuban:
         try:
             with httpx.Client(proxies=proxies, transport=transport) as client:
                 res = client.get(
-                    url="http://api.yuban10703.xyz:2333/setu_v4",
+                    url="https://setu.yuban10703.xyz/setu",
                     params={
-                        "level": self.config.level + 1,
+                        "r18": self.config.level,
                         "num": self.config.toGetNum - self.config.doneNum,
-                        "tag": self.config.tags,
+                        "tags": self.config.tags,
                     },
                     timeout=8,
                 )
         except Exception as e:
             logger.warning("YubanAPI:\r\n{}".format(e))
             return []
-        if res.status_code == 200:
+        if res.status_code:
             dataList = []
             datas = res.json()["data"]
             for d in datas:
                 dataList.append(
                     FinishSetuData(
-                        title=d["title"],
-                        picID=d["artwork"],
-                        picWebUrl="www.pixiv.net/artworks/" + str(d["artwork"]),
+                        title=d["artwork"]["title"],
+                        picID=d["artwork"]["id"],
+                        picWebUrl="www.pixiv.net/artworks/" + str(d["artwork"]["id"]),
                         page=d["page"],
-                        author=d["author"],
-                        authorID=d["artist"],
-                        authorWebUrl="www.pixiv.net/users/" + str(d["artist"]),
-                        picOriginalUrl=d["original"],
-                        picLargeUrl=d["large"].replace("_webp", ""),
-                        picMediumUrl=d["medium"].replace("_webp", ""),
-                        picOriginalUrl_Msg=d["original"].replace(
+                        author=d["author"]["name"],
+                        authorID=d["author"]["id"],
+                        authorWebUrl="www.pixiv.net/users/" + str(d["author"]["id"]),
+                        picOriginalUrl=d["urls"]["original"],
+                        picLargeUrl=d["urls"]["large"].replace("_webp", ""),
+                        picMediumUrl=d["urls"]["medium"].replace("_webp", ""),
+                        picOriginalUrl_Msg=d["urls"]["original"].replace(
                             "i.pximg.net", "i.pixiv.cat"
                         ),
                         # tags=self.config.tags,
