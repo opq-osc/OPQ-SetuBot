@@ -1,17 +1,14 @@
 import random
 import re
 import time
-from typing import Union
 
 from botoy import Action, GroupMsg, FriendMsg
 from botoy.decorators import from_botself
 
 
 @from_botself
-def main(ctx: Union[GroupMsg, FriendMsg]):
+def main(ctx: GroupMsg):
     if not "REVOKE" in ctx.Content:
-        return
-    if ctx.type not in ["temp", "group"]:
         return
     if delay := re.findall(r"REVOKE\[(\d+)]", ctx.Content):
         delay = min(int(delay[0]), 90)
@@ -28,8 +25,4 @@ def main(ctx: Union[GroupMsg, FriendMsg]):
 
 
 def receive_group_msg(ctx: GroupMsg):
-    main(ctx)
-
-
-def receive_friend_msg(ctx: FriendMsg):
     main(ctx)

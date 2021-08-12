@@ -95,7 +95,7 @@ class Setu:
             for k, v in self.config.setuInfoShow.dict().items():  # type:ignore
                 if v:
                     msg += ("" if msg == "" else "\r\n") + msgDict[k]
-            if self.config.setting.revokeTime.dict()[self.ctx.type] != 0:  # type: ignore
+            if self.config.setting.revokeTime.dict()[self.ctx.type] != 0 and self.ctx.type == "group":  # type: ignore
                 msg += "\r\nREVOKE[{}]".format(
                     self.config.setting.revokeTime.dict()[self.ctx.type]  # type:ignore
                 )
