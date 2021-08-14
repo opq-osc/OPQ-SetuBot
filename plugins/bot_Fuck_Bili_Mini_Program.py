@@ -123,7 +123,7 @@ RQFFFFAUUUUH/9k=
 @deco.ignore_botself
 @deco.these_msgtypes("XmlMsg")
 def receive_group_msg(ctx: GroupMsg):
-    if info := re.findall(r"(https://b23\.tv/.*?)\?", ctx.Content):
+    if info := re.findall(r"(https://b23\.tv/\w*)", ctx.Content):
         S.image(
             dont_Send_miniProgram_Base64PIC,
             info[0],
