@@ -31,22 +31,6 @@ except:
     exit(0)
 
 
-@retry(stop_max_attempt_number=3, wait_random_max=1000)
-def download_to_Base64(url):
-    limits = httpx.Limits(
-        max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
-    )
-    with httpx.Client(
-            limits=limits,
-            proxies=proxies,
-            transport=transport,
-            headers={"Referer": "https://www.pixiv.net"},
-            timeout=10,
-    ) as client:
-        resp = client.get(url)
-        return base64.b64encode(BytesIO(resp.content).getvalue()).decode()
-
-
 class Setu:
     conversion_for_send_dict = {
         "original": "picOriginalUrl",
@@ -157,15 +141,28 @@ class Setu:
 
     def sendsetu_forBase64(self, setus: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
+        with httpx.Client(
+                limits=httpx.Limits(
+                    max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
+                ),
+                proxies=proxies,
+                transport=transport,
+                headers={"Referer": "https://www.pixiv.net"},
+                timeout=10,
+        ) as client:
+            @retry(stop_max_attempt_number=3, wait_random_max=1000)
+            def download_to_Base64(url):
+                resp = client.get(url)
+                return base64.b64encode(BytesIO(resp.content).getvalue()).decode()
 
-        for setu in setus:
-            self.pool.submit(
-                lambda send, url, msg, at: send.image(download_to_Base64(url), msg, at),
-                self.send,
-                setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
-                self.buildMsg(setu),
-                self.config.setting.at,
-            )
+            for setu in setus:
+                self.pool.submit(
+                    lambda send, url, msg, at: send.image(download_to_Base64(url), msg, at),
+                    self.send,
+                    setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
+                    self.buildMsg(setu),
+                    self.config.setting.at,
+                )
 
     def auth(self) -> bool:
         """
