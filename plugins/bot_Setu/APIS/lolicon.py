@@ -7,6 +7,7 @@ from typing import List
 import httpx
 from botoy import logger
 
+from ._proxies import proxies, transport
 from ..model import FinishSetuData, GetSetuConfig
 
 
@@ -17,7 +18,7 @@ class Lolicon:
     def get(self) -> List[FinishSetuData]:
         try:
             # with httpx.Client() as client:
-            with httpx.Client() as client:
+            with httpx.Client(proxies=proxies, transport=transport) as client:
                 res = client.post(
                     url="https://api.lolicon.app/setu/v2",
                     json={

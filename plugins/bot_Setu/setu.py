@@ -98,9 +98,6 @@ class Setu:
             if self.config.setting.api.dict()[  # type:ignore
                 conversion_dict[API.__name__]
             ]:  # 遍历API的开启状态
-                if API == Pixiv:
-                    if not global_conf['use_pixiv_api']:  # 关闭了PixivAPI
-                        continue
                 setu_all = API(self.getSetuConfig).main()
                 setu_filtered = self.filter_Sent(setu_all)
                 logger.success(

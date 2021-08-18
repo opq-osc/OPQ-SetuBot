@@ -3,6 +3,7 @@ from typing import List
 import httpx
 from botoy import logger
 
+from ._proxies import proxies, transport
 from ..model import FinishSetuData, GetSetuConfig
 
 
@@ -12,7 +13,7 @@ class Yuban:
 
     def get(self) -> List[FinishSetuData]:
         try:
-            with httpx.Client() as client:
+            with httpx.Client(proxies=proxies, transport=transport) as client:
                 res = client.get(
                     url="https://setu.yuban10703.xyz/setu",
                     params={
