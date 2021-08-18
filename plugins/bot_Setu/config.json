@@ -1,4 +1,5 @@
 {
-  "use_base64_send": false
+  "use_base64_send": false,
+  "use_pixiv_api": true
 }
 
