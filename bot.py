@@ -1,10 +1,11 @@
-import ujson as json
+import asyncio
 
-from botoy import Botoy, FriendMsg, GroupMsg, jconfig
+import ujson as json
+from botoy import AsyncBotoy, FriendMsg, GroupMsg, jconfig
 from botoy.decorators import equal_content, ignore_botself
 from botoy.sugar import Text
 
-bot = Botoy(
+bot = AsyncBotoy(
     qq=jconfig.bot,
     host=jconfig.host,
     port=jconfig.port,
@@ -49,6 +50,6 @@ def help(_):
 
 
 if __name__ == "__main__":
-    bot.run()
+    asyncio.run(bot.run())
 
 ##  "proxies": {"all://":"http://127.0.0.1:10809"},

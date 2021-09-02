@@ -2,7 +2,7 @@ import re
 from typing import Union
 
 from botoy import FriendMsg, GroupMsg, S
-from botoy import decorators as deco
+from botoy import async_decorators as deco
 
 from .model import GetSetuConfig
 from .setu import Setu
@@ -25,7 +25,9 @@ digitalConversionDict = {
 }
 
 
-def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig, None]:
+async def check_and_processing(
+    ctx: Union[GroupMsg, FriendMsg]
+) -> Union[GetSetuConfig, None]:
     send = S.bind(ctx)
     info = getattr(ctx, "_match")
     config = GetSetuConfig()
@@ -36,7 +38,7 @@ def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig
             if info[1].isdigit():
                 config.toGetNum = int(info[1])
             else:
-                send.text("能不能用阿拉伯数字?")
+                await send.atext("能不能用阿拉伯数字?")
                 # logger.info('非数字')
                 return None
     else:  # 未指定数量,默认1
@@ -49,15 +51,14 @@ def check_and_processing(ctx: Union[GroupMsg, FriendMsg]) -> Union[GetSetuConfig
 
 @deco.ignore_botself
 @deco.on_regexp(setuPattern)
-@deco.queued_up
-def main(ctx):
-    if config := check_and_processing(ctx):
-        Setu(ctx, config).main()
+async def main(ctx):
+    if config := await check_and_processing(ctx):
+        await Setu(ctx, config).main()
 
 
-def receive_group_msg(ctx):
-    main(ctx)
+async def receive_group_msg(ctx):
+    await main(ctx)
 
 
-def receive_friend_msg(ctx):
-    main(ctx)
+async def receive_friend_msg(ctx):
+    await main(ctx)
