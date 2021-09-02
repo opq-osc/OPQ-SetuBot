@@ -1,13 +1,13 @@
+import asyncio
 import random
 import re
-import time
 
-from botoy import Action, GroupMsg, FriendMsg
-from botoy.decorators import from_botself
+from botoy import AsyncAction, GroupMsg
+from botoy.async_decorators import from_botself
 
 
 @from_botself
-def main(ctx: GroupMsg):
+async def main(ctx: GroupMsg):
     if not "REVOKE" in ctx.Content:
         return
     if delay := re.findall(r"REVOKE\[(\d+)]", ctx.Content):
@@ -15,14 +15,15 @@ def main(ctx: GroupMsg):
     else:
         delay = random.randint(30, 60)
 
-    time.sleep(delay)
+    await asyncio.sleep(delay)
 
-    Action(
+    async with AsyncAction(
         ctx.CurrentQQ,
         host=getattr(ctx, "_host", None),
         port=getattr(ctx, "_port", None),
-    ).revokeGroupMsg(ctx.QQG, ctx.MsgSeq, ctx.MsgRandom)
+    ) as action:
+        await action.revokeGroupMsg(ctx.QQG, ctx.MsgSeq, ctx.MsgRandom)
 
 
-def receive_group_msg(ctx: GroupMsg):
-    main(ctx)
+async def receive_group_msg(ctx: GroupMsg):
+    await main(ctx)
