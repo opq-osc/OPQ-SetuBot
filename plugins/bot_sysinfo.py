@@ -4,7 +4,7 @@ import time
 import cpuinfo
 import psutil
 from botoy import S
-from botoy import decorators as deco
+from botoy import async_decorators as deco
 from botoy import logger
 
 __doc__ = "发送sysinfo查看系统信息"
@@ -103,11 +103,11 @@ class Sysinfo:
 
 @deco.ignore_botself
 @deco.equal_content("sysinfo")
-def receive_group_msg(_):
-    S.text(Sysinfo.allInfo())
+async def receive_group_msg(_):
+    await S.atext(Sysinfo.allInfo())
 
 
 @deco.ignore_botself
 @deco.equal_content("sysinfo")
-def receive_friend_msg(_):
-    S.text(Sysinfo.allInfo())
+async def receive_friend_msg(_):
+    await S.atext(Sysinfo.allInfo())
