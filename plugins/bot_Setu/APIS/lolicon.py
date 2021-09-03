@@ -7,19 +7,21 @@ from typing import List
 import httpx
 from botoy import logger
 
-from ._proxies import proxies, transport
 from ..model import FinishSetuData, GetSetuConfig
+from ._proxies import proxies, transport
 
 
 class Lolicon:
     def __init__(self, config: GetSetuConfig):
         self.config = config
 
-    def get(self) -> List[FinishSetuData]:
+    async def get(self) -> List[FinishSetuData]:
         try:
             # with httpx.Client() as client:
-            with httpx.Client(proxies=proxies, transport=transport) as client:
-                res = client.post(
+            async with httpx.AsyncClient(
+                proxies=proxies, transport=transport
+            ) as client:
+                res = await client.post(
                     url="https://api.lolicon.app/setu/v2",
                     json={
                         "r18": self.config.level,
@@ -59,7 +61,7 @@ class Lolicon:
             return dataList
         return []
 
-    def main(self) -> List[FinishSetuData]:
+    async def main(self) -> List[FinishSetuData]:
         if self.config.toGetNum - self.config.doneNum <= 0:
             return []
-        return self.get()
+        return await self.get()

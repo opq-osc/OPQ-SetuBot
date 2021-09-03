@@ -126,9 +126,8 @@ pixivToken.main()
 class Pixiv:
     def __init__(self, config: GetSetuConfig):
         self.config = config
-        self.Client = httpx.Client(proxies=proxies, transport=transport)
 
-    def get(self):  # p站热度榜
+    async def get(self):  # p站热度榜
         tags = self.config.tags.copy()
         if self.config.level == 1:  # R18 only
             tags.append("R-18")
@@ -149,8 +148,10 @@ class Pixiv:
             pixivToken.tokendata["access_token"]
         )
         try:
-            with self.Client as client:
-                res = client.get(url, params=params, headers=headers, timeout=10)
+            async with httpx.AsyncClient(
+                proxies=proxies, transport=transport
+            ) as client:
+                res = await client.get(url, params=params, headers=headers, timeout=10)
             data = res.json()
         except Exception as e:
             logger.warning("Pixiv热度榜获取失败~:\r\n{}".format(e))
@@ -210,9 +211,9 @@ class Pixiv:
             )
         return dataList
 
-    def main(self) -> List[FinishSetuData]:
+    async def main(self) -> List[FinishSetuData]:
         if self.config.toGetNum - self.config.doneNum <= 0:
             return []
         if len(self.config.tags) == 0:
             return []
-        return self.get()
+        return await self.get()

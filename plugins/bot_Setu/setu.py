@@ -2,7 +2,6 @@
 # @Time    : 2021/6/20 20:59
 # @Author  : yuban10703
 
-import asyncio
 import json
 import time
 from pathlib import Path
@@ -94,7 +93,7 @@ class Setu:
             if self.config.setting.api.dict()[  # type:ignore
                 conversion_dict[API.__name__]
             ]:  # 遍历API的开启状态
-                setu_all = API(self.getSetuConfig).main()
+                setu_all = await API(self.getSetuConfig).main()
                 setu_filtered = await self.filter_Sent(setu_all)
                 logger.success(
                     "{}:{} 从API:{}获取到关于{}的色图{}张,去除{}s内重复发送过的后剩余{}张".format(

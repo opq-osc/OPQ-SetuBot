@@ -3,18 +3,20 @@ from typing import List
 import httpx
 from botoy import logger
 
-from ._proxies import proxies, transport
 from ..model import FinishSetuData, GetSetuConfig
+from ._proxies import proxies, transport
 
 
 class Yuban:
     def __init__(self, config: GetSetuConfig):
         self.config = config
 
-    def get(self) -> List[FinishSetuData]:
+    async def get(self) -> List[FinishSetuData]:
         try:
-            with httpx.Client(proxies=proxies, transport=transport) as client:
-                res = client.get(
+            async with httpx.AsyncClient(
+                proxies=proxies, transport=transport
+            ) as client:
+                res = await client.get(
                     url="https://setu.yuban10703.xyz/setu",
                     params={
                         "r18": self.config.level,
@@ -52,7 +54,7 @@ class Yuban:
             return dataList
         return []
 
-    def main(self) -> List[FinishSetuData]:
+    async def main(self) -> List[FinishSetuData]:
         if self.config.toGetNum - self.config.doneNum <= 0:
             return []
-        return self.get()
+        return await self.get()
