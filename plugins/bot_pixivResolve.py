@@ -4,13 +4,14 @@ from io import BytesIO
 from typing import Union
 
 import httpx
+from botoy import FriendMsg, GroupMsg, S
+from botoy import async_decorators as deco
+from botoy import jconfig, logger
+from httpx_socks import AsyncProxyTransport
 from PIL import Image, ImageFilter
-from botoy import FriendMsg, GroupMsg, S, logger, jconfig
-from botoy import decorators as deco
-from httpx_socks import SyncProxyTransport
 
 if proxies_socks := jconfig.proxies_socks:
-    transport = SyncProxyTransport.from_url(proxies_socks)
+    transport = AsyncProxyTransport.from_url(proxies_socks)
     proxies = None
 else:
     transport = None
@@ -28,23 +29,25 @@ class PixivResolve:
 
     def __init__(self, ctx: Union[GroupMsg, FriendMsg]):
         self.ctx = ctx
-        self.qq = ctx.QQ  # type:ignore
-        self.qqg = ctx.QQG  # type:ignore
+        self.qq = ctx.QQ
+        self.qqg = ctx.QQG
         self.msgtype = ctx.MsgType
         self.msg = ctx.Content
         self.send = S.bind(ctx)
 
-    def getSetuInfo(self, pid):
+    async def getSetuInfo(self, pid):
         try:
-            with httpx.Client(**client_options) as c:
-                return c.get(
-                    "https://www.pixiv.net/touch/ajax/illust/details",
-                    params={
-                        "illust_id": pid,
-                        "ref": "https://www.pixiv.net/",
-                        "lang": "zh",
-                    },
-                    headers=self.headers,
+            async with httpx.AsyncClient(**client_options) as c:
+                return (
+                    await c.get(
+                        "https://www.pixiv.net/touch/ajax/illust/details",
+                        params={
+                            "illust_id": pid,
+                            "ref": "https://www.pixiv.net/",
+                            "lang": "zh",
+                        },
+                        headers=self.headers,
+                    )
                 ).json()
         except:
             logger.error("Pixiv解析:获取图片信息失败")
@@ -77,11 +80,11 @@ class PixivResolve:
             )
         )
 
-    def url2base64(self, url):
-        with httpx.Client(
-                headers={"Referer": "https://www.pixiv.net"}, **client_options
+    async def url2base64(self, url):
+        async with httpx.AsyncClient(
+            headers={"Referer": "https://www.pixiv.net"}, **client_options
         ) as client:
-            res = client.get(url)
+            res = await client.get(url)
         with Image.open(BytesIO(res.content)) as pic:
             pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=6.5))  # 高斯模糊
             with BytesIO() as bf:
@@ -95,18 +98,18 @@ class PixivResolve:
             re.sub(r"//.*/", r"//pixiv.re/", original_url),
         )
 
-    def main(self):
+    async def main(self):
         raw_info = getattr(self.ctx, "_match")
         logger.info("解析Pixiv:{}".format(raw_info[0]))
         try:
             page = 0 if raw_info[2] is None else int(raw_info[2])
             pid = int(raw_info[1])
         except Exception as e:
-            logger.error('Pixiv解析:处理数据出错\r\n{}'.format(e))
+            logger.error("Pixiv解析:处理数据出错\r\n{}".format(e))
             return
-        if data := self.getSetuInfo(pid):
+        if data := await self.getSetuInfo(pid):
             if picurl := self.choosePicUrl(data["body"]["illust_details"], page):
-                pic_base64 = self.url2base64(picurl[1])
+                pic_base64 = await self.url2base64(picurl[1])
                 msg = self.buildMsg(
                     data["body"]["illust_details"]["title"],
                     data["body"]["illust_details"]["author_details"]["user_name"],
@@ -116,20 +119,15 @@ class PixivResolve:
                         picurl[0], int(data["body"]["illust_details"]["page_count"])
                     ),
                 )
-                self.send.image(pic_base64, msg)
+                await self.send.aimage(pic_base64, msg, type=self.send.TYPE_BASE64)
             else:
-                self.send.text("{}无P{}~".format(pid, page))
+                await self.send.atext("{}无P{}~".format(pid, page))
 
 
 @deco.ignore_botself
 @deco.on_regexp(r".*pixiv.net/artworks/(\d+) ?p?(\d+)?")
-def main(ctx):
-    PixivResolve(ctx).main()
+async def main(ctx):
+    await PixivResolve(ctx).main()
 
 
-def receive_group_msg(ctx):
-    main(ctx)
-
-
-def receive_friend_msg(ctx):
-    main(ctx)
+receive_group_msg = receive_friend_msg = main
