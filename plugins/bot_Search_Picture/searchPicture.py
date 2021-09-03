@@ -4,11 +4,11 @@ from io import BytesIO
 from pathlib import Path
 
 import httpx
-from PIL import Image, ImageFilter
 from botoy import FriendMsg, GroupMsg, S, jconfig, logger
 from botoy.parser import friend as fp
 from botoy.parser import group as gp
-from httpx_socks import SyncProxyTransport
+from httpx_socks import AsyncProxyTransport
+from PIL import Image, ImageFilter
 
 curFileDir = Path(__file__).absolute().parent  # 当前文件路径
 
@@ -23,7 +23,7 @@ except:
     exit(0)
 
 if proxies_socks := jconfig.proxies_socks:
-    transport = SyncProxyTransport.from_url(proxies_socks)
+    transport = AsyncProxyTransport.from_url(proxies_socks)
     proxies = None
 else:
     transport = None
@@ -46,7 +46,7 @@ class SearchPic:
         msg += "预览url:{}".format(data["header"]["thumbnail"])
         return msg
 
-    def saucenao(self, picurl):
+    async def saucenao(self, picurl):
         url = "https://saucenao.com/search.php"
         params = {
             "api_key": conf["APIKEY"],
@@ -58,16 +58,16 @@ class SearchPic:
         }
         try:
 
-            with httpx.Client(**client_options) as client:
-                return client.get(url, params=params).json()
+            async with httpx.AsyncClient(**client_options) as client:
+                return (await client.get(url, params=params)).json()
         except Exception as e:
             logger.warning("saucenao搜图失败~ :{}".format(e))
         return None
 
-    def pictureProcess(self, url):
+    async def pictureProcess(self, url):
         try:
-            with httpx.Client(**client_options) as client:
-                content = client.get(url).content
+            async with httpx.AsyncClient(**client_options) as client:
+                content = (await client.get(url)).content
             with Image.open(BytesIO(content)) as pic:
                 pic_Blur = pic.filter(ImageFilter.GaussianBlur(radius=1.8))  # 高斯模糊
                 with BytesIO() as bf:
@@ -76,7 +76,7 @@ class SearchPic:
         except Exception as e:
             logger.warning("saucenao处理图片失败: %s" % e)
 
-    def main(self):
+    async def main(self):
         picurl = None
 
         if isinstance(self.ctx, GroupMsg):
@@ -90,13 +90,15 @@ class SearchPic:
 
         if picurl:
 
-            if res := self.saucenao(picurl):
+            if res := await self.saucenao(picurl):
                 msg = self.buildmsg(res["results"][0])
-                pic = self.pictureProcess(res["results"][0]["header"]["thumbnail"])
+                pic = await self.pictureProcess(
+                    res["results"][0]["header"]["thumbnail"]
+                )
                 if pic:
-                    self.send.image(pic, msg, type=self.send.TYPE_BASE64)
+                    await self.send.aimage(pic, msg, type=self.send.TYPE_BASE64)
                 else:
-                    self.send.text(msg)
+                    await self.send.atext(msg)
             else:
-                self.send.text("没搜到")
                 logger.warning("saucenao无返回")
+                await self.send.atext("没搜到")
