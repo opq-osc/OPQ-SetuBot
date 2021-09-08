@@ -11,7 +11,7 @@ import httpx
 from botoy import FriendMsg, GroupMsg, S, logger
 
 from .APIS import Lolicon, Pixiv, Yuban
-from .APIS._proxies import proxies, transport
+from .APIS._proxies import proxies, async_transport
 from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 
@@ -137,13 +137,13 @@ class Setu:
     async def sendsetu_forBase64(self, setus: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
         async with httpx.AsyncClient(
-            limits=httpx.Limits(
-                max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
-            ),
-            proxies=proxies,
-            transport=transport,
-            headers={"Referer": "https://www.pixiv.net"},
-            timeout=10,
+                limits=httpx.Limits(
+                    max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
+                ),
+                proxies=proxies,
+                transport=async_transport,
+                headers={"Referer": "https://www.pixiv.net"},
+                timeout=10,
         ) as client:
             for setu in setus:
                 await self.send.aimage(
@@ -169,8 +169,8 @@ class Setu:
             await self.send.atext(self.config.replyMsg.closed)
             return False
         if (
-            not self.config.setting.r18.dict()[self.ctx.type]  # type: ignore
-            and self.getSetuConfig.level > 0
+                not self.config.setting.r18.dict()[self.ctx.type]  # type: ignore
+                and self.getSetuConfig.level > 0
         ):
             await self.send.atext(self.config.replyMsg.noR18)
             return False
@@ -183,8 +183,8 @@ class Setu:
         :return:
         """
         if (
-            self.getSetuConfig.toGetNum
-            > self.config.setting.singleMaximum.dict()[self.ctx.type]  # type:ignore
+                self.getSetuConfig.toGetNum
+                > self.config.setting.singleMaximum.dict()[self.ctx.type]  # type:ignore
         ):
             await self.send.atext(self.config.replyMsg.tooMuch)
             return False
@@ -192,22 +192,22 @@ class Setu:
             await self.send.atext(self.config.replyMsg.tooSmall)
             return False
         if (
-            self.config.setting.r18.dict()[self.ctx.type]  # type:ignore
-            and self.getSetuConfig.level != 1
+                self.config.setting.r18.dict()[self.ctx.type]  # type:ignore
+                and self.getSetuConfig.level != 1
         ):  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         return True
 
     async def filter_Sent(
-        self, setus: List[FinishSetuData]
+            self, setus: List[FinishSetuData]
     ) -> List[FinishSetuData]:  # 过滤一段时间内发送过的图片
         if setus != None:
             setus_copy = setus.copy()
             for setu in setus:
                 if ifSent(
-                    self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
-                    int(setu.picID),
-                    self.config.setting.sentRefreshTime,
+                        self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
+                        int(setu.picID),
+                        self.config.setting.sentRefreshTime,
                 ):
                     setus_copy.remove(setu)
             return setus_copy
@@ -224,7 +224,7 @@ class Setu:
             return
         if self.ctx.type == "group":  # 群聊
             if data := freqLimit(
-                self.ctx.QQG, self.config, self.getSetuConfig
+                    self.ctx.QQG, self.config, self.getSetuConfig
             ):  # 触发频率限制
                 freqConfig = data[0]
                 data_tmp = data[1]
@@ -259,7 +259,7 @@ class Setu:
             await self.send.atext(self.config.replyMsg.tooSmall)
             return
         if (
-            self.config.setting.r18 and self.getSetuConfig.level != 1
+                self.config.setting.r18 and self.getSetuConfig.level != 1
         ):  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         await self.get()
