@@ -136,7 +136,7 @@ class Setu:
                 type=self.send.TYPE_URL,
             )
 
-    async def sendsetu_forBase64(self, setus: List[FinishSetuData]):
+    async def sendsetu_forBase64(self, setus_info: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
 
         @retry(attempts=3, delay=0.5)
@@ -153,20 +153,20 @@ class Setu:
                 timeout=10,
         ) as client:
             tasks = []
-            for setu in setus:
+            for setu in setus_info:
                 tasks.append(
-                    asyncio.create_task(
-                        self.send.aimage(
-                            await download_setu(
-                                client,
-                                setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
-                            ),
-                            self.buildMsg(setu),
-                            self.config.setting.at
-                        )
+                    download_setu(
+                        client,
+                        setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
                     )
                 )
-            await asyncio.wait(tasks)
+            setus_bytes = await asyncio.wait(tasks)
+            for setu_bytes in setus_bytes:
+                await self.send.aimage(
+                    setu_bytes,
+                    self.buildMsg(setu),
+                    self.config.setting.at
+                )
 
     async def auth(self) -> bool:
         """
