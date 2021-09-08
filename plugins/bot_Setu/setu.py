@@ -166,7 +166,7 @@ class Setu:
                         )
                     )
                 )
-            await asyncio.gather(tasks)
+            await asyncio.wait(tasks)
 
     async def auth(self) -> bool:
         """
