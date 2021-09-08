@@ -6,7 +6,7 @@ from pathlib import Path
 from loguru import logger
 from tinydb import TinyDB, where
 
-curFileDir = Path(__file__).absolute().parent  # 当前文件路径
+curFileDir = Path(__file__).parent  # 当前文件路径
 setuDB = TinyDB(curFileDir / "DB" / "setu.json")
 
 
