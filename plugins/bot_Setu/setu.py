@@ -164,7 +164,7 @@ class Setu:
             setus_bytes = await asyncio.gather(*tasks)
             for setu_bytes in setus_bytes:
                 await self.send.aimage(
-                    setu_bytes.result(),
+                    setu_bytes,
                     self.buildMsg(setu),
                     self.config.setting.at
                 )
