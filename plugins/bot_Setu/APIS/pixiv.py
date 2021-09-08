@@ -119,7 +119,7 @@ class PixivToken:
 
 
 pixivToken = PixivToken()
-asyncio.get_event_loop().run_until_complete(pixivToken.main())
+asyncio.run(pixivToken.main())
 
 
 class Pixiv:
