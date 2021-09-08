@@ -2,6 +2,7 @@
 # @Time    : 2021/6/20 20:59
 # @Author  : yuban10703
 
+import asyncio
 import json
 import time
 from pathlib import Path
@@ -140,7 +141,7 @@ class Setu:
 
         @retry(attempts=3, delay=0.5)
         async def download_setu(client, url):
-            return await client.get(url)
+            return await client.get(url).content
 
         async with httpx.AsyncClient(
                 limits=httpx.Limits(
@@ -151,21 +152,21 @@ class Setu:
                 headers={"Referer": "https://www.pixiv.net"},
                 timeout=10,
         ) as client:
+            tasks = []
             for setu in setus:
-                await self.send.aimage(
-                    (
-                        await download_setu(
-                            client,
-                            setu.dict()[
-                                self.conversion_for_send_dict[
-                                    self.config.setting.quality
-                                ]
-                            ],
+                tasks.append(
+                    asyncio.create_task(
+                        self.send.aimage(
+                            await download_setu(
+                                client,
+                                setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
+                            ),
+                            self.buildMsg(setu),
+                            self.config.setting.at
                         )
-                    ).content,
-                    self.buildMsg(setu),
-                    self.config.setting.at,
+                    )
                 )
+            await asyncio.gather(tasks)
 
     async def auth(self) -> bool:
         """
