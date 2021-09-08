@@ -71,8 +71,8 @@ class PixivToken:
     def continue_refresh_token(self):
         try:
             self.refresh_token()
-        except:
-            logger.warning("刷新失败")
+        except Exception as e:
+            logger.warning(f"刷新失败\r\n{e}")
             nextTime = 300
         else:
             nextTime = int(
@@ -110,7 +110,7 @@ class PixivToken:
             self.continue_refresh_token()
             return
         if time.time() - self.tokendata["time"] >= int(
-            self.tokendata["expires_in"]
+                self.tokendata["expires_in"]
         ):  # 停止程序后再次启动时间后的间隔时间超过刷新间隔
             self.continue_refresh_token()
             return
@@ -149,7 +149,7 @@ class Pixiv:
         )
         try:
             async with httpx.AsyncClient(
-                proxies=proxies, transport=transport
+                    proxies=proxies, transport=transport
             ) as client:
                 res = await client.get(url, params=params, headers=headers, timeout=10)
             data = res.json()
