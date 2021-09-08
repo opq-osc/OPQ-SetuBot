@@ -141,7 +141,8 @@ class Setu:
 
         @retry(attempts=3, delay=0.5)
         async def download_setu(client, url):
-            return await client.get(url).content
+            res = await client.get(url)
+            return res.content
 
         async with httpx.AsyncClient(
                 limits=httpx.Limits(
