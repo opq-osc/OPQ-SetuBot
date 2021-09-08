@@ -140,7 +140,7 @@ class Setu:
         """发送setu,下载后用Base64发给OPQ"""
 
         @retry(attempts=3, delay=0.5)
-        async def download_setu(client, url):
+        async def download_setu(client, url) -> bytes:
             res = await client.get(url)
             return res.content
 
@@ -161,10 +161,10 @@ class Setu:
                         setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
                     )
                 )
-            setus_bytes = await asyncio.wait(tasks)
+            setus_bytes = await asyncio.gather(*tasks)
             for setu_bytes in setus_bytes:
                 await self.send.aimage(
-                    (setu_bytes),
+                    setu_bytes.result(),
                     self.buildMsg(setu),
                     self.config.setting.at
                 )
