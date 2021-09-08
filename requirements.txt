@@ -2,7 +2,7 @@ botoy
 httpx
 httpx_socks
 pydantic
-retrying
+retrying-async
 tinydb
 Pillow
 py-cpuinfo

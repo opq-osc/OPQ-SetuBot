@@ -9,6 +9,7 @@ from typing import List, Union
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S, logger
+from retrying_async import retry
 
 from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import proxies, async_transport
@@ -136,6 +137,11 @@ class Setu:
 
     async def sendsetu_forBase64(self, setus: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
+
+        @retry(attempts=3, delay=0.5)
+        async def download_setu(client, url):
+            return await client.get(url)
+
         async with httpx.AsyncClient(
                 limits=httpx.Limits(
                     max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
@@ -148,7 +154,8 @@ class Setu:
             for setu in setus:
                 await self.send.aimage(
                     (
-                        await client.get(
+                        await download_setu(
+                            client,
                             setu.dict()[
                                 self.conversion_for_send_dict[
                                     self.config.setting.quality
