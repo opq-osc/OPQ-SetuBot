@@ -17,7 +17,7 @@ import httpx
 from botoy import logger
 from botoy.schedule import scheduler
 
-from ._proxies import proxies, transport, async_transport
+from ._proxies import proxies, async_transport
 from ..model import FinishSetuData, GetSetuConfig
 
 
@@ -25,7 +25,7 @@ class PixivToken:
     def __init__(self):
         self.tokenPath = Path(__file__).absolute().parent.parent / ".PixivToken.json"
         self.tokendata = {}
-        self.Client = httpx.AsyncClient(proxies=proxies, transport=transport)
+        self.Client = httpx.AsyncClient(proxies=proxies, transport=async_transport)
 
     def headers(self):
         hash_secret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
