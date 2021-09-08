@@ -18,7 +18,7 @@ from botoy import logger
 from botoy.schedule import scheduler
 from retrying import retry
 
-from ._proxies import proxies, transport
+from ._proxies import proxies, transport, async_transport
 from ..model import FinishSetuData, GetSetuConfig
 
 
@@ -149,7 +149,7 @@ class Pixiv:
         )
         try:
             async with httpx.AsyncClient(
-                    proxies=proxies, transport=transport
+                    proxies=proxies, transport=async_transport
             ) as client:
                 res = await client.get(url, params=params, headers=headers, timeout=10)
             data = res.json()
