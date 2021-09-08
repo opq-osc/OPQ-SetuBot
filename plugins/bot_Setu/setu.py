@@ -15,7 +15,7 @@ from .APIS._proxies import proxies, transport
 from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 
-curFileDir = Path(__file__).absolute().parent  # 当前文件路径
+curFileDir = Path(__file__).parent  # 当前文件路径
 
 try:
     with open(curFileDir / "config.json", "r", encoding="utf-8") as f:
