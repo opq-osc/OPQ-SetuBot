@@ -24,6 +24,7 @@ from ._proxies import proxies, async_transport
 from ..model import FinishSetuData, GetSetuConfig
 
 scheduler = AsyncIOScheduler()
+scheduler.start()
 
 
 class PixivToken:
