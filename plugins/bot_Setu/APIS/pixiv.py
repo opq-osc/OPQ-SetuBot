@@ -15,16 +15,12 @@ from pathlib import Path
 from typing import List
 
 import httpx
-# from botoy.schedule import scheduler
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from botoy.schedule import scheduler
 from botoy import logger
 from retrying_async import retry
 
 from ._proxies import proxies, async_transport
 from ..model import FinishSetuData, GetSetuConfig
-
-scheduler = AsyncIOScheduler()
-scheduler.start()
 
 
 class PixivToken:
@@ -96,7 +92,7 @@ class PixivToken:
     def addJob(self, next_time: int):
         logger.info("离下次刷新还有:{}s".format(next_time))
         scheduler.add_job(
-            self.continue_refresh_token,
+            lambda: asyncio.run(self.continue_refresh_token()),
             next_run_time=datetime.now() + timedelta(seconds=next_time - 1),
             misfire_grace_time=30,
         )
