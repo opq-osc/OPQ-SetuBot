@@ -168,7 +168,7 @@ class Setu:
                     self.buildMsg(setu),
                     self.config.setting.at
                 )
-                await asyncio.sleep(1.2)
+                await asyncio.sleep(2)
 
     async def auth(self) -> bool:
         """
