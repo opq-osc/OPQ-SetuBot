@@ -2,7 +2,6 @@
 # @Time    : 2021/6/20 21:01
 # @Author  : yuban10703
 
-import asyncio
 import hashlib
 import json
 import random
@@ -15,11 +14,11 @@ from pathlib import Path
 from typing import List
 
 import httpx
-from botoy.schedule import scheduler
 from botoy import logger
-from retrying_async import retry
+from botoy.schedule import scheduler
+from retrying import retry
 
-from ._proxies import proxies, async_transport
+from ._proxies import proxies, async_transport, transport
 from ..model import FinishSetuData, GetSetuConfig
 
 
@@ -27,7 +26,7 @@ class PixivToken:
     def __init__(self):
         self.tokenPath = Path(__file__).absolute().parent.parent / ".PixivToken.json"
         self.tokendata = {}
-        self.Client = httpx.AsyncClient(proxies=proxies, transport=async_transport)
+        self.Client = httpx.Client(proxies=proxies, transport=transport)
 
     def headers(self):
         hash_secret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
@@ -49,8 +48,8 @@ class PixivToken:
         }
         return headers
 
-    @retry(attempts=3, delay=3)
-    async def refresh_token(self):
+    @retry(stop_max_attempt_number=2, wait_random_max=3000)
+    def refresh_token(self):
         url = "https://oauth.secure.pixiv.net/auth/token"
         logger.info("尝试刷新Pixiv_token")
         data = {
@@ -64,15 +63,14 @@ class PixivToken:
             "get_secure_url": "true",
             "include_policy": "true",
         }
-        res = await self.Client.post(url, data=data, headers=self.headers())
-        self.tokendata = res.json()
+        self.tokendata = self.Client.post(url, data=data, headers=self.headers()).json()
         self.tokendata["time"] = time.time()
         logger.success("刷新token成功~")
         self.saveToken()
 
-    async def continue_refresh_token(self):
+    def continue_refresh_token(self):
         try:
-            await self.refresh_token()
+            self.refresh_token()
         except:
             logger.warning("刷新失败")
             nextTime = 300
@@ -92,12 +90,12 @@ class PixivToken:
     def addJob(self, next_time: int):
         logger.info("离下次刷新还有:{}s".format(next_time))
         scheduler.add_job(
-            lambda: asyncio.run(self.continue_refresh_token()),
+            self.continue_refresh_token,
             next_run_time=datetime.now() + timedelta(seconds=next_time - 1),
             misfire_grace_time=30,
         )
 
-    async def main(self):
+    def main(self):
         try:
             with open(self.tokenPath, "r", encoding="utf-8") as f:
                 self.tokendata = json.load(f)
@@ -109,12 +107,12 @@ class PixivToken:
             logger.error("PixivToken不存在")
             sys.exit(0)
         if "time" not in self.tokendata.keys():  # 没time字段就是第一次启动
-            await self.continue_refresh_token()
+            self.continue_refresh_token()
             return
         if time.time() - self.tokendata["time"] >= int(
                 self.tokendata["expires_in"]
         ):  # 停止程序后再次启动时间后的间隔时间超过刷新间隔
-            await self.continue_refresh_token()
+            self.continue_refresh_token()
             return
         self.addJob(
             int(self.tokendata["expires_in"] - (time.time() - self.tokendata["time"]))
@@ -122,7 +120,7 @@ class PixivToken:
 
 
 pixivToken = PixivToken()
-asyncio.run(pixivToken.main())
+pixivToken.main()
 
 
 class Pixiv:
