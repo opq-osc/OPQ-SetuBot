@@ -7,6 +7,7 @@ import hashlib
 import json
 import random
 import re
+import sys
 import time
 import uuid
 from datetime import datetime, timedelta
@@ -14,12 +15,15 @@ from pathlib import Path
 from typing import List
 
 import httpx
+# from botoy.schedule import scheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from botoy import logger
-from botoy.schedule import scheduler
 from retrying_async import retry
 
 from ._proxies import proxies, async_transport
 from ..model import FinishSetuData, GetSetuConfig
+
+scheduler = AsyncIOScheduler()
 
 
 class PixivToken:
@@ -103,10 +107,10 @@ class PixivToken:
                 logger.success("读取.PixivToken.json成功~")
         except Exception as e:
             logger.error(".PixivToken.json载入失败,请检查内容并重新启动~\r\n{}".format(e))
-            # sys.exit(0)
+            sys.exit(0)
         if self.tokendata["refresh_token"] == "":
             logger.error("PixivToken不存在")
-            # sys.exit(0)
+            sys.exit(0)
         if "time" not in self.tokendata.keys():  # 没time字段就是第一次启动
             await self.continue_refresh_token()
             return
