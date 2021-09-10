@@ -290,5 +290,5 @@ class Setu:
             else:
                 logger.warning("无群:{}的配置文件".format(self.ctx.QQG))
         await self.send.atext(
-            "如果要使用Setu插件,请参考https://github.com/opq-osc/OPQ-SetuBot/wiki对本群的配置文件初始化"
+            "无本群配置文件,请联系bot管理员~"
         )
