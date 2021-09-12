@@ -6,7 +6,7 @@ import asyncio
 import json
 import time
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Optional
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S, logger
@@ -138,37 +138,40 @@ class Setu:
 
     async def sendsetu_forBase64(self, setus_info: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
+        async with httpx.AsyncClient(limits=httpx.Limits(max_keepalive_connections=8, max_connections=10),
+                                     proxies=proxies,
+                                     transport=async_transport,
+                                     headers={"Referer": "https://www.pixiv.net"},
+                                     timeout=10) as client:
+            @retry(attempts=3, delay=0.5)
+            async def download_setu(url) -> Optional[bytes]:
+                res = await client.get(url)
+                if res.status_code == 200:
+                    return res.content
+                return None
 
-        @retry(attempts=3, delay=0.5)
-        async def download_setu(client, url) -> bytes:
-            res = await client.get(url)
-            return res.content
-
-        async with httpx.AsyncClient(
-                limits=httpx.Limits(
-                    max_keepalive_connections=8, max_connections=10, keepalive_expiry=8
-                ),
-                proxies=proxies,
-                transport=async_transport,
-                headers={"Referer": "https://www.pixiv.net"},
-                timeout=10,
-        ) as client:
-            tasks = []
+            # tasks = []
             for setu in setus_info:
-                tasks.append(
-                    download_setu(
-                        client,
-                        setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
-                    )
-                )
-            setus_bytes = await asyncio.gather(*tasks)
-            for i in range(len(setus_bytes)):
                 await self.send.aimage(
-                    setus_bytes[i],
-                    self.buildMsg(setus_info[i]),
+                    await download_setu(setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]]),
+                    self.buildMsg(setu),
                     self.config.setting.at
                 )
-                await asyncio.sleep(2)
+            # for setu in setus_info:
+            #     tasks.append(
+            #         download_setu(
+            #             setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]]
+            #         )
+            #     )
+            # setus_bytes = await asyncio.gather(*tasks)
+            #
+            # for i in range(len(setus_bytes)):
+            #     await self.send.aimage(
+            #         setus_bytes[i],
+            #         self.buildMsg(setus_info[i]),
+            #         self.config.setting.at
+            #     )
+            #     await asyncio.sleep(2)
 
     async def auth(self) -> bool:
         """
