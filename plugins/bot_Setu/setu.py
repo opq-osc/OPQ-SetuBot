@@ -162,10 +162,10 @@ class Setu:
                     )
                 )
             setus_bytes = await asyncio.gather(*tasks)
-            for setu_bytes in setus_bytes:
+            for i in range(len(setus_bytes)):
                 await self.send.aimage(
-                    setu_bytes,
-                    self.buildMsg(setu),
+                    setus_bytes[i],
+                    self.buildMsg(setus_info[i]),
                     self.config.setting.at
                 )
                 await asyncio.sleep(2)
