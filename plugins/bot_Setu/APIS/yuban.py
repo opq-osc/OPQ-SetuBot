@@ -13,7 +13,7 @@ class Yuban:
 
     async def get(self) -> List[FinishSetuData]:
         try:
-            async with httpx.AsyncClient(proxies=proxies, transport=async_transport) as client:
+            async with httpx.AsyncClient() as client:
                 res = await client.get(
                     url="https://setu.yuban10703.xyz/setu",
                     params={

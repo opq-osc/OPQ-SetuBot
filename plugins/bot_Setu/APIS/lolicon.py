@@ -18,7 +18,7 @@ class Lolicon:
     async def get(self) -> List[FinishSetuData]:
         try:
             # with httpx.Client() as client:
-            async with httpx.AsyncClient(proxies=proxies, transport=async_transport) as client:
+            async with httpx.AsyncClient() as client:
                 res = await client.post(
                     url="https://api.lolicon.app/setu/v2",
                     json={
