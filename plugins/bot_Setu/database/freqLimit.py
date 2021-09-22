@@ -1,6 +1,7 @@
 import time
 
 from botoy import logger
+from botoy.contrib import to_async
 from tinydb import where
 from tinydb.operations import add
 from tinyrecord import transaction
@@ -8,6 +9,7 @@ from tinyrecord import transaction
 from ._shared import freqLimitTable
 
 
+@to_async
 def freqLimit(groupid, config, getSetuConfig):
     """
     频率限制

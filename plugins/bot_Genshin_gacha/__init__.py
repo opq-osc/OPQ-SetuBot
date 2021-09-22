@@ -21,6 +21,7 @@ digitalConversionDict = {
 poolConversion = {
     '普通': 'ordinary',
     '普': 'ordinary',
+    '常驻': 'ordinary',
     '角色': 'roleUp',
     '人物': 'roleUp',
     '武器': 'armUp',

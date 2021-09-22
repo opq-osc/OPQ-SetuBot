@@ -3,7 +3,6 @@ from typing import List
 import httpx
 from botoy import logger
 
-from ._proxies import proxies, async_transport
 from ..model import FinishSetuData, GetSetuConfig
 
 

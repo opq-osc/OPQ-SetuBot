@@ -4,11 +4,11 @@ from io import BytesIO
 from typing import Union
 
 import httpx
+from PIL import Image, ImageFilter
 from botoy import FriendMsg, GroupMsg, S
 from botoy import async_decorators as deco
 from botoy import jconfig, logger
 from httpx_socks import AsyncProxyTransport
-from PIL import Image, ImageFilter
 
 if proxies_socks := jconfig.proxies_socks:
     transport = AsyncProxyTransport.from_url(proxies_socks)

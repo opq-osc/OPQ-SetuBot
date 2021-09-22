@@ -1,11 +1,13 @@
 import time
 
+from botoy.contrib import to_async
 from tinydb import where
 from tinyrecord import transaction
 
 from ._shared import sentlistTable
 
 
+@to_async
 def ifSent(groupId: int, picId: int, refreshTime: int):
     with transaction(sentlistTable) as tr:
         with tr.lock:

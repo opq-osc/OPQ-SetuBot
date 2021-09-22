@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/6/20 20:59
 # @Author  : yuban10703
-
 import asyncio
 import json
 import time
@@ -144,11 +143,11 @@ class Setu:
                                      headers={"Referer": "https://www.pixiv.net"},
                                      timeout=10) as client:
             @retry(attempts=3, delay=0.5)
-            async def download_setu(url) -> Optional[bytes]:
+            async def download_setu(url) -> Optional[bytes, str]:
                 res = await client.get(url)
                 if res.status_code == 200:
                     return res.content
-                return None
+                return "https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg"
 
             # tasks = []
             for setu in setus_info:
@@ -157,21 +156,7 @@ class Setu:
                     self.buildMsg(setu),
                     self.config.setting.at
                 )
-            # for setu in setus_info:
-            #     tasks.append(
-            #         download_setu(
-            #             setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]]
-            #         )
-            #     )
-            # setus_bytes = await asyncio.gather(*tasks)
-            #
-            # for i in range(len(setus_bytes)):
-            #     await self.send.aimage(
-            #         setus_bytes[i],
-            #         self.buildMsg(setus_info[i]),
-            #         self.config.setting.at
-            #     )
-            #     await asyncio.sleep(2)
+                await asyncio.sleep(2)
 
     async def auth(self) -> bool:
         """
@@ -211,13 +196,13 @@ class Setu:
             self.getSetuConfig.level = 2
         return True
 
-    async def filter_Sent(
-            self, setus: List[FinishSetuData]
-    ) -> List[FinishSetuData]:  # 过滤一段时间内发送过的图片
+    async def filter_Sent(self, setus: List[FinishSetuData]) -> List[FinishSetuData]:
+        """过滤一段时间内发送过的图片
+        """
         if setus != None:
             setus_copy = setus.copy()
             for setu in setus:
-                if ifSent(
+                if await ifSent(
                         self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
                         int(setu.picID),
                         self.config.setting.sentRefreshTime,
@@ -236,12 +221,12 @@ class Setu:
         if not await self.check_parameters():  # 检查数量
             return
         if self.ctx.type == "group":  # 群聊
-            if data := freqLimit(
+            if data := await freqLimit(
                     self.ctx.QQG, self.config, self.getSetuConfig
             ):  # 触发频率限制
                 freqConfig = data[0]
                 data_tmp = data[1]
-                self.send.text(
+                await self.send.atext(
                     self.config.replyMsg.freqLimit.format(
                         time=freqConfig.refreshTime,
                         limitCount=freqConfig.limitCount,
