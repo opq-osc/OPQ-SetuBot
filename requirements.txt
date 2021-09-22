@@ -5,6 +5,7 @@ pydantic
 retrying
 retrying-async
 tinydb
+tinyrecord
 Pillow
 py-cpuinfo
 ujson
