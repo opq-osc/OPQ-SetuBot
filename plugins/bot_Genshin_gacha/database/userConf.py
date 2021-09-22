@@ -18,7 +18,7 @@ def updateUserConfig(userid: int, cardPool: str, config: UserInfo) -> bool:
     with transaction(gachaDB.table(cardPool)) as tr:
         with tr.lock:
             if gachaDB.table(cardPool).get(where('userid') == userid):
-                tr.table(cardPool).update(config.dict(), where('userid') == userid)
+                tr.update(config.dict(), where('userid') == userid)
                 return True
             else:
                 tr.insert(config.dict())
