@@ -5,7 +5,7 @@ import asyncio
 import json
 import time
 from pathlib import Path
-from typing import List, Union, Optional
+from typing import List, Union
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S, logger
@@ -143,7 +143,7 @@ class Setu:
                                      headers={"Referer": "https://www.pixiv.net"},
                                      timeout=10) as client:
             @retry(attempts=3, delay=0.5)
-            async def download_setu(url) -> Optional[bytes, str]:
+            async def download_setu(url) -> Union[bytes, str]:
                 res = await client.get(url)
                 if res.status_code == 200:
                     return res.content
