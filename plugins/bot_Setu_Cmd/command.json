@@ -80,11 +80,11 @@
     "res": 0
   },
   "开启原图": {
-    "keyList": ["setting", "quality", "group"],
+    "keyList": ["setting", "quality"],
     "res": "original"
   },
   "关闭原图": {
-    "keyList": ["setting", "quality", "group"],
+    "keyList": ["setting", "quality"],
     "res": "large"
   },
   "关闭色图标题信息": {
