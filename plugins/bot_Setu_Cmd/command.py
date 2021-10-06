@@ -137,8 +137,10 @@ class CMD:
         """
         if self.ctx.QQ == jconfig.superAdmin:
             return 1
-        if self.ctx.QQ in self.config.admins:
-            return 2
+        if self.ctx.type != "friend":
+            self.config = getGroupConfig(self.ctx.QQG).dict()
+            if self.ctx.QQ in self.config["admins"]:
+                return 2
         return False
 
     def main(self):
