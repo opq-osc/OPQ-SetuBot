@@ -159,4 +159,5 @@ class CMD:
                 if res := re.match("_cmd (.*)", self.ctx.Content):  # 匹配命令
                     self.specific_command(res)
         else:
+            self.send.text("爪 巴")
             return
