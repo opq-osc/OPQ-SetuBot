@@ -153,6 +153,7 @@ class CMD:
             if res := re.match(r"_cmd_adv (.*) (.*):(.*)", self.ctx.Content):  # 万能修改
                 self.advanced_command(self.ctx.QQG, res[1].split(), res[2], res[3])
             if self.ctx.type != "friend":
+                self.config = getGroupConfig(self.ctx.QQG).dict()
                 if res := re.match("_cmd (.*)", self.ctx.Content):  # 匹配命令
                     self.specific_command(res)
         else:
