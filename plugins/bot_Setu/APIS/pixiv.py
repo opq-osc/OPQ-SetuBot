@@ -71,8 +71,8 @@ class PixivToken:
     def continue_refresh_token(self):
         try:
             self.refresh_token()
-        except:
-            logger.warning("刷新失败")
+        except Exception as e:
+            logger.error(f"刷新失败\r\n{e}")
             nextTime = 300
         else:
             nextTime = int(
