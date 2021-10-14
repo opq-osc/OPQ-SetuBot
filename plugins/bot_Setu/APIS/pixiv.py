@@ -24,7 +24,7 @@ from ..model import FinishSetuData, GetSetuConfig
 
 class PixivToken:
     def __init__(self):
-        self.tokenPath = Path(__file__).absolute().parent.parent / ".PixivToken.json"
+        self.tokenPath = Path(__file__).parent.parent / ".PixivToken.json"
         self.tokendata = {}
         self.Client = httpx.Client(proxies=proxies, transport=transport)
 
@@ -50,7 +50,6 @@ class PixivToken:
 
     @retry(stop_max_attempt_number=2, wait_random_max=3000)
     def refresh_token(self):
-        url = "https://oauth.secure.pixiv.net/auth/token"
         logger.info("尝试刷新Pixiv_token")
         data = {
             "client_id": "MOBrBDS8blbauoSck0ZfDbtuzpyT",
@@ -63,7 +62,11 @@ class PixivToken:
             "get_secure_url": "true",
             "include_policy": "true",
         }
-        self.tokendata = self.Client.post(url, data=data, headers=self.headers()).json()
+        self.tokendata = self.Client.post(
+            url="https://oauth.secure.pixiv.net/auth/token",
+            data=data,
+            headers=self.headers()
+        ).json()
         self.tokendata["time"] = time.time()
         logger.success("刷新token成功~")
         self.saveToken()
