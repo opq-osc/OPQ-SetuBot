@@ -51,6 +51,7 @@ class PixivToken:
     @retry(stop_max_attempt_number=2, wait_random_max=3000)
     def refresh_token(self):
         logger.info("尝试刷新Pixiv_token")
+        url = "https://oauth.secure.pixiv.net/auth/token"
         data = {
             "client_id": "MOBrBDS8blbauoSck0ZfDbtuzpyT",
             "client_secret": "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj",
@@ -62,11 +63,7 @@ class PixivToken:
             "get_secure_url": "true",
             "include_policy": "true",
         }
-        self.tokendata = self.Client.post(
-            url="https://oauth.secure.pixiv.net/auth/token",
-            data=data,
-            headers=self.headers()
-        ).json()
+        self.tokendata = self.Client.post(url, data=data, headers=self.headers()).json()
         self.tokendata["time"] = time.time()
         logger.success("刷新token成功~")
         self.saveToken()
