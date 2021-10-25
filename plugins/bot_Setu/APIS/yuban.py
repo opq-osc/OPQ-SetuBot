@@ -42,7 +42,7 @@ class Yuban:
                         picLargeUrl=d["urls"]["large"].replace("_webp", ""),
                         picMediumUrl=d["urls"]["medium"].replace("_webp", ""),
                         picOriginalUrl_Msg=d["urls"]["original"].replace(
-                            "i.pximg.net", "i.pixiv.cat"
+                            "i.pximg.net", "i.pixiv.re"
                         ),
                         # tags=self.config.tags,
                         tags=",".join(d["tags"]),
