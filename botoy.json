@@ -3,7 +3,7 @@
   "port": 8888,
   "bot": 123456,
   "superAdmin": 123456,
-  "proxies_http": {},
+  "proxies_http": "",
   "proxies_socks": "",
   "group_blacklist": [],
   "friend_blacklist": [],
