@@ -205,6 +205,7 @@ class Setu:
                 if await ifSent(
                         self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
                         int(setu.picID),
+                        int(setu.page),
                         self.config.setting.sentRefreshTime,
                 ):
                     setus_copy.remove(setu)
