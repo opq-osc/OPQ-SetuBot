@@ -2,8 +2,7 @@ botoy
 httpx
 httpx_socks
 pydantic
-retrying
-retrying-async
+tenacity
 tinydb
 tinyrecord
 Pillow

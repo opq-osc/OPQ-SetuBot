@@ -16,7 +16,7 @@ from typing import List
 import httpx
 from botoy import logger
 from botoy.schedule import scheduler
-from retrying import retry
+from tenacity import retry, stop_after_attempt, wait_random
 
 from ._proxies import proxies, async_transport, transport
 from ..model import FinishSetuData, GetSetuConfig
@@ -48,7 +48,7 @@ class PixivToken:
         }
         return headers
 
-    @retry(stop_max_attempt_number=2, wait_random_max=3000)
+    @retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=2))
     def refresh_token(self):
         logger.info("尝试刷新Pixiv_token")
         url = "https://oauth.secure.pixiv.net/auth/token"

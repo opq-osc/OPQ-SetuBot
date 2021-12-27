@@ -9,7 +9,7 @@ from typing import List, Union
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S, logger
-from retrying_async import retry
+from tenacity import retry, stop_after_attempt, wait_random
 
 from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import proxies, async_transport
@@ -142,12 +142,14 @@ class Setu:
                                      transport=async_transport,
                                      headers={"Referer": "https://www.pixiv.net"},
                                      timeout=10) as client:
-            @retry(attempts=3, delay=0.5)
+            @retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=2), retry_error_callback=lambda
+                    retry_state: "https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg")
             async def download_setu(url) -> Union[bytes, str]:
                 res = await client.get(url)
-                if res.status_code == 200:
-                    return res.content
-                return "https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg"
+                if res.status_code != 200:
+                    logger.warning("download_setu: res.status_code != 200")
+                    raise Exception("download_setu: res.status_code != 200")
+                return res.content
 
             # tasks = []
             for setu in setus_info:
