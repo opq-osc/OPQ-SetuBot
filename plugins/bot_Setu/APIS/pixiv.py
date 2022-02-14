@@ -9,7 +9,7 @@ import re
 import sys
 import time
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List
 
@@ -89,9 +89,11 @@ class PixivToken:
 
     def addJob(self, next_time: int):
         logger.info("离下次刷新还有:{}s".format(next_time))
+        utc_time = datetime.utcnow().replace(tzinfo=timezone.utc)
+        beijing_time = utc_time.astimezone(timezone(timedelta(hours=8)))
         scheduler.add_job(
             self.continue_refresh_token,
-            next_run_time=datetime.now() + timedelta(seconds=next_time - 1),
+            next_run_time=beijing_time + timedelta(seconds=next_time - 1),
             misfire_grace_time=30,
         )
 
