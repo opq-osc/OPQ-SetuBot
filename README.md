@@ -1,6 +1,10 @@
-# [OPQBOT](https://github.com/OPQBOT/OPQ)的色图姬插件
+# [OPQBOT](https://github.com/OPQBOT/OPQ) 的色图姬插件
+
+#### 部署教程 [从0开始搭建一个色图Bot - Yuban10703's site](https://2333.world/_posts/2022_02_13/%E4%BB%8E0%E5%BC%80%E5%A7%8B%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%89%B2%E5%9B%BEBot/)
 
 #### 详细信息看[wiki](https://github.com/yuban10703/OPQ-SetuBot/wiki)
+
+#### 有问题直接发issue
 
 ### 功能
 
