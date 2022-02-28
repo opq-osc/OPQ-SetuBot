@@ -1,5 +1,4 @@
 import base64
-import json
 from io import BytesIO
 from pathlib import Path
 
@@ -10,17 +9,12 @@ from botoy.parser import friend as fp
 from botoy.parser import group as gp
 from httpx_socks import AsyncProxyTransport
 
-curFileDir = Path(__file__).absolute().parent  # 当前文件路径
+curFileDir = Path(__file__).parent  # 当前文件路径
 
-try:
-    with open(curFileDir / "config.json", "r", encoding="utf-8") as f:
-        conf = json.load(f)
-    if not conf["APIKEY"]:
-        logger.error("[searchPicture]: 请配置API KEY: saucenaoAPIKEY")
-        exit(0)
-except:
-    logger.error("载入saucenaoAPIKEY配置文件(plugins/bot_Search_Picture/config.json)出错")
-    exit(0)
+setu_config = jconfig.get_configuration('searchPicture')
+apiKey = setu_config.get("apiKey")
+
+assert apiKey, "[searchPicture]: 请配置searchPicture.apiKey"
 
 if proxies_socks := jconfig.proxies_socks:
     transport = AsyncProxyTransport.from_url(proxies_socks)
@@ -49,7 +43,7 @@ class SearchPic:
     async def saucenao(self, picurl):
         url = "https://saucenao.com/search.php"
         params = {
-            "api_key": conf["APIKEY"],
+            "api_key": apiKey,
             "db": 999,
             "output_type": 2,
             "testmode": 1,

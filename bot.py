@@ -6,7 +6,6 @@ from botoy.decorators import equal_content, ignore_botself
 from botoy.sugar import Text
 
 bot = AsyncBotoy(
-    qq=jconfig.bot,
     host=jconfig.host,
     port=jconfig.port,
     log=True,

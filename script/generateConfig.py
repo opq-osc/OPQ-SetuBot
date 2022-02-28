@@ -11,7 +11,7 @@ curFileDir = Path(__file__).absolute().parent  # 当前文件路径
 with open(curFileDir.parent / "botoy.json", "r", encoding="utf-8") as f:
     botConf = json.load(f)
 
-action = Action(qq=botConf["bot"], host=botConf["host"], port=botConf["port"])
+action = Action(host=botConf["host"], port=botConf["port"])
 
 
 class MsgShow(BaseModel):
@@ -83,13 +83,13 @@ if __name__ == "__main__":
     for group in groupList:
         groupid = group["GroupId"]
         filePath = (
-            curFileDir.parent
-            / "plugins"
-            / "bot_Setu"
-            / "database"
-            / "DB"
-            / "configs"
-            / "{}.json".format(groupid)
+                curFileDir.parent
+                / "plugins"
+                / "bot_Setu"
+                / "database"
+                / "DB"
+                / "configs"
+                / "{}.json".format(groupid)
         )
         if filePath.is_file():
             logger.info("群:{} 配置文件已存在".format(groupid))

@@ -2,13 +2,12 @@
 # @Time    : 2021/6/20 20:59
 # @Author  : yuban10703
 import asyncio
-import json
 import time
 from pathlib import Path
 from typing import List, Union
 
 import httpx
-from botoy import FriendMsg, GroupMsg, S, logger
+from botoy import jconfig, FriendMsg, GroupMsg, S, logger
 from tenacity import retry, stop_after_attempt, wait_random
 
 from .APIS import Lolicon, Pixiv, Yuban
@@ -18,12 +17,10 @@ from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 
 curFileDir = Path(__file__).parent  # 当前文件路径
 
-try:
-    with open(curFileDir / "config.json", "r", encoding="utf-8") as f:
-        global_conf = json.load(f)
-except:
-    logger.error("载入setu配置文件出错")
-    exit(0)
+setu_config = jconfig.get_configuration('setu')
+base64_send = setu_config.get("base64_send")
+
+logger.warning(f"{'已开启base64发送setu' if base64_send else '未使用base64发送setu'}")
 
 
 class Setu:
@@ -108,7 +105,7 @@ class Setu:
                     )
                 )
                 self.getSetuConfig.doneNum += len(setu_filtered)  # 记录获取到的数量
-                if global_conf["use_base64_send"]:
+                if base64_send:
                     await self.sendsetu_forBase64(setu_filtered)
                 else:
                     await self.sendsetu_forUrl(setu_filtered)

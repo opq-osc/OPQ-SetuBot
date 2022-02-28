@@ -7,10 +7,11 @@ from tinydb.operations import add
 from tinyrecord import transaction
 
 from ._shared import freqLimitTable
+from ..model import getSetuConfig
 
 
 @to_async
-def freqLimit(groupid, config, getSetuConfig):
+def freqLimit(groupid, config, get_setu_config: getSetuConfig):
     """
     频率限制
     :return:
@@ -29,7 +30,7 @@ def freqLimit(groupid, config, getSetuConfig):
                     return False
                 elif (
                         freqConfig.limitCount != 0
-                        and (getSetuConfig.toGetNum + data_tmp["callDone"]) > freqConfig.limitCount
+                        and (get_setu_config.toGetNum + data_tmp["callDone"]) > freqConfig.limitCount
                 ):
                     # 大于限制且不为0
                     logger.info(
@@ -40,12 +41,12 @@ def freqLimit(groupid, config, getSetuConfig):
                     return freqConfig, data_tmp
                 # 记录
                 tr.update(
-                    add("callDone", getSetuConfig.toGetNum), where("group") == groupid
+                    add("callDone", get_setu_config.toGetNum), where("group") == groupid
                 )
                 return False
             else:  # 没数据
                 logger.info("群:{}第一次调用".format(groupid))
                 tr.insert(
-                    {"group": groupid, "time": time.time(), "callDone": getSetuConfig.toGetNum}
+                    {"group": groupid, "time": time.time(), "callDone": get_setu_config.toGetNum}
                 )
             return False

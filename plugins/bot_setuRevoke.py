@@ -8,7 +8,7 @@ from botoy.async_decorators import from_botself
 
 @from_botself
 async def main(ctx: GroupMsg):
-    if not "REVOKE" in ctx.Content:
+    if "REVOKE" not in ctx.Content:
         return
     if delay := re.findall(r"REVOKE\[(\d+)]", ctx.Content):
         delay = min(int(delay[0]), 90)
@@ -17,11 +17,7 @@ async def main(ctx: GroupMsg):
 
     await asyncio.sleep(delay)
 
-    async with AsyncAction(
-        ctx.CurrentQQ,
-        host=getattr(ctx, "_host", None),
-        port=getattr(ctx, "_port", None),
-    ) as action:
+    async with AsyncAction.from_ctx(ctx) as action:
         await action.revokeGroupMsg(ctx.QQG, ctx.MsgSeq, ctx.MsgRandom)
 
 
