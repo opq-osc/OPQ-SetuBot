@@ -6,7 +6,7 @@ from botoy import Action
 from loguru import logger
 from pydantic import BaseModel
 
-curFileDir = Path(__file__).parent  # 当前文件路径
+curFileDir = Path(__file__).parent.absolute()  # 当前文件路径
 
 with open(curFileDir.parent / "botoy.json", "r", encoding="utf-8") as f:
     botConf = json.load(f)
