@@ -7,6 +7,7 @@
   "webhook": false,
   "webhook_post_url": "http://127.0.0.1:5000",
   "webhook_timeout": 20,
+  "qq": 123456,
   "superAdmin": 123456,
   "proxies_http": {},
   "proxies_socks": "",
