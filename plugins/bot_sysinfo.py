@@ -20,17 +20,8 @@ class Sysinfo:
             psutil.cpu_percent(),  # type:ignore
             2,
         )
-        try:
-            model = info["hardware_raw"]  # 树莓派能用这个获取到具体型号
-        except:
-            try:
-                model = info["brand_raw"]  # cpu型号(我笔记本能用这个获取到具体型号,而且没有hardware_raw字段)
-            except:
-                model = "null"
-        try:  # 频率
-            freq = info["hz_actual_friendly"]
-        except:
-            freq = "null"
+        model = info.get("hardware_raw", info.get("brand_raw", "null"))  # 树莓派能用这个获取到具体型号
+        freq = info.get("hz_actual_friendly", "null")
         return (
             "CPU型号:{}\r\n"
             "频率:{}\r\n"
