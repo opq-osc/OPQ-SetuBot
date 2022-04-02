@@ -94,11 +94,13 @@ class Sysinfo:
 
 @deco.ignore_botself
 @deco.equal_content("sysinfo")
+async def main():
+    await S.atext(Sysinfo.allInfo())
+
+
 async def receive_group_msg(_):
-    await S.atext(Sysinfo.allInfo())
+    await main()
 
 
-@deco.ignore_botself
-@deco.equal_content("sysinfo")
 async def receive_friend_msg(_):
-    await S.atext(Sysinfo.allInfo())
+    await main()
