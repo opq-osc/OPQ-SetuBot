@@ -94,7 +94,7 @@ class Sysinfo:
 
 @deco.ignore_botself
 @deco.equal_content("sysinfo")
-async def main():
+async def main(_):
     await S.atext(Sysinfo.allInfo())
 
 
