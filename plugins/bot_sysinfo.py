@@ -99,8 +99,8 @@ async def main(_):
 
 
 async def receive_group_msg(_):
-    await main()
+    await main(_)
 
 
 async def receive_friend_msg(_):
-    await main()
+    await main(_)
