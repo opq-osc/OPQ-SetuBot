@@ -1,0 +1,14 @@
+{
+  "host": "http://127.0.0.1",
+  "bot":123 ,
+  "port":8888,
+  "superAdmin": 123456,
+  "proxies_http": {},
+  "proxies_socks": "",
+  "group_blacklist": [],
+  "friend_blacklist": [],
+  "blocked_users": [],
+  "webhook": false,
+  "webhook_post_url": "http://127.0.0.1:5000",
+  "webhook_timeout": 20
+}
