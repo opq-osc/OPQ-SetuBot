@@ -14,6 +14,7 @@ from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import proxies, async_transport
 from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
+from .generateConfig import geneConfig
 
 curFileDir = Path(__file__).parent  # 当前文件路径
 
@@ -278,5 +279,6 @@ class Setu:
             else:
                 logger.warning("无群:{}的配置文件".format(self.ctx.QQG))
         await self.send.atext(
-            "无本群配置文件,请联系bot管理员~"
+            "正在生成群聊配置····群聊配置以生成完毕"
         )
+        await geneConfig(self.ctx.QQG)
