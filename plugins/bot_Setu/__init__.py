@@ -28,6 +28,7 @@ digitalConversionDict = {
 async def check_and_processing(
     ctx: Union[GroupMsg, FriendMsg]
 ) -> Union[GetSetuConfig, None]:
+
     send = S.bind(ctx)
     info = getattr(ctx, "_match")
     config = GetSetuConfig()
