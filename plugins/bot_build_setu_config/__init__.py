@@ -1,10 +1,11 @@
-import json
 import re
 from pathlib import Path
 from typing import Union
 
-from botoy import FriendMsg, GroupMsg, S, jconfig, logger, Action
+import ujson as json
+from botoy import Action, FriendMsg, GroupMsg, S
 from botoy import decorators as deco
+from botoy import jconfig, logger
 
 from .groupConfig import GroupConfig
 

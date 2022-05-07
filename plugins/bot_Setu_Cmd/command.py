@@ -1,8 +1,8 @@
-import json
 import re
 from pathlib import Path
 from typing import Union
 
+import ujson as json
 from botoy import FriendMsg, GroupMsg, S, jconfig, logger
 
 from ..bot_Setu.database import getGroupConfig
