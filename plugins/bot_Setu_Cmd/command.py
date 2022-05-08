@@ -155,11 +155,6 @@ class CMD:
     def main(self):
         if auth := self.auth():
             if auth == 1:
-                if res := re.match(
-                    r"_cmd [G,g] (\d+) (.*) (.*):(.*)", self.ctx.Content
-                ):  # 万能修改
-                    self.advanced_command(int(res[1]), res[2].split(), res[3], res[4])
-                    return
                 if res := re.match(r"_cmd [G,g] (\d+) (.*)", self.ctx.Content):
                     self.specific_command(res[2])
                     return
