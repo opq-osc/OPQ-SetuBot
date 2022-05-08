@@ -18,10 +18,10 @@ with open(curFileDir / "onset.json", "r", encoding="utf-8") as f:
 async def main(ctx: Union[GroupMsg, FriendMsg]):
     name = ctx.Content[2:].strip()
     if name.isspace() or len(name) == 0 or "[ATALL()]" in name:
-        S.text("要对谁发病捏?")
+        await S.atext("要对谁发病捏?")
         return
     content: str = random.choice(data)["content"]
-    S.text(content.replace("{{user.name}}", name))
+    await S.atext(content.replace("{{user.name}}", name))
 
 
 receive_group_msg = receive_friend_msg = main
