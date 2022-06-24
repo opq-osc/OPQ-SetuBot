@@ -129,3 +129,9 @@ async def receive_group_msg(ctx: GroupMsg):
             info[0],
             type=S.TYPE_BASE64,
         )
+    elif info := re.findall(r"(https://www\.zhihu\.com/question/\w*[-a-zA-Z0-9()/]*)", ctx.Content):
+            await S.bind(ctx).aimage(
+            dont_Send_miniProgram_Base64PIC,
+            info[0],
+            type=S.TYPE_BASE64,
+        )
