@@ -15,7 +15,6 @@ from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import async_transport, proxies
 from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
-from .utils import change_pic_md5
 
 curFileDir = Path(__file__).parent  # 当前文件路径
 
