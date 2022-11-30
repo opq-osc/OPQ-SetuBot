@@ -3,18 +3,17 @@
 # @Author  : yuban10703
 import asyncio
 import time
-from io import BytesIO
 from pathlib import Path
 from typing import List, Union
 
 import httpx
 from botoy import FriendMsg, GroupMsg, S, jconfig, logger
-from tenacity import retry, stop_after_attempt, wait_random
 
 from .APIS import Lolicon, Pixiv, Yuban
 from .APIS._proxies import async_transport, proxies
 from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
+from .utils import download_setu
 
 curFileDir = Path(__file__).parent  # 当前文件路径
 
@@ -136,34 +135,18 @@ class Setu:
     async def sendsetu_forBase64(self, setus_info: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
         async with httpx.AsyncClient(
-            limits=httpx.Limits(max_keepalive_connections=8, max_connections=10),
-            proxies=proxies,
-            transport=async_transport,
-            headers={"Referer": "https://www.pixiv.net"},
-            timeout=10,
+                proxies=proxies,
+                transport=async_transport,
+                headers={"Referer": "https://www.pixiv.net"},
+                timeout=10,
         ) as client:
-
-            @retry(
-                stop=stop_after_attempt(3),
-                wait=wait_random(min=1, max=2),
-                retry_error_callback=lambda retry_state: "https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/error.jpg",
-            )
-            async def download_setu(url) -> Union[bytes, str]:
-                res = await client.get(url)
-                if res.status_code != 200:
-                    logger.warning("download_setu: res.status_code != 200")
-                    raise Exception("download_setu: res.status_code != 200")
-                with BytesIO() as bf:
-                    bf.write(res.content)
-                    bf.write(str(time.time()).encode("utf-8"))  # 增加信息,改变MD5
-                    return bf.getvalue()
-
             for setu in setus_info:
                 await self.send.aimage(
                     await download_setu(
+                        client,
                         setu.dict()[
                             self.conversion_for_send_dict[self.config.setting.quality]
-                        ]
+                        ],
                     ),
                     self.buildMsg(setu),
                     self.config.setting.at,
@@ -179,8 +162,8 @@ class Setu:
             await self.send.atext(self.config.replyMsg.closed)
             return False
         if (
-            not self.config.setting.r18.dict()[self.ctx.type]  # type: ignore
-            and self.getSetuConfig.level > 0
+                not self.config.setting.r18.dict()[self.ctx.type]  # type: ignore
+                and self.getSetuConfig.level > 0
         ):
             await self.send.atext(self.config.replyMsg.noR18)
             return False
@@ -193,8 +176,8 @@ class Setu:
         :return:
         """
         if (
-            self.getSetuConfig.toGetNum
-            > self.config.setting.singleMaximum.dict()[self.ctx.type]  # type:ignore
+                self.getSetuConfig.toGetNum
+                > self.config.setting.singleMaximum.dict()[self.ctx.type]  # type:ignore
         ):
             await self.send.atext(self.config.replyMsg.tooMuch)
             return False
@@ -202,8 +185,8 @@ class Setu:
             await self.send.atext(self.config.replyMsg.tooSmall)
             return False
         if (
-            self.config.setting.r18.dict()[self.ctx.type]  # type:ignore
-            and self.getSetuConfig.level != 1
+                self.config.setting.r18.dict()[self.ctx.type]  # type:ignore
+                and self.getSetuConfig.level != 1
         ):  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         return True
@@ -214,10 +197,10 @@ class Setu:
             setus_copy = setus.copy()
             for setu in setus:
                 if await ifSent(
-                    self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
-                    int(setu.picID),
-                    int(setu.page),
-                    self.config.setting.sentRefreshTime,
+                        self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
+                        int(setu.picID),
+                        int(setu.page),
+                        self.config.setting.sentRefreshTime,
                 ):
                     setus_copy.remove(setu)
             return setus_copy
@@ -234,7 +217,7 @@ class Setu:
             return
         if self.ctx.type == "group":  # 群聊
             if data := await freqLimit(
-                self.ctx.QQG, self.config, self.getSetuConfig
+                    self.ctx.QQG, self.config, self.getSetuConfig
             ):  # 触发频率限制
                 freqConfig = data[0]
                 data_tmp = data[1]
@@ -269,7 +252,7 @@ class Setu:
             await self.send.atext(self.config.replyMsg.tooSmall)
             return
         if (
-            self.config.setting.r18 and self.getSetuConfig.level != 1
+                self.config.setting.r18 and self.getSetuConfig.level != 1
         ):  # 群开启了R18,则在非指定r18时返回混合内容
             self.getSetuConfig.level = 2
         await self.get()

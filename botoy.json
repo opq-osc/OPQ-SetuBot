@@ -12,6 +12,7 @@
   "proxies_http": {},
   "proxies_socks": "",
   "setu.base64_send": false,
+  "setu.transpose": false,
   "setu.refresh_token": "",
   "searchPicture.apiKey": ""
 }
