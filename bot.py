@@ -2,10 +2,9 @@ import asyncio
 
 import ujson as json
 from botoy import AsyncBotoy, FriendMsg, GroupMsg, jconfig
-from botoy.decorators import equal_content, ignore_botself
-from botoy.sugar import Text
 
 bot = AsyncBotoy(
+    qq=jconfig.qq,
     host=jconfig.host,
     port=jconfig.port,
     log=True,
@@ -41,14 +40,5 @@ def friend_ctx_middleware(ctx: FriendMsg):
     return ctx
 
 
-@bot.on_group_msg
-@ignore_botself
-@equal_content("帮助")
-def help(_):
-    Text(bot.plugMgr.help)
-
-
 if __name__ == "__main__":
     asyncio.run(bot.run())
-
-##  "proxies": {"all://":"http://127.0.0.1:10809"},
