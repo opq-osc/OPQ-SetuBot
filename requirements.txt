@@ -1,10 +1,9 @@
-botoy>=8.0.0
-httpx
-httpx_socks
+botoy
 pydantic
 tenacity
 tinydb
 tinyrecord
+httpx[socks]
 Pillow
 py-cpuinfo
 ujson
