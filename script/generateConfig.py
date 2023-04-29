@@ -5,13 +5,14 @@ from typing import Literal
 from botoy import Action
 from loguru import logger
 from pydantic import BaseModel
+import asyncio
 
 curFileDir = Path(__file__).parent.absolute()  # 当前文件路径
 
 with open(curFileDir.parent / "botoy.json", "r", encoding="utf-8") as f:
     botConf = json.load(f)
 
-action = Action(qq=botConf["qq"], host=botConf["host"], port=botConf["port"])
+action = Action(qq=botConf["qq"], url=botConf["url"])
 
 
 class MsgShow(BaseModel):
@@ -77,15 +78,16 @@ class GroupConfig(BaseModel):
     replyMsg: ReplyMsg = ReplyMsg()
 
 
-if __name__ == "__main__":
+async def main():
     logger.info("开始更新所有群数据~")
-    groupList = action.getGroupList()
+    groupList = await action.getGroupList()
+    print(groupList)
     for group in groupList:
-        groupid = group["GroupId"]
+        groupid = group["GroupCode"]
         filePath = (
                 curFileDir.parent
                 / "plugins"
-                / "bot_Setu"
+                / "setu"
                 / "database"
                 / "DB"
                 / "configs"
@@ -94,11 +96,17 @@ if __name__ == "__main__":
         if filePath.is_file():
             logger.info("群:{} 配置文件已存在".format(groupid))
             continue
-        adminList = action.getGroupAdminList(groupid)
-        admins_QQid = [i["MemberUin"] for i in adminList]
+        adminList = await action.getGroupAdminList(groupid)
+        # print(adminList)
+        admins_QQid = [i["Uin"] for i in adminList]
+        # print(admins_QQid)
         with open(filePath, "w", encoding="utf-8") as f:
             json.dump(
                 GroupConfig(admins=admins_QQid).dict(), f, indent=4, ensure_ascii=False
             )
         logger.success("%s.json创建成功" % groupid)
     logger.success("更新群信息成功~")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
