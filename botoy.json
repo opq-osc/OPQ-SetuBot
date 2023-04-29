@@ -1,18 +1,9 @@
 {
-  "host": "http://127.0.0.1",
-  "port": 8888,
-  "group_blacklist": [],
-  "friend_blacklist": [],
-  "blocked_users": [],
-  "webhook": false,
-  "webhook_post_url": "http://127.0.0.1:5000",
-  "webhook_timeout": 20,
+  "url": "10.1.1.204:8086",
   "qq": 123456,
-  "superAdmin": 123456,
-  "proxies_http": {},
-  "proxies_socks": "",
-  "setu.base64_send": false,
+  "apscheduler_autostart": true,
+  "proxies": null,
+  "setu.base64_send": true,
   "setu.transpose": false,
-  "setu.refresh_token": "",
-  "searchPicture.apiKey": ""
+  "setu.refresh_token": ""
 }
