@@ -30,7 +30,7 @@ digitalConversionDict = {
 async def check_and_processing(ctx, info, user_config) -> Union[GetSetuConfig, None]:
     S_ = S.bind(ctx)
     getSetuConfig = GetSetuConfig()
-    print(info[1], info[2], info[3])
+    # print(info[1], info[2], info[3])
     if info[1] != "":
         if info[1] in digitalConversionDict.keys():
             getSetuConfig.toGetNum = int(digitalConversionDict[info[1]])
@@ -51,14 +51,24 @@ async def check_and_processing(ctx, info, user_config) -> Union[GetSetuConfig, N
 
 async def main():
     if m := (ctx.group_msg or ctx.friend_msg):
-        if info := m.text_match(setuPattern):
+        if m.text in ["色图", "setu"]:
+            if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
+                if config := getGroupConfig(m.from_group):
+                    ctx.QQG = m.from_group
+                    ctx.QQ = m.from_user
+                    ctx.type = "group" if m.from_type.value == 2 else "temp"
+                    await Setu(ctx, GetSetuConfig(), config).group_or_temp()
+            else:
+                if config := getFriendConfig():
+                    await Setu(ctx, GetSetuConfig(), config).friend()
+        elif info := m.text_match(setuPattern):
             if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
                 if config := getGroupConfig(m.from_group):
                     ctx.QQG = m.from_group
                     ctx.QQ = m.from_user
                     ctx.type = "group" if m.from_type.value == 2 else "temp"
                     if getSetuConfig := await check_and_processing(ctx, info, config):
-                        asyncio.ensure_future(Setu(ctx, getSetuConfig, config).group_or_temp())
+                        await Setu(ctx, getSetuConfig, config).group_or_temp()
 
                 else:
                     logger.warning("无群:{}的配置文件".format(m.from_group))
@@ -67,7 +77,7 @@ async def main():
             else:  # from_type == 1
                 if config := getFriendConfig():
                     if getSetuConfig := await  check_and_processing(ctx, info, config):
-                        asyncio.ensure_future(Setu(ctx, getSetuConfig, config).friend())
+                        await Setu(ctx, getSetuConfig, config).friend()
 
                 else:
                     logger.warning("无好友的配置文件(0.json)")

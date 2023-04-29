@@ -96,8 +96,7 @@ async def main():
     if m := (ctx.group_msg or ctx.friend_msg):
         if m.text == ".sys":
             logger.info("sysinfo")
-            # await S.text(Sysinfo.allInfo())
-            asyncio.ensure_future(S.image("https://bing.com/th?id=OHR.EarthDayFox_ZH-CN7926350207_1920x1080.jpg&qlt=100"))
+            await S.text(Sysinfo.allInfo())
         elif m.text == ".cpu":
             logger.info("cpuinfo")
             await S.text(Sysinfo.get_cpu_info())

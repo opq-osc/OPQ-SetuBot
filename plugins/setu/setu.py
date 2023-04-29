@@ -133,14 +133,13 @@ class Setu:
                 timeout=10,
         ) as client:
             for setu in setus_info:
-                setu_b = await download_setu(
-                    client,
-                    setu.dict()[
-                        self.conversion_for_send_dict[self.config.setting.quality]
-                    ],
-                )
                 await self.send.image(
-                    setu_b,
+                    await download_setu(
+                        client,
+                        setu.dict()[
+                            self.conversion_for_send_dict[self.config.setting.quality]
+                        ],
+                    ),
                     self.buildMsg(setu),
                     self.config.setting.at,
                 )
@@ -254,6 +253,5 @@ class Setu:
         """群聊和临时会话一起处理
         好友私聊单独处理"""
         await self.friend()
-
 
         await self.group_or_temp()
