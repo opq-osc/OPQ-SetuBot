@@ -135,7 +135,7 @@ class Setu:
                 timeout=10,
         ) as client:
             for setu in setus_info:
-                data = await self.send.image(
+                await self.send.image(
                     await download_setu(
                         client,
                         setu.dict()[
@@ -145,7 +145,6 @@ class Setu:
                     self.buildMsg(setu),
                     self.config.setting.at,
                 )
-                print(data)
                 await asyncio.sleep(1)
 
     async def auth(self) -> bool:
