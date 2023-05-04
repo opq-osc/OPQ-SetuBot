@@ -4,21 +4,21 @@
 
 #### 详细信息看[wiki](https://github.com/yuban10703/OPQ-SetuBot/wiki)
 
-#### 有问题直接发issue
+#### (上面的都有点过时)有问题直接发issue
 
 ### 功能
 
 - 发色图
-- 原神模拟抽卡
-- 自动解析Pixiv链接
-- B站小程序转换成链接
-- 搜图(saucenao)
+
+- ~~原神模拟抽卡~~
+
+- ~~自动解析Pixiv链接~~
+
+- ~~B站小程序转换成链接~~
+
+- ~~搜图(saucenao)~~
+
 - 系统信息
-
-### TODO
-
-- TAG映射 (咕咕咕)
-- 本地色图 (咕咕咕)
 
 ### 感谢
 
@@ -33,7 +33,9 @@
 [H-K-Y/Genshin_Impact_bot](https://github.com/H-K-Y/Genshin_Impact_bot)
 
 特别感谢 [JetBrains](https://www.jetbrains.com/?from=OPQ-SetuBot)
-为开源项目提供免费的 [pycharm](https://www.jetbrains.com/pycharm/?from=OPQ-SetuBot) 等 IDE 的授权  
+
+为开源项目提供免费的 [pycharm](https://www.jetbrains.com/pycharm/?from=OPQ-SetuBot) 等 IDE 的授权  
+
 [<img src="https://cdn.jsdelivr.net/gh/yuban10703/BlogImgdata/img/20210305185521.png" width="100"/>](https://www.jetbrains.com/?from=OPQ-SetuBot)
 
 ### 投食通道
