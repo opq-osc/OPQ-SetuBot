@@ -120,9 +120,12 @@ class PixivToken:
             int(self.tokendata["expires_in"] - (time.time() - self.tokendata["time"]))
         )
 
-
-pixivToken = PixivToken()
-pixivToken.main()
+if jconfig.get("setu.refresh_token"):
+    logger.warning("启用PixivAPI")
+    pixivToken = PixivToken()
+    pixivToken.main()
+else:
+    logger.warning("未启用PixivAPI")
 
 
 class Pixiv:

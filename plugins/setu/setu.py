@@ -81,6 +81,8 @@ class Setu:
         conversion_dict = {"Lolicon": "lolicon", "Yuban": "yuban", "Pixiv": "pixiv"}
 
         for API in [Yuban, Lolicon, Pixiv]:
+            if API.__name__ == "Pixiv" and not setu_config.get("refresh_token"):
+                continue
             if self.config.setting.api.dict()[  # type:ignore
                 conversion_dict[API.__name__]
             ]:  # 遍历API的开启状态
@@ -133,7 +135,7 @@ class Setu:
                 timeout=10,
         ) as client:
             for setu in setus_info:
-                await self.send.image(
+                data = await self.send.image(
                     await download_setu(
                         client,
                         setu.dict()[
@@ -143,6 +145,7 @@ class Setu:
                     self.buildMsg(setu),
                     self.config.setting.at,
                 )
+                print(data)
                 await asyncio.sleep(1)
 
     async def auth(self) -> bool:
