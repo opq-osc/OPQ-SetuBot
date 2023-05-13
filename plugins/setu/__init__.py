@@ -30,11 +30,13 @@ digitalConversionDict = {
 async def check_and_processing(ctx, msg, info, user_config) -> Union[GetSetuConfig, None]:
     S_ = S.bind(ctx)
     getSetuConfig = GetSetuConfig()
-    if ctx.friend_msg:
-        if not msg.is_private:
-            getSetuConfig.QQG = 0
-    else:
+    if ctx.group_msg:  # 群聊
         getSetuConfig.QQG = msg.from_group
+    else:
+        if not msg.is_private:  # 好友
+            getSetuConfig.QQG = 0
+        else:  # 私聊
+            getSetuConfig.QQG = msg.from_group
     getSetuConfig.QQ = msg.from_user
     getSetuConfig.msgtype = {1: "friend", 2: "group", 3: "temp"}[msg.from_type.value]
     # print(info[1], info[2], info[3])
