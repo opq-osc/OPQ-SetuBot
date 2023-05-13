@@ -1,13 +1,12 @@
 import asyncio
 import re
-import random
 from typing import Union
 
 from botoy import S, ctx, mark_recv, logger, Action, jconfig
 
 from .model import GetSetuConfig
 from .setu import Setu
-from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
+from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent, getRevokeTime
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 
 __doc__ = "色图姬"
@@ -28,9 +27,16 @@ digitalConversionDict = {
 }
 
 
-async def check_and_processing(ctx, info, user_config) -> Union[GetSetuConfig, None]:
+async def check_and_processing(ctx, msg, info, user_config) -> Union[GetSetuConfig, None]:
     S_ = S.bind(ctx)
     getSetuConfig = GetSetuConfig()
+    if ctx.friend_msg:
+        if not msg.is_private:
+            getSetuConfig.QQG = 0
+    else:
+        getSetuConfig.QQG = msg.from_group
+    getSetuConfig.QQ = msg.from_user
+    getSetuConfig.msgtype = {1: "friend", 2: "group", 3: "temp"}[msg.from_type.value]
     # print(info[1], info[2], info[3])
     if info[1] != "":
         if info[1] in digitalConversionDict.keys():
@@ -57,20 +63,18 @@ async def main():
         if m.text in ["色图", "setu"]:
             if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
                 if config := getGroupConfig(m.from_group):
-                    ctx.QQG = m.from_group
-                    ctx.QQ = m.from_user
-                    ctx.type = "group" if m.from_type.value == 2 else "temp"
-                    await Setu(ctx, GetSetuConfig(), config).group_or_temp()
+                    await Setu(ctx, GetSetuConfig(QQG=m.from_group, QQ=m.from_user,
+                                                  msgtype={1: "friend", 2: "group", 3: "temp"}[m.from_type.value]),
+                               config).group_or_temp()
             else:
                 if config := getFriendConfig():
-                    await Setu(ctx, GetSetuConfig(), config).friend()
+                    await Setu(ctx, GetSetuConfig(QQG=0, QQ=m.from_user,
+                                                  msgtype={1: "friend", 2: "group", 3: "temp"}[m.from_type.value]),
+                               config).friend()
         elif info := m.text_match(setuPattern):
             if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
                 if config := getGroupConfig(m.from_group):
-                    ctx.QQG = m.from_group
-                    ctx.QQ = m.from_user
-                    ctx.type = "group" if m.from_type.value == 2 else "temp"
-                    if getSetuConfig := await check_and_processing(ctx, info, config):
+                    if getSetuConfig := await check_and_processing(ctx, m, info, config):
                         await Setu(ctx, getSetuConfig, config).group_or_temp()
 
                 else:
@@ -79,7 +83,7 @@ async def main():
 
             else:  # from_type == 1
                 if config := getFriendConfig():
-                    if getSetuConfig := await  check_and_processing(ctx, info, config):
+                    if getSetuConfig := await check_and_processing(ctx, m, info, config):
                         await Setu(ctx, getSetuConfig, config).friend()
 
                 else:
@@ -93,15 +97,12 @@ async def setu_revoke():
             return
         # if not m.is_from_self:
         #     return
-        if "REVOKE" not in m.text:
+        if not m.images:
             return
-        if delay := re.findall(r"REVOKE\[(\d+)]", m.text):
-            delay = min(int(delay[0]), 90)
-        else:
-            delay = random.randint(30, 60)
-        await asyncio.sleep(delay)
-        logger.info(f"撤回群[{m.from_group_name}:{m.from_group}] [msg_seq:{m.msg_seq} msg_random:{m.msg_random}]")
-        await Action(qq=jconfig.qq, url=jconfig.url).revoke(m)
+        if delay := await getRevokeTime(group=m.from_group, msgseq=m.msg_seq):
+            await asyncio.sleep(delay)
+            logger.info(f"撤回群[{m.from_group_name}:{m.from_group}] [msg_seq:{m.msg_seq} msg_random:{m.msg_random}]")
+            await Action(qq=jconfig.qq, url=jconfig.url).revoke(m)
 
 
 mark_recv(main, author='yuban10703', name="发送色图", usage='来张色图')

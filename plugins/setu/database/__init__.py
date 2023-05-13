@@ -7,3 +7,4 @@ from ._shared import tmpDB
 from .freqLimit import freqLimit
 from .getConfig import getFriendConfig, getGroupConfig
 from .ifSent import ifSent
+from .revoke import saveMsgSeq, getRevokeTime

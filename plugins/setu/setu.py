@@ -11,7 +11,7 @@ from botoy import S, jconfig, logger
 
 from .APIS import Lolicon, Pixiv, Yuban
 
-from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent
+from .database import freqLimit, ifSent, saveMsgSeq
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 from .utils import download_setu
 
@@ -35,8 +35,8 @@ class Setu:
         用正则提取要获取的色图数量,标签,是否R18等信息
         :param ctx: 消息信息
         """
-        self.ctx = ctx
-        self.send = S.bind(self.ctx)
+        # self.ctx = ctx
+        self.send = S.bind(ctx)
         self.getSetuConfig = getSetuConfig
         # 要获取色图的信息(数量,tag......)
         self.config = user_config
@@ -57,7 +57,7 @@ class Setu:
         msg = ""
         # if self.config:  # 群聊和临时
 
-        if getattr(self.ctx, "type") == "friend":  # 好友会话
+        if self.getSetuConfig.msgtype == "friend":  # 好友会话
             for v in msgDict.values():
                 msg += ("" if msg == "" else "\r\n") + v
             return msg
@@ -65,10 +65,11 @@ class Setu:
             for k, v in self.config.setuInfoShow.dict().items():  # type:ignore
                 if v:
                     msg += ("" if msg == "" else "\r\n") + msgDict[k]
-            if self.config.setting.revokeTime.dict()[self.ctx.type] != 0 and self.ctx.type == "group":  # type: ignore
-                msg += "\r\nREVOKE[{}]".format(
-                    self.config.setting.revokeTime.dict()[self.ctx.type]  # type:ignore
-                )
+            # if self.config.setting.revokeTime.dict()[
+            #     self.getSetuConfig.msgtype] != 0 and self.getSetuConfig.msgtype == "group":  # type: ignore
+            #     msg += "\r\nREVOKE[{}]".format(
+            #         self.config.setting.revokeTime.dict()[self.getSetuConfig.msgtype]  # type:ignore
+            #     )
             if self.config.setting.at:  # type:ignore
                 return "\r\n" + msg
             return msg
@@ -90,8 +91,8 @@ class Setu:
                 setu_filtered = await self.filter_Sent(setu_all)
                 logger.success(
                     "{}:{} 从API:{}获取到关于{}的色图{}张,去除{}s内重复发送过的后剩余{}张".format(
-                        "好友" if self.ctx.type == "friend" else "群",
-                        self.ctx.QQ if self.ctx.type == "friend" else self.ctx.QQG,
+                        "好友" if self.getSetuConfig.msgtype == "friend" else "群",
+                        self.getSetuConfig.QQ if self.getSetuConfig.msgtype == "friend" else self.getSetuConfig.QQG,
                         API.__name__,
                         self.getSetuConfig.tags,
                         len(setu_all),
@@ -135,7 +136,7 @@ class Setu:
                 timeout=10,
         ) as client:
             for setu in setus_info:
-                await self.send.image(
+                data = await self.send.image(
                     await download_setu(
                         client,
                         setu.dict()[
@@ -145,18 +146,21 @@ class Setu:
                     self.buildMsg(setu),
                     self.config.setting.at,
                 )
-                await asyncio.sleep(1)
+                if self.getSetuConfig.msgtype == "group":
+                    await saveMsgSeq(group=self.getSetuConfig.QQG, msgseq=data.MsgSeq,
+                                     revoke_time=self.config.setting.revokeTime.dict()[self.getSetuConfig.msgtype])
+                await asyncio.sleep(2.5)
 
     async def auth(self) -> bool:
         """
         检查群是否开启setu,r18功能
         :return:
         """
-        if not self.config.setting.setu.dict()[self.ctx.type]:  # type: ignore
+        if not self.config.setting.setu.dict()[self.getSetuConfig.msgtype]:  # type: ignore
             await self.send.text(self.config.replyMsg.closed)
             return False
         if (
-                not self.config.setting.r18.dict()[self.ctx.type]  # type: ignore
+                not self.config.setting.r18.dict()[self.getSetuConfig.msgtype]  # type: ignore
                 and self.getSetuConfig.level > 0
         ):
             await self.send.text(self.config.replyMsg.noR18)
@@ -171,18 +175,18 @@ class Setu:
         """
         if (
                 self.getSetuConfig.toGetNum
-                > self.config.setting.singleMaximum.dict()[self.ctx.type]  # type:ignore
+                > self.config.setting.singleMaximum.dict()[self.getSetuConfig.msgtype]  # type:ignore
         ):
             await self.send.text(self.config.replyMsg.tooMuch)
             return False
         if self.getSetuConfig.toGetNum <= 0:
             await self.send.text(self.config.replyMsg.tooSmall)
             return False
-        if (
-                self.config.setting.r18.dict()[self.ctx.type]  # type:ignore
-                and self.getSetuConfig.level != 1
-        ):  # 群开启了R18,则在非指定r18时返回混合内容
-            self.getSetuConfig.level = 2
+        # if (
+        #         self.config.setting.r18.dict()[self.getSetuConfig.msgtype]  # type:ignore
+        #         and self.getSetuConfig.level != 1
+        # ):  # 群开启了R18,则在非指定r18时返回混合内容
+        #     self.getSetuConfig.level = 2
         return True
 
     async def filter_Sent(self, setus: List[FinishSetuData]) -> List[FinishSetuData]:
@@ -191,7 +195,7 @@ class Setu:
             setus_copy = setus.copy()
             for setu in setus:
                 if await ifSent(
-                        self.ctx.QQG if self.ctx.type == "group" else self.ctx.QQ,
+                        self.getSetuConfig.QQG if self.getSetuConfig.msgtype == "group" else self.getSetuConfig.QQ,
                         int(setu.picID),
                         int(setu.page),
                         self.config.setting.sentRefreshTime,
@@ -209,9 +213,9 @@ class Setu:
             return
         if not await self.check_parameters():  # 检查数量
             return
-        if self.ctx.type == "group":  # 群聊
+        if self.getSetuConfig.msgtype == "group":  # 群聊
             if data := await freqLimit(
-                    self.ctx.QQG, self.config, self.getSetuConfig
+                    self.getSetuConfig.QQG, self.config, self.getSetuConfig
             ):  # 触发频率限制
                 freqConfig = data[0]
                 data_tmp = data[1]
@@ -245,15 +249,8 @@ class Setu:
         if self.getSetuConfig.toGetNum <= 0:
             await self.send.text(self.config.replyMsg.tooSmall)
             return
-        if (
-                self.config.setting.r18 and self.getSetuConfig.level != 1
-        ):  # 群开启了R18,则在非指定r18时返回混合内容
-            self.getSetuConfig.level = 2
+        # if (
+        #         self.config.setting.r18 and self.getSetuConfig.level != 1
+        # ):  # 群开启了R18,则在非指定r18时返回混合内容
+        #     self.getSetuConfig.level = 2
         await self.get()
-
-    async def main(self):
-        """群聊和临时会话一起处理
-        好友私聊单独处理"""
-        await self.friend()
-
-        await self.group_or_temp()
