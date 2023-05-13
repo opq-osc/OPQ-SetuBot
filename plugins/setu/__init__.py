@@ -1,8 +1,9 @@
 import asyncio
 import re
+import random
 from typing import Union
 
-from botoy import S, ctx, mark_recv, logger
+from botoy import S, ctx, mark_recv, logger, Action, jconfig
 
 from .model import GetSetuConfig
 from .setu import Setu
@@ -86,4 +87,22 @@ async def main():
                     return
 
 
-mark_recv(main, author='yuban10703', name="色图", usage='来张色图')
+async def setu_revoke():
+    if m := ctx.group_msg:
+        if m.bot_qq != jconfig.qq:
+            return
+        # if not m.is_from_self:
+        #     return
+        if "REVOKE" not in m.text:
+            return
+        if delay := re.findall(r"REVOKE\[(\d+)]", m.text):
+            delay = min(int(delay[0]), 90)
+        else:
+            delay = random.randint(30, 60)
+        await asyncio.sleep(delay)
+        logger.info(f"撤回群[{m.from_group_name}:{m.from_group}] [msg_seq:{m.msg_seq} msg_random:{m.msg_random}]")
+        await Action(qq=jconfig.qq, url=jconfig.url).revoke(m)
+
+
+mark_recv(main, author='yuban10703', name="发送色图", usage='来张色图')
+mark_recv(setu_revoke, author='yuban10703', name="撤回色图", usage='None')
