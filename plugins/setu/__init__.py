@@ -51,6 +51,8 @@ async def check_and_processing(ctx, info, user_config) -> Union[GetSetuConfig, N
 
 async def main():
     if m := (ctx.group_msg or ctx.friend_msg):
+        if m.bot_qq != jconfig.qq:  # 只接收一个bot
+            return
         if m.text in ["色图", "setu"]:
             if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
                 if config := getGroupConfig(m.from_group):
