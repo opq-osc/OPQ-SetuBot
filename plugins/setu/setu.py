@@ -82,8 +82,10 @@ class Setu:
         :return:
         """
         conversion_dict = {"Lolicon": "lolicon", "Yuban": "yuban", "Pixiv": "pixiv"}
-        APIS = [Yuban, Lolicon, Pixiv]
+        APIS = [Yuban, Lolicon]
         shuffle(APIS)  # 打乱api顺序
+        APIS.append(Pixiv)  # p站默认最后
+        # logger.warning(APIS)
         for API in APIS:
             if API.__name__ == "Pixiv" and not setu_config.get("refresh_token"):
                 continue
