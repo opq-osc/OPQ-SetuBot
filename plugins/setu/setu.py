@@ -18,7 +18,7 @@ from .utils import download_setu
 curFileDir = Path(__file__).parent  # 当前文件路径
 
 setu_config = jconfig.get_configuration("setu")
-base64_send = setu_config.get("base64_send")
+# base64_send = setu_config.get("base64_send")
 
 logger.warning(f"{'已开启base64发送setu' if base64_send else '未使用base64发送setu'}")
 
@@ -101,10 +101,12 @@ class Setu:
                     )
                 )
                 self.getSetuConfig.doneNum += len(setu_filtered)  # 记录获取到的数量
-                if base64_send:
-                    await self.sendsetu_forBase64(setu_filtered)
-                else:
-                    await self.sendsetu_forUrl(setu_filtered)
+                await self.sendsetu_forBase64(setu_filtered)
+
+                # if base64_send:
+                #     await self.sendsetu_forBase64(setu_filtered)
+                # else:
+                #     await self.sendsetu_forUrl(setu_filtered)
 
         if self.getSetuConfig.doneNum == 0:  # 遍历完API一张都没获取到
             await self.send.text(self.config.replyMsg.notFound)
@@ -117,16 +119,16 @@ class Setu:
             )
             return
 
-    async def sendsetu_forUrl(self, setus: List[FinishSetuData]):
-        """发送setu,直接传url到OPQ"""
-
-        for setu in setus:
-            await self.send.image(
-                setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
-                self.buildMsg(setu),
-                self.config.setting.at,
-                type=self.send.TYPE_URL,
-            )
+    # async def sendsetu_forUrl(self, setus: List[FinishSetuData]):
+    #     """发送setu,直接传url到OPQ"""
+    #
+    #     for setu in setus:
+    #         await self.send.image(
+    #             setu.dict()[self.conversion_for_send_dict[self.config.setting.quality]],
+    #             self.buildMsg(setu),
+    #             self.config.setting.at,
+    #             type=self.send.TYPE_URL,
+    #         )
 
     async def sendsetu_forBase64(self, setus_info: List[FinishSetuData]):
         """发送setu,下载后用Base64发给OPQ"""
