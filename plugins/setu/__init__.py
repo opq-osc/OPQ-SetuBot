@@ -101,9 +101,11 @@ async def setu_revoke():
         #     return
         if not m.images:
             return
+        await asyncio.sleep(3)  # 等opq返回msgseq
         if delay := await getRevokeTime(group=m.from_group, msgseq=m.msg_seq):
             await asyncio.sleep(delay)
-            logger.info(f"撤回群[{m.from_group_name}:{m.from_group}] [msg_seq:{m.msg_seq} msg_random:{m.msg_random}]")
+            logger.success(
+                f"撤回群[{m.from_group_name}:{m.from_group}] [msg_seq:{m.msg_seq} msg_random:{m.msg_random}]")
             await Action(qq=jconfig.qq, url=jconfig.url).revoke(m)
 
 

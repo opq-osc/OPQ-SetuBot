@@ -153,6 +153,7 @@ class Setu:
                     self.buildMsg(setu),
                     self.config.setting.at,
                 )
+                logger.info(f"MsgSeq:{data.MsgSeq} MsgTime:{data.MsgTime}")
                 if self.getSetuConfig.msgtype == "group":
                     await saveMsgSeq(group=self.getSetuConfig.QQG, msgseq=data.MsgSeq,
                                      revoke_time=self.config.setting.revokeTime.dict()[self.getSetuConfig.msgtype])
