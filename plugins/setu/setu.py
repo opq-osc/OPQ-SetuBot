@@ -4,13 +4,13 @@
 import asyncio
 import time
 from pathlib import Path
+from random import shuffle
 from typing import List, Union
 
 import httpx
 from botoy import S, jconfig, logger
 
 from .APIS import Lolicon, Pixiv, Yuban
-
 from .database import freqLimit, ifSent, saveMsgSeq
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 from .utils import download_setu
@@ -18,6 +18,8 @@ from .utils import download_setu
 curFileDir = Path(__file__).parent  # 当前文件路径
 
 setu_config = jconfig.get_configuration("setu")
+
+
 # base64_send = setu_config.get("base64_send")
 
 # logger.warning(f"{'已开启base64发送setu' if base64_send else '未使用base64发送setu'}")
@@ -80,8 +82,9 @@ class Setu:
         :return:
         """
         conversion_dict = {"Lolicon": "lolicon", "Yuban": "yuban", "Pixiv": "pixiv"}
-
-        for API in [Yuban, Lolicon, Pixiv]:
+        APIS = [Yuban, Lolicon, Pixiv]
+        shuffle(APIS)  # 打乱api顺序
+        for API in APIS:
             if API.__name__ == "Pixiv" and not setu_config.get("refresh_token"):
                 continue
             if self.config.setting.api.dict()[  # type:ignore
