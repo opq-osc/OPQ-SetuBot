@@ -20,7 +20,7 @@ curFileDir = Path(__file__).parent  # 当前文件路径
 setu_config = jconfig.get_configuration("setu")
 # base64_send = setu_config.get("base64_send")
 
-logger.warning(f"{'已开启base64发送setu' if base64_send else '未使用base64发送setu'}")
+# logger.warning(f"{'已开启base64发送setu' if base64_send else '未使用base64发送setu'}")
 
 
 class Setu:
