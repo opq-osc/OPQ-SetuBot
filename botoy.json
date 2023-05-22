@@ -5,5 +5,6 @@
   "proxies": null,
   "setu.base64_send": true,
   "setu.transpose": false,
-  "setu.refresh_token": ""
+  "setu.refresh_token": "",
+  "setuconfig.admin": 123456
 }
