@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class GetSetuConfig(BaseModel):
+    botqq: int = None
     QQG: int = None
     QQ: int = None
     msgtype: str = None

@@ -6,5 +6,6 @@
   "setu.base64_send": true,
   "setu.transpose": false,
   "setu.refresh_token": "",
+  "setuconfig.autobuild": false,
   "setuconfig.admin": 123456
 }

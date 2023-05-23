@@ -155,7 +155,7 @@ class Setu:
                 )
                 logger.info(f"MsgSeq:{data.MsgSeq} MsgTime:{data.MsgTime}")
                 if self.getSetuConfig.msgtype == "group":
-                    await saveMsgSeq(group=self.getSetuConfig.QQG, msgseq=data.MsgSeq,
+                    await saveMsgSeq(botqq=self.getSetuConfig.botqq, group=self.getSetuConfig.QQG, msgseq=data.MsgSeq,
                                      revoke_time=self.config.setting.revokeTime.dict()[self.getSetuConfig.msgtype])
                 await asyncio.sleep(2.5)
 
