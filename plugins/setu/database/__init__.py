@@ -8,3 +8,4 @@ from .freqLimit import freqLimit
 from .getConfig import getFriendConfig, getGroupConfig
 from .ifSent import ifSent
 from .revoke import saveMsgSeq, getRevokeTime
+from .buildConfig import buildConfig
