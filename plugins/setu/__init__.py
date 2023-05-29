@@ -4,8 +4,8 @@ from typing import Union
 
 from botoy import S, ctx, mark_recv, logger, Action, jconfig
 
-from .database import freqLimit, getFriendConfig, getGroupConfig, ifSent, getRevokeTime, buildConfig
-from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
+from .command import CMD
+from .database import getFriendConfig, getGroupConfig, getRevokeTime, buildConfig
 from .model import GetSetuConfig
 from .setu import Setu
 
@@ -63,10 +63,10 @@ async def main():
         #     return
         if m.text in ["色图", "setu"]:
             if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
-                if not getGroupConfig(m.from_group) and jconfig.get("setuconfig.autobuild"):
+                if not await getGroupConfig(m.from_group) and jconfig.get("setuconfig.autobuild"):
                     await buildConfig(m.bot_qq, m.from_group)
 
-                if config := getGroupConfig(m.from_group):
+                if config := await getGroupConfig(m.from_group):
                     await Setu(ctx, GetSetuConfig(botqq=m.bot_qq, QQG=m.from_group, QQ=m.from_user,
                                                   msgtype={1: "friend", 2: "group", 3: "temp"}[m.from_type.value]),
                                config).group_or_temp()
@@ -75,16 +75,16 @@ async def main():
                     logger.warning("无群:{}的配置文件".format(m.from_group))
                     return
             else:
-                if config := getFriendConfig():
+                if config := await getFriendConfig():
                     await Setu(ctx, GetSetuConfig(botqq=m.bot_qq, QQG=0, QQ=m.from_user,
                                                   msgtype={1: "friend", 2: "group", 3: "temp"}[m.from_type.value]),
                                config).friend()
         elif info := m.text_match(setuPattern):
             if m.from_type.value in [2, 3]:  # 群聊或者群临时会话就加载该群的配置文件
-                if not getGroupConfig(m.from_group) and jconfig.get("setuconfig.autobuild"):
+                if not await getGroupConfig(m.from_group) and jconfig.get("setuconfig.autobuild"):
                     await buildConfig(m.bot_qq, m.from_group)
 
-                if config := getGroupConfig(m.from_group):
+                if config := await getGroupConfig(m.from_group):
                     if getSetuConfig := await check_and_processing(ctx, m, info, config):
                         await Setu(ctx, getSetuConfig, config).group_or_temp()
 
@@ -93,7 +93,7 @@ async def main():
                     return
 
             else:  # from_type == 1
-                if config := getFriendConfig():
+                if config := await getFriendConfig():
                     if getSetuConfig := await check_and_processing(ctx, m, info, config):
                         await Setu(ctx, getSetuConfig, config).friend()
 
@@ -123,7 +123,7 @@ async def buildconfig():
         if m.from_user == jconfig.get("setuconfig.admin"):
             action = Action(qq=m.bot_qq)
             if m.text == "生成配置文件":
-                if getGroupConfig(m.from_group):
+                if await getGroupConfig(m.from_group):
                     logger.warning(f"群:{m.from_group}的配置文件已存在")
                     await S.text(f"群:{m.from_group}的配置文件已存在")
                     return
@@ -132,7 +132,7 @@ async def buildconfig():
                     await S.text(f"群:{m.from_group}\r\nsetu配置文件创建成功")
             elif info := re.match("生成配置文件 ?(\d+)", m.text):
                 groupid = info[1]
-                if getGroupConfig(groupid):
+                if await getGroupConfig(groupid):
                     logger.warning(f"群:{groupid}的配置文件已存在")
                     await S.text("配置文件已存在")
                     return
@@ -143,6 +143,34 @@ async def buildconfig():
                 await S.text(f"群:{groupid}\r\nsetu配置文件创建成功")
 
 
+async def setu_cmd():
+    if m := (ctx.group_msg or ctx.friend_msg):
+        if m.text[:4] == "_cmd":
+            if m.from_user == jconfig.get("setuconfig.admin"):
+                if res := re.match(r"_cmd [G,g] (\d+) (.*)", m.text):  # 提取群号
+                    groupid = int(res[1])
+                    cmd_text = res[2]
+                elif res := re.match("_cmd (.*)", m.text):  # 匹配命令
+                    if m.from_type.value in [2, 3]:
+                        cmd_text = res[1]
+                        groupid = m.from_group
+                    else:
+                        S.text("无法获取群号")
+                        return
+                else:
+                    S.text("无权限")
+                    return
+                await CMD(S.bind(ctx), groupid, cmd_text).main()
+
+            elif m.from_type.value in [2, 3]:
+                if config := await getGroupConfig(m.from_group):
+                    if m.from_user in config["admins"]:
+                        await CMD(S.bind(ctx), m.from_group).main()
+                    else:
+                        S.text("无权限")
+
+
 mark_recv(main, author='yuban10703', name="发送色图", usage='来张色图')
 mark_recv(setu_revoke, author='yuban10703', name="撤回色图", usage='None')
 mark_recv(buildconfig, author='yuban10703', name="生成setu配置文件", usage='发送"生成配置文件"')
+mark_recv(setu_cmd, author='yuban10703', name="修改setu配置文件", usage='发送"_cmd"')
