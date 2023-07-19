@@ -100,7 +100,6 @@ class PixivResolve:
         if data := await self.getSetuInfo(self.pid):
             # print(data)
             if picurl := self.choosePicUrl(data["body"]["illust_details"], self.page):
-                print(picurl)
                 pic_base64 = await self.url2base64(picurl)
                 msg = self.buildMsg(
                     data["body"]["illust_details"]["title"],
