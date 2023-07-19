@@ -50,21 +50,6 @@ class PixivResolve:
             except:
                 return
 
-    def buildMsg(self, title, author, authorid, page, pic_url):
-        return (
-            "标题:{title}\r\n"
-            "作者:{author}\r\n"
-            "https://www.pixiv.net/users/{authorid}\r\n"
-            "P:{page}\r\n"
-            "原图:{pic_url}\r\n".format(
-                title=title,
-                author=author,
-                authorid=authorid,
-                page=page,
-                pic_url=pic_url
-            )
-        )
-
     async def url2base64(self, url):
         async with httpx.AsyncClient(
                 headers={"Referer": "https://www.pixiv.net"}, **client_options
@@ -100,14 +85,9 @@ class PixivResolve:
         if data := await self.getSetuInfo(self.pid):
             # print(data)
             if picurl := self.choosePicUrl(data["body"]["illust_details"], self.page):
+                # print(picurl)
                 pic_base64 = await self.url2base64(picurl)
-                msg = self.buildMsg(
-                    data["body"]["illust_details"]["title"],
-                    data["body"]["illust_details"]["author_details"]["user_name"],
-                    data["body"]["illust_details"]["user_id"],
-                    self.page,
-                    await self.check_png_or_jpg(self.buildOriginalUrl(picurl)),
-                )
+                msg = await self.check_png_or_jpg(self.buildOriginalUrl(picurl))
                 await self.send.image(pic_base64, msg, type=self.send.TYPE_BASE64)
             else:
                 await self.send.text("{}无P{}~".format(self.pid, self.page))
@@ -116,13 +96,13 @@ class PixivResolve:
 async def main():
     if m := (ctx.group_msg or ctx.friend_msg):
         if info := re.match(r".*pixiv.net/artworks/(\d+) ?p?(\d+)?", m.text):
-            logger.info("解析Pixiv:{}".format(info[0]))
             try:
                 page = 0 if info[2] is None else int(info[2])
                 pid = int(info[1])
             except Exception as e:
                 logger.error("Pixiv解析:处理数据出错\r\n{}".format(e))
                 return
+            logger.info(f"解析Pixiv_ID:[{pid}] Page:[{page}]")
             await PixivResolve(S.bind(ctx), pid, page).main()
 
 
