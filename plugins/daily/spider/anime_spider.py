@@ -1,4 +1,4 @@
-# -*- coding: gbk -*-
+# -*- coding: utf-8 -*-
 import requests
 from lxml import html
 
@@ -16,26 +16,28 @@ def add_anime_info(anime_list, name, day_of_week, time, acover, tags):
 def get_imgurl_from_xpath(url):
     total_xpath = '//*[@id="acgs-anime-icons"]'
     try:
-        # ·¢ËÍ HTTP ÇëÇó²¢»ñÈ¡ÍøÒ³ÄÚÈİ
+        # å‘é€ HTTP è¯·æ±‚å¹¶è·å–ç½‘é¡µå†…å®¹
         response = requests.get(url)
 
-        # È·ÈÏÇëÇó³É¹¦
+        # ç¡®è®¤è¯·æ±‚æˆåŠŸ
         response.raise_for_status()
 
-        # Ê¹ÓÃ lxml ½âÎöÍøÒ³ÄÚÈİ
+        # ä½¿ç”¨ lxml è§£æç½‘é¡µå†…å®¹
         tree = html.fromstring(response.content)
 
-        # »ñÈ¡µ±Ç°·¬¾ç×ÜÊı£º
+        # è·å–å½“å‰ç•ªå‰§æ€»æ•°ï¼š
         total_number_element = tree.xpath(total_xpath)
         total_number = len(total_number_element[0])
 
         for i in range(1, total_number + 1):
-            day_element = tree.xpath(f'//*[@id="acgs-anime-icons"]/div[{i}]/a/div[6]')
+            day_element = tree.xpath(f'//*[@id="acgs-anime-icons"]/div[{i}]')
             name_element = tree.xpath(f'//*[@id="acgs-anime-icons"]/div[{i}]/a/div[3]')
             img_element = tree.xpath(f'//*[@id="acgs-anime-list"]/div[{i}]/div[1]/div/div[2]/div/img')
             tag_element = tree.xpath(f'//*[@id="acgs-anime-list"]/div[{i}]/div[1]/div/div[3]/div[2]/div[2]/div[1]')
-            get_day = day_element[0].text_content()[0:1]
-            time = day_element[0].text_content()[1:]
+            time_element = tree.xpath(f'//*[@id="acgs-anime-icons"]/div[{i}]')
+            get_day = day_element[0].get('weektomorrow')
+            time_data = time_element[0].get('weekairtime')[1:]
+            time = f"{time_data[:2]}:{time_data[2:]}"
             name = name_element[0].text_content()
             url = img_element[0].get('src')
             tag = tag_element[0].text_content()
@@ -52,11 +54,11 @@ def get_imgurl_from_xpath(url):
         print("An error occurred:", ex)
         return None
 
-# Ìæ»»´Ë URL ÎªÄãÒªËÑË÷µÄÄ¿±êÍøÒ³
-url_to_search = "https://acgsecrets.hk/bangumi"  # ½« URL Ìæ»»ÎªÄãÒªËÑË÷µÄÄ¿±êÍøÒ³
+# æ›¿æ¢æ­¤ URL ä¸ºä½ è¦æœç´¢çš„ç›®æ ‡ç½‘é¡µ
+url_to_search = "https://acgsecrets.hk/bangumi"  # å°† URL æ›¿æ¢ä¸ºä½ è¦æœç´¢çš„ç›®æ ‡ç½‘é¡µ
 
 
-# µ÷ÓÃ·â×°µÄº¯ÊıÀ´ËÑË÷Ä¿±êÔªËØµÄ src ÊôĞÔÖµ
+# è°ƒç”¨å°è£…çš„å‡½æ•°æ¥æœç´¢ç›®æ ‡å…ƒç´ çš„ src å±æ€§å€¼
 result_ssrc = get_imgurl_from_xpath(url_to_search)
 
 print(anime_list)
