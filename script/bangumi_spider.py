@@ -3,7 +3,7 @@ from lxml import html
 from pathlib import Path
 import json
 
-curFileDir = Path(__file__).parent  # 当前文件路径
+curFileDir = Path(__file__).parent.absolute()  # 当前文件路径
 
 anime_list = []
 
@@ -13,6 +13,7 @@ headers = {
 
 def update_json_file(path, data):
     # 清空文件内容
+    print(path)
     with open(path, 'w') as file:
         file.write('')
 
@@ -22,6 +23,7 @@ def update_json_file(path, data):
 
 
 def download_image(url, save_path):
+    print(save_path)
     response = httpx.get(url, headers=headers)
     with open(save_path, "wb") as file:
         file.write(response.content)
@@ -106,9 +108,9 @@ digitalConversionDict = {
 b = {}
 
 for d in anime_list:
-    # print(d)
+    print(d)
     if dd := b.get(digitalConversionDict[d["time"][0]]):
-        print(dd)
+        # print(dd)
         if dd.get(d["time"][1]):
             dd[d["time"][1]].append({"name": d["name"], "filename": f"{d['name']}.jpg", "tags": d["tags"]})
             b[digitalConversionDict[d["time"][0]]] = dd
@@ -124,7 +126,6 @@ import datetime
 for k, v in sorted_data.items():
     sorted_data[k] = dict(sorted(v.items(), key=lambda x: datetime.datetime.strptime(x[0], '%H:%M')))
 
-update_json_file(str(curFileDir.parent / "plugins" / "daily" / "config" / "bangumi.json"), sorted_data)
+update_json_file(curFileDir.parent / "plugins" / "daily" / "config" / "bangumi.json", sorted_data)
 for fj in anime_list:
-    download_image(fj['acover'],
-                   str(curFileDir.parent / "plugins" / "daily" / "files" / "bangumi" / f"{fj['name']}.jpg"))
+    download_image(fj['acover'], curFileDir.parent / "plugins" / "daily" / "files" / "bangumi" / f"{fj['name']}.jpg")
