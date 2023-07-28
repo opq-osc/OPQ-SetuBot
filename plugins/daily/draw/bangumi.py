@@ -47,7 +47,7 @@ def singlePage(picpaths, titles, tags, update_time):
     title_coordinate_x = 535
     title_coordinate_y = 0
     ###################
-    tags_font = ImageFont.truetype(str(curFileDir.parent / "files" / "LXGWWenKaiMono-Regular.ttf"), 40, layout_engine=0)
+    tags_font = ImageFont.truetype(str(curFileDir.parent / "files" / "LXGWWenKaiMono-Regular.ttf"), 40)
     tags_coordinate_x = title_coordinate_x
     tags_coordinate_y = 0
     for i in range(len(pics_fin)):
@@ -96,8 +96,7 @@ def add_current_time(page: Image.Image, update_time, next_time):
         page = page.copy()
         # page.show()
 
-        update_time_font = ImageFont.truetype(str(curFileDir.parent / "files" / "LXGWWenKaiMono-Regular.ttf"), 38,
-                                              layout_engine=0)
+        update_time_font = ImageFont.truetype(str(curFileDir.parent / "files" / "LXGWWenKaiMono-Regular.ttf"), 38)
         draw = ImageDraw.Draw(page)
         start_point = (75, 44)
         center = (start_point[0], 21)
@@ -106,8 +105,8 @@ def add_current_time(page: Image.Image, update_time, next_time):
         end_point = (start_point[0], page.size[1])
         total_minutes = (end_time.hour - start_time.hour) * 60 + (end_time.minute - start_time.minute)
         elapsed_minutes = (current_time.hour - start_time.hour) * 60 + (current_time.minute - start_time.minute)
-        percentage = max(0.07, min(0.93, (elapsed_minutes / total_minutes)))
-        # print(percentage)
+        percentage = max(0.08, min(0.92, (elapsed_minutes / total_minutes)))
+        print(percentage)
         length = end_point[1] - start_point[1]
         position_ratio = percentage * length
         position = start_point[1] + position_ratio
