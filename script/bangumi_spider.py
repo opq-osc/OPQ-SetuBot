@@ -124,6 +124,7 @@ import datetime
 for k, v in sorted_data.items():
     sorted_data[k] = dict(sorted(v.items(), key=lambda x: datetime.datetime.strptime(x[0], '%H:%M')))
 
-update_json_file(curFileDir.parent / "plugins" / "daily" / "config" / "bangumi.json", sorted_data)
+update_json_file(str(curFileDir.parent / "plugins" / "daily" / "config" / "bangumi.json"), sorted_data)
 for fj in anime_list:
-    download_image(fj['acover'], curFileDir.parent / "plugins" / "daily" / "files" / "bangumi" / f"{fj['name']}.jpg")
+    download_image(fj['acover'],
+                   str(curFileDir.parent / "plugins" / "daily" / "files" / "bangumi" / f"{fj['name']}.jpg"))
