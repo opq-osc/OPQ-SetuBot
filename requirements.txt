@@ -8,3 +8,4 @@ Pillow
 py-cpuinfo
 ujson
 psutil
+lxml
