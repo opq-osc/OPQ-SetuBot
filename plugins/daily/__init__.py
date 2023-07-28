@@ -1,10 +1,11 @@
 import asyncio
 import re
+import time
 from typing import Union
 from datetime import date
 import httpx
 from PIL import Image, ImageDraw, ImageFont
-from .draw import singlePage, merge_pages, add_logo_and_info
+from .draw import build_today_bangumi_image
 import json
 from pathlib import Path
 
@@ -31,24 +32,7 @@ async def main():
             today = date.today()
             weekday = today.weekday() + 1
             data = await get_bangumi_config(weekday)
-            # print(data)
-            p = []
-            iter_data = iter(data)
-            next(iter_data)
-            for k, v in data.items():
-                pics = []
-                names = []
-                tags = []
-                for fanju in v:
-                    pics.append(Image.open(str(curFileDir / "files" / "bangumi" / fanju["filename"])))
-                    names.append(fanju["name"])
-                    tags.append(fanju["tags"])
-                next_time = next(iter_data, None)
-                # print(k, next_time)
-                p.append(singlePage(pics, names, tags, k, next_time))
-            img = add_logo_and_info(merge_pages(p))
-
-            await S.image(img)
+            await S.image(await build_today_bangumi_image(data))
 
 
 mark_recv(main, author='yuban10703', name="今日番剧", usage='发送"今日番剧"')
