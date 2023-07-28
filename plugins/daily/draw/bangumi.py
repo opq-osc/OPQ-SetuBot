@@ -106,7 +106,6 @@ def add_current_time(page: Image.Image, update_time, next_time):
         total_minutes = (end_time.hour - start_time.hour) * 60 + (end_time.minute - start_time.minute)
         elapsed_minutes = (current_time.hour - start_time.hour) * 60 + (current_time.minute - start_time.minute)
         percentage = max(0.08, min(0.92, (elapsed_minutes / total_minutes)))
-        print(percentage)
         length = end_point[1] - start_point[1]
         position_ratio = percentage * length
         position = start_point[1] + position_ratio
