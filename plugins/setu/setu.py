@@ -9,6 +9,7 @@ from typing import List, Union
 
 import httpx
 from botoy import S, jconfig, logger
+from tenacity import AsyncRetrying, RetryError, stop_after_attempt, wait_fixed
 
 from .APIS import Lolicon, Pixiv, Yuban
 from .database import freqLimit, ifSent, saveMsgSeq
@@ -143,22 +144,30 @@ class Setu:
                 timeout=10,
         ) as client:
             for setu in setus_info:
-                data = await self.send.image(
-                    await download_setu(
-                        client,
-                        setu.dict()[
-                            self.conversion_for_send_dict[self.config.setting.quality]
-                        ],
-                    ),
-                    self.buildMsg(setu),
-                    self.config.setting.at,
-                )
-                logger.info(f"MsgSeq:{data.MsgSeq} MsgTime:{data.MsgTime}")
-                if self.getSetuConfig.msgtype == "group":
-                    await saveMsgSeq(botqq=self.getSetuConfig.botqq, group=self.getSetuConfig.QQG, msgseq=data.MsgSeq,
-                                     revoke_time=self.config.setting.revokeTime.dict()[self.getSetuConfig.msgtype],
-                                     time=int(time.time()))
-                await asyncio.sleep(2.5)
+                try:
+                    async for attempt in AsyncRetrying(stop=stop_after_attempt(3), wait=wait_fixed(2)):
+                        with attempt:
+                            data = await self.send.image(
+                                await download_setu(
+                                    client,
+                                    setu.dict()[
+                                        self.conversion_for_send_dict[self.config.setting.quality]
+                                    ],
+                                ),
+                                self.buildMsg(setu),
+                                self.config.setting.at,
+                            )
+                            logger.info(f"MsgSeq:{data.MsgSeq} MsgTime:{data.MsgTime}")
+                            if self.getSetuConfig.msgtype == "group":
+                                await saveMsgSeq(botqq=self.getSetuConfig.botqq, group=self.getSetuConfig.QQG,
+                                                 msgseq=data.MsgSeq,
+                                                 revoke_time=self.config.setting.revokeTime.dict()[
+                                                     self.getSetuConfig.msgtype],
+                                                 time=int(time.time()))
+                except RetryError:
+                    logger.error(f"[{setu.picOriginalUrl_Msg}]发送失败")
+
+                await asyncio.sleep(1)
 
     async def auth(self) -> bool:
         """
