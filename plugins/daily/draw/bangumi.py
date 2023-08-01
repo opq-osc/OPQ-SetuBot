@@ -106,6 +106,7 @@ def add_current_time(page: Image.Image, update_time, next_time):
         total_minutes = (end_time.hour - start_time.hour) * 60 + (end_time.minute - start_time.minute)
         elapsed_minutes = (current_time.hour - start_time.hour) * 60 + (current_time.minute - start_time.minute)
         percentage = max(0.08, min(0.92, (elapsed_minutes / total_minutes)))
+        # print(percentage)
         length = end_point[1] - start_point[1]
         position_ratio = percentage * length
         position = start_point[1] + position_ratio
@@ -142,12 +143,12 @@ def merge_pages(pages):
     return background
 
 
-def add_logo_and_info(pic, logo_path):
-    current_date = datetime.datetime.now().strftime("%m-%d")
-    today = datetime.datetime.now()
-    weekday = today.weekday()
+def add_logo_and_date(pic, logo_path, current_date, weekday):
+    # current_date = datetime.datetime.now().strftime("%m-%d")
+    # today = datetime.datetime.now()
+    # weekday = today.weekday()
     weekday_names = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
-    weekday_name = weekday_names[weekday]
+    weekday_name = weekday_names[weekday-1]
     target_image = Image.open(logo_path).resize((190, 190))
     paste_position = (20, 0)  # 在目标图像上的坐标位置
 
@@ -174,7 +175,10 @@ def add_logo_and_info(pic, logo_path):
 
 
 @contrib.to_async
-def build_today_bangumi_image(data) -> bytes:
+def build_bangumi_image(data, weekday: int) -> bytes:
+    today_weekday = datetime.date.today().weekday() + 1
+    if_today = today_weekday == weekday
+    # print(if_today)
     start_time = time.time()
     p = []
     iter_data = iter(data)
@@ -189,8 +193,14 @@ def build_today_bangumi_image(data) -> bytes:
             tags += (",".join(fanju["tags"]),)
         next_time = next(iter_data, None)
         # s_page = singlePage(pic_paths, names, tags, k)
-        p.append(add_current_time(singlePage(pic_paths, names, tags, k), k, next_time))
-    img = add_logo_and_info(merge_pages(p),
-                            str(curFileDir.parent / "files" / "bangumi" / "icons" / f"{random.randint(1, 5)}.png"))
+        p.append(add_current_time(singlePage(pic_paths, names, tags, k), k,
+                                  next_time) if if_today else singlePage(pic_paths,
+                                                                         names, tags,
+                                                                         k))
+    img = add_logo_and_date(merge_pages(p),
+                            str(curFileDir.parent / "files" / "bangumi" / "icons" / f"{random.randint(1, 5)}.png"),
+                            datetime.datetime.now().strftime("%m-%d") if if_today else "",
+                            weekday
+                            )
     logger.success(f"生成图片耗时{round(time.time() - start_time, 2)}s")
     return img

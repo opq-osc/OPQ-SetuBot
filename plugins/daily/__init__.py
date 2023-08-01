@@ -1,15 +1,11 @@
-import asyncio
-import re
-import time
-from typing import Union
-from datetime import date
-import httpx
-from PIL import Image, ImageDraw, ImageFont
-from .draw import build_today_bangumi_image
 import json
+import re
+from datetime import date
 from pathlib import Path
 
-from botoy import S, ctx, mark_recv, logger, contrib, Action, jconfig
+from botoy import S, ctx, mark_recv, logger, contrib
+
+from .draw import build_bangumi_image
 
 curFileDir = Path(__file__).parent  # 当前文件路径
 
@@ -26,13 +22,44 @@ def get_bangumi_config(weekday):
         return None
 
 
+prefixes = ["番剧", "番剧列表"]
+pattern = r'\b(?:' + '|'.join(prefixes) + r')\s*(\d+)\b'
+
+
 async def main():
     if m := (ctx.group_msg or ctx.friend_msg):
-        if m.text == "今日番剧":
-            today = date.today()
-            weekday = today.weekday() + 1
+        if m.text in ["今日番剧", "番剧", "番剧列表"]:
+            weekday = date.today().weekday() + 1
+            # print(weekday)
             data = await get_bangumi_config(weekday)
-            await S.image(await build_today_bangumi_image(data))
+            await S.image(await build_bangumi_image(data, weekday))
+        elif m.text in ["明日番剧"]:
+            weekday = date.today().weekday() + 1
+            if weekday == 7:
+                weekday = 1
+            else:
+                weekday += 1
+            data = await get_bangumi_config(weekday)
+            await S.image(await build_bangumi_image(data, weekday))
+        elif m.text in ["昨日番剧"]:
+            weekday = date.today().weekday() + 1
+            if weekday == 1:
+                weekday = 7
+            else:
+                weekday -= 1
+            data = await get_bangumi_config(weekday)
+            await S.image(await build_bangumi_image(data, weekday))
+        elif info := re.findall(pattern, m.text):
+            if info[0].isdigit():
+                weekday = int(info[0])
+                # print(weekday)
+                if 1 <= weekday <= 7:
+                    data = await get_bangumi_config(weekday)
+                    await S.image(await build_bangumi_image(data, weekday))
+                else:
+                    await S.text("?")
+            else:
+                await S.text("要阿拉伯数字哦")
 
 
 mark_recv(main, author='yuban10703', name="今日番剧", usage='发送"今日番剧"')
