@@ -2,6 +2,7 @@ import httpx
 from lxml import html
 from pathlib import Path
 import json
+import hashlib
 
 curFileDir = Path(__file__).parent.absolute()  # 当前文件路径
 
@@ -112,14 +113,19 @@ for d in anime_list:
     if dd := b.get(digitalConversionDict[d["time"][0]]):
         # print(dd)
         if dd.get(d["time"][1]):
-            dd[d["time"][1]].append({"name": d["name"], "filename": f"{d['name']}.jpg", "tags": d["tags"]})
+
+            dd[d["time"][1]].append(
+                {"name": d["name"], "filename": f"{hashlib.md5(d['name'].encode()).hexdigest()}.jpg",
+                 "tags": d["tags"]})
             b[digitalConversionDict[d["time"][0]]] = dd
         else:
             b[digitalConversionDict[d["time"][0]]][d["time"][1]] = [
-                {"name": d["name"], "filename": f"{d['name']}.jpg", "tags": d["tags"]}]
+                {"name": d["name"], "filename": f"{hashlib.md5(d['name'].encode()).hexdigest()}.jpg",
+                 "tags": d["tags"]}]
     else:
         b[digitalConversionDict[d["time"][0]]] = {
-            d["time"][1]: [{"name": d["name"], "filename": f"{d['name']}.jpg", "tags": d["tags"]}]}
+            d["time"][1]: [{"name": d["name"], "filename": f"{hashlib.md5(d['name'].encode()).hexdigest()}.jpg",
+                            "tags": d["tags"]}]}
 sorted_data = dict(sorted(b.items()))
 import datetime
 
@@ -128,4 +134,5 @@ for k, v in sorted_data.items():
 
 update_json_file(curFileDir.parent / "plugins" / "daily" / "config" / "bangumi.json", sorted_data)
 for fj in anime_list:
-    download_image(fj['acover'], curFileDir.parent / "plugins" / "daily" / "files" / "bangumi" / f"{fj['name']}.jpg")
+    download_image(fj['acover'],
+                   curFileDir.parent / "plugins" / "daily" / "files" / "bangumi" / f"{hashlib.md5(fj['name'].encode()).hexdigest()}.jpg")
