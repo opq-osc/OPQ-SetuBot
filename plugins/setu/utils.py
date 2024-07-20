@@ -4,7 +4,8 @@ from typing import Union
 
 from botoy import jconfig, logger
 from PIL import Image
-from tenacity import retry, stop_after_attempt, wait_random
+from tenacity import AsyncRetrying, stop_after_attempt, wait_random
+
 
 setu_config = jconfig.get_configuration("setu")
 
