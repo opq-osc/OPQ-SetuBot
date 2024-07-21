@@ -12,7 +12,7 @@ class Repeater:
         self.previous_message = None
 
     def receive_message(self, sender: int, message: str) -> bool:
-        if message == self.previous_message or message.strip() == "":  # 过滤重复消息和空消息
+        if message == self.previous_message or message == "":  # 过滤重复消息和空消息
             return False
         if message == self.message and sender not in self.sender:
             # if message == self.message:
