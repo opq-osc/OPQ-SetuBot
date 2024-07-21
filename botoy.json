@@ -7,5 +7,6 @@
   "setu.transpose": false,
   "setu.refresh_token": "",
   "setuconfig.autobuild": false,
-  "setuconfig.admin": 123456
+  "setuconfig.admin": 123456,
+  "repeat_after_count": 3
 }
