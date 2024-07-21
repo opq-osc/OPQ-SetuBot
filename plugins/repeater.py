@@ -11,11 +11,11 @@ class Repeater:
         self.message = None
         self.previous_message = None
 
-    def receive_message(self, sender, message) -> bool:
-        if message == self.previous_message:
+    def receive_message(self, sender: int, message: str) -> bool:
+        if message == self.previous_message or message.strip() == "":  # 过滤重复消息和空消息
             return False
         if message == self.message and sender not in self.sender:
-        # if message == self.message:
+            # if message == self.message:
             self.message_count += 1
             self.sender.append(sender)
         else:
@@ -33,12 +33,13 @@ class Repeater:
 
 async def main():
     if m := ctx.group_msg:
-        if group_class.get(m.from_group):
-            if group_class[m.from_group].receive_message(m.from_user, m.text):
-                logger.info(f"群[{m.from_group}] 复读:>> {m.text} <<")
-                await S.text(m.text)
-        else:
-            group_class[m.from_group] = Repeater(int(jconfig.get("repeat_after_count")))
+        if m.text:
+            if group_class.get(m.from_group):
+                if group_class[m.from_group].receive_message(m.from_user, m.text):
+                    logger.info(f"群[{m.from_group}] 复读:>> {m.text} <<")
+                    await S.text(m.text)
+            else:
+                group_class[m.from_group] = Repeater(int(jconfig.get("repeat_after_count")))
 
 
 mark_recv(main, author='yuban10703', name="复读机", usage='自动复读')
