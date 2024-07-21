@@ -14,8 +14,8 @@ class Repeater:
     def receive_message(self, sender, message) -> bool:
         if message == self.previous_message:
             return False
-        # if message == self.message and sender not in self.sender:
-        if message == self.message:
+        if message == self.message and sender not in self.sender:
+        # if message == self.message:
             self.message_count += 1
             self.sender.append(sender)
         else:
