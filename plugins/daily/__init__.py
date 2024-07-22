@@ -72,31 +72,33 @@ async def push_bangumi(data: list, weekday: int, update_time):
     # print(whitelist)
     # print(blacklist)
     pic = await build_specified_bangumi_image(data, weekday, update_time)
-    action = Action(qq=jconfig["qq"], url=jconfig["url"])
-    try:
-        async for attempt in AsyncRetrying(stop=stop_after_attempt(3), wait=wait_fixed(2)):
-            with attempt:
-                groupList = await action.getGroupList()
-    except RetryError:
-        logger.error(f"番剧更新推送:获取群数据失败")
-        return
-    # print(groupList)
-    groupid_list_mark = []
-    if whitelist == []:
-        for group in groupList:
-            groupid = group["GroupCode"]
-            if groupid in blacklist:
-                continue
-            groupid_list_mark.append(groupid)
-    else:
-        groupid_list_mark = whitelist
-    for groupid in groupid_list_mark:
+    qlist = await Action(qq=jconfig["qq"], url=jconfig["url"]).getAllBots()
+    for i in qlist:
+        action = Action(i)
         try:
             async for attempt in AsyncRetrying(stop=stop_after_attempt(3), wait=wait_fixed(2)):
                 with attempt:
-                    await action.sendGroupPic(groupid, base64=base64.b64encode(pic).decode())
+                    groupList = await action.getGroupList()
         except RetryError:
-            logger.error(f"番剧更新推送[{groupid}]发送失败")
+            logger.error(f"番剧更新推送:获取群数据失败")
+            return
+        # print(groupList)
+        groupid_list_mark = []
+        if whitelist == []:
+            for group in groupList:
+                groupid = group["GroupCode"]
+                if groupid in blacklist:
+                    continue
+                groupid_list_mark.append(groupid)
+        else:
+            groupid_list_mark = whitelist
+        for groupid in groupid_list_mark:
+            try:
+                async for attempt in AsyncRetrying(stop=stop_after_attempt(3), wait=wait_fixed(2)):
+                    with attempt:
+                        await action.sendGroupPic(groupid, base64=base64.b64encode(pic).decode())
+            except RetryError:
+                logger.error(f"番剧更新推送[{groupid}]发送失败")
 
 
 async def add_scheduler_job():
