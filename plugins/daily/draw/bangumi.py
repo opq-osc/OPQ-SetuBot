@@ -148,7 +148,7 @@ def add_logo_and_date(pic, logo_path, current_date, weekday):
     # today = datetime.datetime.now()
     # weekday = today.weekday()
     weekday_names = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
-    weekday_name = weekday_names[weekday-1]
+    weekday_name = weekday_names[weekday - 1]
     target_image = Image.open(logo_path).resize((190, 190))
     paste_position = (20, 0)  # 在目标图像上的坐标位置
 
@@ -202,5 +202,26 @@ def build_bangumi_image(data, weekday: int) -> bytes:
                             datetime.datetime.now().strftime("%m-%d") if if_today else "",
                             weekday
                             )
+    logger.success(f"生成图片耗时{round(time.time() - start_time, 2)}s")
+    return img
+
+
+@contrib.to_async
+def build_specified_bangumi_image(data: list, weekday: int, update_time) -> bytes:
+    start_time = time.time()
+    p = []
+    pic_paths = ()
+    names = ()
+    tags = ()
+    for fanju in data:
+        pic_paths += ((str(curFileDir.parent / "files" / "bangumi" / fanju["filename"])),)
+        names += (fanju["name"],)
+        tags += (",".join(fanju["tags"]),)
+    p.append(singlePage(pic_paths, names, tags, update_time))
+    img = add_logo_and_date(merge_pages(p),
+                            str(curFileDir.parent / "files" / "bangumi" / "icons" / f"{random.randint(1, 5)}.png"),
+                            datetime.datetime.now().strftime("%m-%d"),
+                            weekday)
+    # img.show()
     logger.success(f"生成图片耗时{round(time.time() - start_time, 2)}s")
     return img

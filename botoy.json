@@ -8,5 +8,8 @@
   "setu.refresh_token": "",
   "setuconfig.autobuild": false,
   "setuconfig.admin": 123456,
-  "repeat_after_count": 3
+  "repeat_after_count": 3,
+  "bangumi_push": true,
+  "bangumi_push_whitelist": [],
+  "bangumi_push_blacklist": []
 }
