@@ -35,10 +35,7 @@ async def main():
     if m := (ctx.group_msg or ctx.friend_msg):
         if m.text in ["今日番剧", "番剧", "番剧列表"]:
             weekday = date.today().weekday() + 1
-            # print(weekday)
             data = await get_bangumi_config(weekday)
-            print(data)
-            # await build_specified_bangumi_image(data["01:50"],weekday,"01:05")
             await S.image(await build_bangumi_image(data, weekday))
         elif m.text in ["明日番剧"]:
             weekday = date.today().weekday() + 1
