@@ -8,11 +8,11 @@ from random import shuffle
 from typing import List, Union
 
 import httpx
-from botoy import S, jconfig, logger
+from botoy import S, jconfig, logger, contrib
 from tenacity import AsyncRetrying, RetryError, stop_after_attempt, wait_fixed
 
 from .APIS import Lolicon, Pixiv, Yuban
-from .database import freqLimit, ifSent, saveMsgSeq
+from .database import freqLimit, ifSent
 from .model import FinishSetuData, FriendConfig, GetSetuConfig, GroupConfig
 from .utils import download_setu
 
@@ -58,7 +58,6 @@ class Setu:
             "tags": "Tags:[{}]".format(setudata.tags),
         }
         msg = ""
-        # if self.config:  # 群聊和临时
 
         if self.getSetuConfig.msgtype == "friend":  # 好友会话
             for v in msgDict.values():
@@ -68,6 +67,7 @@ class Setu:
             for k, v in self.config.setuInfoShow.dict().items():  # type:ignore
                 if v:
                     msg += ("" if msg == "" else "\r\n") + msgDict[k]
+
             # if self.config.setting.revokeTime.dict()[
             #     self.getSetuConfig.msgtype] != 0 and self.getSetuConfig.msgtype == "group":  # type: ignore
             #     msg += "\r\nREVOKE[{}]".format(
@@ -75,6 +75,7 @@ class Setu:
             #     )
             if self.config.setting.at:  # type:ignore
                 return "\r\n" + msg
+            msg = contrib.Revoker.mark(msg, timeout=self.config.setting.revokeTime.dict()[self.getSetuConfig.msgtype])
             return msg
 
     async def get(self):
@@ -147,7 +148,7 @@ class Setu:
                 try:
                     async for attempt in AsyncRetrying(stop=stop_after_attempt(3), wait=wait_fixed(2)):
                         with attempt:
-                            data = await self.send.image(
+                            await self.send.image(
                                 await download_setu(
                                     client,
                                     setu.dict()[
@@ -157,13 +158,8 @@ class Setu:
                                 self.buildMsg(setu),
                                 self.config.setting.at,
                             )
-                            logger.info(f"MsgSeq:{data.MsgSeq} MsgTime:{data.MsgTime}")
-                            if self.getSetuConfig.msgtype == "group":
-                                await saveMsgSeq(botqq=self.getSetuConfig.botqq, group=self.getSetuConfig.QQG,
-                                                 msgseq=data.MsgSeq,
-                                                 revoke_time=self.config.setting.revokeTime.dict()[
-                                                     self.getSetuConfig.msgtype],
-                                                 time=int(time.time()))
+                            # logger.info(f"MsgSeq:{data.MsgSeq} MsgTime:{data.MsgTime}")
+
                 except RetryError:
                     logger.error(f"[{setu.picOriginalUrl_Msg}]发送失败")
 

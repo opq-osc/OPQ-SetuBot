@@ -2,10 +2,10 @@ import asyncio
 import re
 from typing import Union
 
-from botoy import S, ctx, mark_recv, logger, Action, jconfig
+from botoy import S, ctx, mark_recv, logger, Action, jconfig, contrib
 
 from .command import CMD
-from .database import getFriendConfig, getGroupConfig, getRevokeTime, buildConfig
+from .database import getFriendConfig, getGroupConfig, buildConfig
 from .model import GetSetuConfig
 from .setu import Setu
 
@@ -104,18 +104,10 @@ async def main():
 
 async def setu_revoke():
     if m := ctx.group_msg:
-        # if m.bot_qq != jconfig.qq:
-        #     return
-        # if not m.is_from_self:
-        #     return
-        if not m.images:
-            return
-        await asyncio.sleep(3)  # 等opq返回msgseq
-        if delay := await getRevokeTime(botqq=m.bot_qq, group=m.from_group, msgseq=m.msg_seq):
+        if delay := contrib.Revoker.check(m.text):
             await asyncio.sleep(delay)
-            logger.success(
-                f"撤回bot:{m.bot_qq} 群[{m.from_group_name}:{m.from_group}] [msg_seq:{m.msg_seq} msg_random:{m.msg_random}]")
             await Action(qq=m.bot_qq).revoke(m)
+            logger.success(f"撤回bot:{m.bot_qq} 群[{m.from_group_name}:{m.from_group}]")
 
 
 async def buildconfig():
